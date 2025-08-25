@@ -1,0 +1,10 @@
+[[gateways.grafbase]]
+# Image to use.
+image = "ghcr.io/grafbase/gateway:latest"
+# Arguments to use when running the gateway
+arguments = [
+    "--schema",
+    "/data/schema.graphql",
+    "--config",
+    "/data/grafbase.toml",
+]
