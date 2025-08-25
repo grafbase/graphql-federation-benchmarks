@@ -1,6 +1,6 @@
-[[gateways.grafbase]]
+[gateways.grafbase]
 # Image to use.
-image = "ghcr.io/grafbase/gateway:latest"
+image = "ghcr.io/grafbase/gateway:0.48.0"
 # Arguments to use when running the gateway
 arguments = [
     "--schema",

@@ -1,5 +1,6 @@
 import http from "k6/http";
 import { check } from "k6";
+import { textSummary } from "https://jslib.k6.io/k6-summary/0.1.0/index.js";
 
 export const options = {
   scenarios: {
@@ -11,7 +12,7 @@ export const options = {
   },
 };
 
-const payload = open("./request/request.json");
+const payload = open("./request/body.json");
 const expected = open("./request/expected.json");
 const params = {
   headers: {
@@ -46,4 +47,11 @@ export default function() {
       return res.body === expected;
     },
   });
+}
+
+export function handleSummary(data) {
+  return {
+    "summary.json": JSON.stringify(data),
+    stdout: textSummary(data, { indent: " ", enableColors: true }),
+  };
 }
