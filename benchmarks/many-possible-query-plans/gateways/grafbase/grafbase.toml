@@ -1,9 +1,0 @@
-[operation_caching]
-enabled = false
-limit = 0
-
-[graph]
-path = "/"
-
-[network]
-listen_address = "0.0.0.0:4000"

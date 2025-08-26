@@ -1,0 +1,4 @@
+supergraph:
+  query_planning:
+    cache:
+      enabled: false

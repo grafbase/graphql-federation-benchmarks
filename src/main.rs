@@ -4,8 +4,9 @@ mod config;
 mod docker;
 mod k6;
 mod orchestrator;
+mod report;
 mod resources;
-mod results;
+mod system;
 
 use anyhow::Result;
 use cli::{Cli, Command};
@@ -18,7 +19,10 @@ async fn main() -> Result<()> {
         .with(
             tracing_subscriber::EnvFilter::try_from_default_env().unwrap_or_else(|_| "info".into()),
         )
-        .with(tracing_subscriber::fmt::layer())
+        .with(
+            tracing_subscriber::fmt::layer()
+                .with_target(std::env::var("RUST_LOG").is_ok())
+        )
         .init();
 
     let cli: Cli = argh::from_env();

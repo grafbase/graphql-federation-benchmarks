@@ -24,24 +24,7 @@ pub fn compose_up(path: &Path) -> Result<()> {
     Ok(())
 }
 
-pub fn start_gateway(
-    gateway_name: &str,
-    config: &GatewayConfig,
-    benchmark_path: &Path,
-) -> Result<String> {
-    let gateway_path = benchmark_path.join("gateways").join(gateway_name);
-
-    if !gateway_path.exists() {
-        return Err(anyhow::anyhow!(
-            "Gateway directory not found: {:?}",
-            gateway_path
-        ));
-    }
-
-    cmd!("docker", "pull", &config.image)
-        .run()
-        .map_err(|e| anyhow::anyhow!("Failed to pull gateway image: {}", e))?;
-
+pub fn start_gateway(config: &GatewayConfig, data_path: &Path) -> Result<String> {
     let mut args = vec![
         "run".to_string(),
         "-d".to_string(),
@@ -49,7 +32,7 @@ pub fn start_gateway(
         "--network".to_string(),
         "host".to_string(),
         "-v".to_string(),
-        format!("{}:/data", gateway_path.display()),
+        format!("{}:/data", data_path.display()),
     ];
 
     for (key, value) in &config.environment {
@@ -60,17 +43,13 @@ pub fn start_gateway(
     args.push(config.image.clone());
     args.extend(config.arguments.clone());
 
-    tracing::debug!(
-        "Starting gateway '{}': docker run {}",
-        gateway_name,
-        args.join(" ")
-    );
+    tracing::debug!("docker {}", args.join(" "));
 
     let container_id = cmd("docker", &args)
         .read()
         .map_err(|e| anyhow::anyhow!("Failed to start gateway container: {}", e))?;
 
-    let container_id = container_id.trim().to_string();
+    let container_id = container_id.lines().next().unwrap().trim().to_string();
     tracing::debug!("Gateway container started with ID: {}", container_id);
 
     Ok(container_id)
@@ -79,7 +58,7 @@ pub fn start_gateway(
 pub fn stop(container_id: &str) -> Result<()> {
     tracing::debug!("Stopping container: {}", container_id);
 
-    cmd!("docker", "stop", container_id)
+    cmd!("docker", "stop", "-t", "2", container_id)
         .stdout_null()
         .stderr_null()
         .run()

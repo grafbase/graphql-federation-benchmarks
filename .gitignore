@@ -1,5 +1,6 @@
 # Devenv
 .devenv*
+.claude
 devenv.local.nix
 
 # direnv
@@ -10,3 +11,5 @@ devenv.local.nix
 
 # Rust
 target
+.grafbase
+summary.json

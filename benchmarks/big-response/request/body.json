@@ -1,0 +1,3 @@
+{
+  "query": "query { nodes(n: 8) { ...F nodes(n: 8) { ...F nodes(n: 8) { ...F  nodes(n: 8) { ...F } } } } } fragment F on Node { id floats ints strings int float string }"
+}

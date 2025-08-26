@@ -12,7 +12,13 @@ pub struct K6Run {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct K6Summary {
+    pub subgraph_stats: SubgraphStats,
     pub metrics: K6SummaryMetrics,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct SubgraphStats {
+    pub count: u64,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -20,7 +26,7 @@ pub struct K6SummaryMetrics {
     pub data_received: CounterMetric,
     pub data_sent: CounterMetric,
     pub http_req_duration: TrendMetric,
-    pub http_req_failed: HttpReqFailedMetric,
+    pub checks: CheckMetric,
     pub http_reqs: CounterMetric,
 }
 
@@ -42,6 +48,7 @@ pub struct TrendMetric {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct TrendValues {
+    pub count: u64,
     pub avg: f64,
     pub min: f64,
     pub med: f64,
@@ -55,7 +62,7 @@ pub struct TrendValues {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct HttpReqFailedMetric {
+pub struct CheckMetric {
     pub values: HttpReqFailedValues,
 }
 
@@ -81,7 +88,7 @@ pub async fn run(path: &Path) -> Result<K6Run> {
         "k6",
         "run",
         "--summary-trend-stats",
-        "avg,min,med,max,p(90),p(95),p(99)",
+        "count,avg,min,med,max,p(90),p(95),p(99)",
         "k6.js"
     )
     .dir(path)

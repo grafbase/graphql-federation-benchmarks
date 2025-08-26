@@ -1,4 +1,5 @@
 [gateways.grafbase]
+label = "Grafbase Gateway"
 # Image to use.
 image = "ghcr.io/grafbase/gateway:0.48.0"
 # Arguments to use when running the gateway
@@ -8,3 +9,18 @@ arguments = [
     "--config",
     "/data/grafbase.toml",
 ]
+
+# Compiled from https://github.com/Finistere/router/tree/qp-disable-cache
+# To allow disabling the query plan cache entirely which the Apollo router doesn't allow (must be at least 1).
+# After checking out the repo, run:
+# `docker build . -t apollo-router-custom`
+# As of 2024-08-26 it is based on 58b86ee4b5c2b603e294e5440f5924996d908b5b which past 2.5.0, but before the 2.6.0 release.
+[gateways.apollo-router-custom]
+label = "Apollo Router (custom)"
+image = "apollo-router-custom"
+arguments = ["-s", "/data/schema.graphql", "-c", "/data/router.yml"]
+
+[gateways.apollo-router]
+label = "Apollo Router"
+image = "ghcr.io/apollographql/router:v2.5.0"
+arguments = ["-s", "/data/schema.graphql", "-c", "/data/router.yml"]

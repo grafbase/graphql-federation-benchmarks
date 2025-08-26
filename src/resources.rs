@@ -1,7 +1,5 @@
 use anyhow::Result;
-use bollard::query_parameters::StatsOptionsBuilder;
-use bollard::secret::ContainerStatsResponse;
-use bollard::Docker;
+use bollard::{query_parameters::StatsOptionsBuilder, secret::ContainerStatsResponse, Docker};
 use serde::{Deserialize, Serialize};
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;

@@ -2,8 +2,7 @@ use anyhow::{Context, Result};
 use bollard::Docker;
 use std::path::PathBuf;
 
-use crate::benchmark::Benchmark;
-use crate::config::Config;
+use crate::{benchmark::Benchmark, config::Config, report, system::SystemInfo};
 
 pub struct Orchestrator {
     docker: Docker,
@@ -55,7 +54,7 @@ impl Orchestrator {
 
                 let gateway_config = &self.config.gateways[gateway_name];
                 let benchmark = Benchmark::new(
-                    self.docker.clone(),
+                    &self.docker,
                     benchmark_path.clone(),
                     gateway_name,
                     gateway_config,
@@ -76,20 +75,22 @@ impl Orchestrator {
         let benchmarks = self.create_all_benchmarks(benchmark_filter, gateway_filter)?;
 
         if benchmarks.is_empty() {
-            println!("No benchmarks found matching the filter");
+            tracing::info!("No benchmarks found matching the filter");
             return Ok(());
         }
 
+        let mut results = Vec::new();
+
         for mut benchmark in benchmarks {
-            println!(
-                "\n=== Running benchmark '{}' with gateway '{}' ===",
+            tracing::info!(
+                "=== Running benchmark '{}' with gateway '{}' ===",
                 benchmark.name(),
                 benchmark.gateway_name()
             );
 
             match benchmark.run().await {
                 Ok(result) => {
-                    println!("\n{}", serde_json::to_string_pretty(&result)?);
+                    results.push(result);
                 }
                 Err(e) => {
                     tracing::error!("Failed to run benchmark: {}", e);
@@ -100,6 +101,14 @@ impl Orchestrator {
             benchmark.cleanup().await;
         }
 
+        // Generate and print the markdown report
+        if !results.is_empty() {
+            let system_info = SystemInfo::detect()?;
+            let report =
+                report::generate_report(time::OffsetDateTime::now_utc(), &results, &system_info);
+            println!("\n{}", report);
+        }
+
         Ok(())
     }
 
@@ -107,11 +116,11 @@ impl Orchestrator {
         let benchmarks = self.create_all_benchmarks(None, None)?;
 
         if benchmarks.is_empty() {
-            println!("No benchmarks found");
+            tracing::info!("No benchmarks found");
             return Ok(());
         }
 
-        println!("\n=== Available Benchmarks ===");
+        tracing::info!("=== Available Benchmarks ===");
         let mut current_benchmark = String::new();
         for benchmark in benchmarks {
             let benchmark_name = benchmark.name();
