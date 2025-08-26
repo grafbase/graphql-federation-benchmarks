@@ -45,45 +45,45 @@ CPU Boost: Disabled
 
 | Gateway          | Requests | Failures | Subgraph requests (total) |
 | :--------------- | -------: | -------: | ------------------------: |
-| Apollo Router    |      354 |        0 |                   1 (354) |
-| Grafbase Gateway |      779 |        0 |                   1 (779) |
+| Apollo Router    |      359 |        0 |                   1 (359) |
+| Grafbase Gateway |      790 |        0 |                   1 (790) |
 
 ### Latencies (ms)
 
 | Gateway          |     Min |     Med |     P90 |     P95 |     P99 |     Max |
 | :--------------- | ------: | ------: | ------: | ------: | ------: | ------: |
-| Apollo Router    |    76.3 |    83.7 |    90.1 |    92.8 |    95.8 |   118.3 |
-| Grafbase Gateway |    31.8 |    37.7 |    41.0 |    42.3 |    46.1 |    58.5 |
+| Apollo Router    |    73.9 |    82.6 |    88.4 |    90.6 |    96.1 |   118.9 |
+| Grafbase Gateway |    34.7 |    37.1 |    40.6 |    41.8 |    44.1 |    56.0 |
 
 ### Resources
 
 | Gateway          |  CPU avg |  CPU max |   MEM avg |   MEM max |
 | :--------------- | -------: | -------: | --------: | --------: |
-| Apollo Router    |      71% |      73% |   451 MiB |   529 MiB |
-| Grafbase Gateway |      37% |      39% |   150 MiB |   166 MiB |
+| Apollo Router    |      71% |      73% |   484 MiB |   539 MiB |
+| Grafbase Gateway |      38% |      39% |   142 MiB |   164 MiB |
 
 ## many-plans
 
 ### Requests
 
-| Gateway                | Requests | Failures | Subgraph requests (total) |
-| :--------------------- | -------: | -------: | ------------------------: |
-| Apollo Router (custom) |        9 |        0 |                203 (1827) |
-| Grafbase Gateway       |     1417 |        0 |               83 (117611) |
+| Gateway                  | Requests | Failures | Subgraph requests (total) |
+| :----------------------- | -------: | -------: | ------------------------: |
+| Apollo Router (no cache) |        9 |        0 |                203 (1827) |
+| Grafbase Gateway         |     1432 |        0 |               83 (118856) |
 
 ### Latencies (ms)
 
-| Gateway                |     Min |     Med |     P90 |     P95 |     P99 |     Max |
-| :--------------------- | ------: | ------: | ------: | ------: | ------: | ------: |
-| Apollo Router (custom) |  3327.8 |  3359.4 |  3394.4 |  3409.8 |  3422.1 |  3425.1 |
-| Grafbase Gateway       |    18.6 |    21.1 |    22.4 |    22.8 |    23.6 |    59.3 |
+| Gateway                  |     Min |     Med |     P90 |     P95 |     P99 |     Max |
+| :----------------------- | ------: | ------: | ------: | ------: | ------: | ------: |
+| Apollo Router (no cache) |  3313.2 |  3328.8 |  3371.2 |  3381.7 |  3390.2 |  3392.3 |
+| Grafbase Gateway         |    18.7 |    20.9 |    22.1 |    22.4 |    23.3 |    55.5 |
 
 ### Resources
 
-| Gateway                |  CPU avg |  CPU max |   MEM avg |   MEM max |
-| :--------------------- | -------: | -------: | --------: | --------: |
-| Apollo Router (custom) |     100% |     101% |  1353 MiB |  2443 MiB |
-| Grafbase Gateway       |     107% |     108% |   175 MiB |   208 MiB |
+| Gateway                  |  CPU avg |  CPU max |   MEM avg |   MEM max |
+| :----------------------- | -------: | -------: | --------: | --------: |
+| Apollo Router (no cache) |     100% |     101% |  1335 MiB |  2434 MiB |
+| Grafbase Gateway         |     107% |     108% |   200 MiB |   241 MiB |
 ```
 
 ## Running the benchmarks
