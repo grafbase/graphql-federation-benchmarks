@@ -79,7 +79,11 @@ pub async fn run(path: &Path, script: &str) -> Result<K6Run> {
         std::fs::remove_file(&summary_path)?;
     }
 
-    tracing::info!("Starting K6 test for benchmark at {:?} using script {}", path, script);
+    tracing::info!(
+        "Starting K6 test for benchmark at {:?} using script {}",
+        path,
+        script
+    );
 
     let start = time::OffsetDateTime::now_utc();
 
