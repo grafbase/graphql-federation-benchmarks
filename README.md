@@ -36,6 +36,9 @@ Date: 2025-08-28
 CPU: AMD Ryzen 9 7950X3D 16-Core Processor
 Memory: 93.4 GiB
 CPU Boost: Disabled
+Git Commit: d729680366dc2050ed77c9d47381989fa7771542
+Linux Version: 6.16.1
+Docker Version: 28.3.3
 
 # Benchmarks
 

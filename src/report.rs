@@ -32,6 +32,15 @@ pub fn generate_report(
             if boost { "Enabled" } else { "Disabled" }
         ));
     }
+    if let Some(git_commit) = &system_info.git_commit {
+        report.push_str(&format!("Git Commit: {}\n", git_commit));
+    }
+    if let Some(linux_version) = &system_info.linux_version {
+        report.push_str(&format!("Linux Version: {}\n", linux_version));
+    }
+    if let Some(docker_version) = &system_info.docker_version {
+        report.push_str(&format!("Docker Version: {}\n", docker_version));
+    }
     report.push_str("\n# Benchmarks\n\n");
 
     for (benchmark_name, benchmark_results) in grouped_results {
@@ -359,6 +368,9 @@ mod tests {
             cpu_model: "Test CPU Model".to_string(),
             total_memory_mib: 16384,
             cpu_boost_enabled: Some(true),
+            git_commit: Some("abc123def456".to_string()),
+            linux_version: Some("6.16.1".to_string()),
+            docker_version: Some("24.0.7".to_string()),
         };
         let report = generate_report(
             time::macros::datetime!(2019-01-01 0:00 UTC),
@@ -372,6 +384,9 @@ mod tests {
         CPU: Test CPU Model
         Memory: 16.0 GiB
         CPU Boost: Enabled
+        Git Commit: abc123def456
+        Linux Version: 6.16.1
+        Docker Version: 24.0.7
 
         # Benchmarks
 

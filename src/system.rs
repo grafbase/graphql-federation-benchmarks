@@ -1,12 +1,16 @@
 use anyhow::{Context as _, Result};
 use serde::Serialize;
 use std::fs;
+use std::process::Command;
 
 #[derive(Debug, Clone, Serialize)]
 pub struct SystemInfo {
     pub cpu_model: String,
     pub total_memory_mib: u64,
     pub cpu_boost_enabled: Option<bool>,
+    pub git_commit: Option<String>,
+    pub linux_version: Option<String>,
+    pub docker_version: Option<String>,
 }
 
 impl SystemInfo {
@@ -26,17 +30,38 @@ impl SystemInfo {
             None
         });
 
+        let git_commit = detect_git_commit().unwrap_or_else(|e| {
+            tracing::debug!("Failed to detect git commit: {}", e);
+            None
+        });
+
+        let linux_version = detect_linux_version().unwrap_or_else(|e| {
+            tracing::debug!("Failed to detect Linux version: {}", e);
+            None
+        });
+
+        let docker_version = detect_docker_version().unwrap_or_else(|e| {
+            tracing::debug!("Failed to detect Docker version: {}", e);
+            None
+        });
+
         tracing::debug!(
-            "System info: CPU={}, Memory={}MiB, Boost={:?}",
+            "System info: CPU={}, Memory={}MiB, Boost={:?}, Git={:?}, Linux={:?}, Docker={:?}",
             cpu_model,
             total_memory_mib,
-            cpu_boost_enabled
+            cpu_boost_enabled,
+            git_commit,
+            linux_version,
+            docker_version
         );
 
         Ok(Self {
             cpu_model,
             total_memory_mib,
             cpu_boost_enabled,
+            git_commit,
+            linux_version,
+            docker_version,
         })
     }
 }
@@ -86,6 +111,65 @@ fn detect_cpu_boost() -> Result<Option<bool>> {
 
     // CPU boost information not available
     Ok(None)
+}
+
+fn detect_git_commit() -> Result<Option<String>> {
+    let output = Command::new("git")
+        .args(["rev-parse", "HEAD"])
+        .output()
+        .context("Failed to run git rev-parse")?;
+
+    if output.status.success() {
+        let commit = String::from_utf8(output.stdout)
+            .context("Invalid UTF-8 in git output")?
+            .trim()
+            .to_string();
+        Ok(Some(commit))
+    } else {
+        Ok(None)
+    }
+}
+
+fn detect_linux_version() -> Result<Option<String>> {
+    // Try reading from /proc/version first
+    if let Ok(version) = fs::read_to_string("/proc/version") {
+        if let Some(version_str) = version.split_whitespace().nth(2) {
+            return Ok(Some(version_str.to_string()));
+        }
+    }
+
+    // Fallback to uname -r
+    let output = Command::new("uname")
+        .arg("-r")
+        .output()
+        .context("Failed to run uname")?;
+
+    if output.status.success() {
+        let version = String::from_utf8(output.stdout)
+            .context("Invalid UTF-8 in uname output")?
+            .trim()
+            .to_string();
+        Ok(Some(version))
+    } else {
+        Ok(None)
+    }
+}
+
+fn detect_docker_version() -> Result<Option<String>> {
+    let output = Command::new("docker")
+        .args(["version", "--format", "{{.Server.Version}}"])
+        .output()
+        .context("Failed to run docker version")?;
+
+    if output.status.success() {
+        let version = String::from_utf8(output.stdout)
+            .context("Invalid UTF-8 in docker output")?
+            .trim()
+            .to_string();
+        Ok(Some(version))
+    } else {
+        Ok(None)
+    }
 }
 
 #[cfg(test)]
