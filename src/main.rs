@@ -1,17 +1,17 @@
 mod benchmark;
 mod cli;
-mod config;
 mod docker;
+mod gateway;
 mod k6;
-mod orchestrator;
 mod report;
 mod resources;
 mod system;
 
 use anyhow::Result;
 use cli::{Cli, Command};
-use orchestrator::Orchestrator;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
+
+use crate::cli::Context;
 
 #[tokio::main]
 async fn main() -> Result<()> {
@@ -19,22 +19,19 @@ async fn main() -> Result<()> {
         .with(
             tracing_subscriber::EnvFilter::try_from_default_env().unwrap_or_else(|_| "info".into()),
         )
-        .with(
-            tracing_subscriber::fmt::layer()
-                .with_target(std::env::var("RUST_LOG").is_ok())
-        )
+        .with(tracing_subscriber::fmt::layer().with_target(std::env::var("RUST_LOG").is_ok()))
         .init();
 
-    let cli: Cli = argh::from_env();
+    let args: Cli = argh::from_env();
     let current_dir = std::env::current_dir()?;
-    let orchestrator = Orchestrator::new(current_dir).await?;
+    let ctx = Context::new(current_dir)?;
 
-    match cli.command {
-        Command::Run(run_cmd) => {
-            orchestrator.run(run_cmd.benchmark, run_cmd.gateway).await?;
+    match args.command {
+        Command::Run(args) => {
+            cli::run::main(ctx, args).await?;
         }
-        Command::List(_) => {
-            orchestrator.list().await?;
+        Command::List(args) => {
+            cli::list::main(ctx, args).await?;
         }
     }
 

@@ -281,6 +281,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "877a4ace8713b0bcf2a4e7eec82529c029f1d0619886d18145fea96c3ffe5c0f"
 
 [[package]]
+name = "fast-glob"
+version = "0.3.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3afcf4effa2c44390b9912544582d5af29e10dc4c816c5dbebf748e1c7416faa"
+
+[[package]]
 name = "fnv"
 version = "1.0.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -388,6 +394,7 @@ dependencies = [
  "argh",
  "bollard",
  "duct",
+ "fast-glob",
  "futures-util",
  "insta",
  "reqwest",

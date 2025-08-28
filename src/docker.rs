@@ -2,8 +2,6 @@ use anyhow::Result;
 use duct::cmd;
 use std::path::Path;
 
-use crate::config::GatewayConfig;
-
 pub fn compose_up(path: &Path) -> Result<()> {
     tracing::debug!("Starting subgraphs with docker compose at {:?}", path);
 
@@ -24,37 +22,6 @@ pub fn compose_up(path: &Path) -> Result<()> {
     Ok(())
 }
 
-pub fn start_gateway(config: &GatewayConfig, data_path: &Path) -> Result<String> {
-    let mut args = vec![
-        "run".to_string(),
-        "-d".to_string(),
-        "--rm".to_string(),
-        "--network".to_string(),
-        "host".to_string(),
-        "-v".to_string(),
-        format!("{}:/data", data_path.display()),
-    ];
-
-    for (key, value) in &config.environment {
-        args.push("-e".to_string());
-        args.push(format!("{}={}", key, value));
-    }
-
-    args.push(config.image.clone());
-    args.extend(config.arguments.clone());
-
-    tracing::debug!("docker {}", args.join(" "));
-
-    let container_id = cmd("docker", &args)
-        .read()
-        .map_err(|e| anyhow::anyhow!("Failed to start gateway container: {}", e))?;
-
-    let container_id = container_id.lines().next().unwrap().trim().to_string();
-    tracing::debug!("Gateway container started with ID: {}", container_id);
-
-    Ok(container_id)
-}
-
 pub fn stop(container_id: &str) -> Result<()> {
     tracing::debug!("Stopping container: {}", container_id);
 
@@ -66,6 +33,55 @@ pub fn stop(container_id: &str) -> Result<()> {
 
     tracing::debug!("Container stopped and removed");
     Ok(())
+}
+
+#[derive(Debug, Clone)]
+pub struct ContainerId(String);
+
+impl std::ops::Deref for ContainerId {
+    type Target = str;
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+pub fn run(
+    image: &str,
+    env: impl Iterator<Item = (String, String)>,
+    volumes: impl Iterator<Item = (String, String)>,
+    arguments: impl Iterator<Item = String>,
+) -> Result<ContainerId> {
+    let mut args = vec![
+        "run".to_string(),
+        "-d".to_string(),
+        "--rm".to_string(),
+        "--network".to_string(),
+        "host".to_string(),
+    ];
+
+    for (host_dir, guest_dir) in volumes {
+        args.push("-v".to_string());
+        args.push(format!("{}:{}", host_dir, guest_dir));
+    }
+
+    for (key, value) in env {
+        args.push("-e".to_string());
+        args.push(format!("{}={}", key, value));
+    }
+
+    args.push(image.to_string());
+    args.extend(arguments);
+
+    tracing::debug!("docker {}", args.join(" "));
+
+    let out = cmd("docker", &args)
+        .read()
+        .map_err(|e| anyhow::anyhow!("Failed to start gateway container: {}", e))?;
+
+    let id = out.lines().next().unwrap().trim().to_string();
+    tracing::debug!("Gateway container started with ID: {}", id);
+
+    Ok(ContainerId(id))
 }
 
 pub fn compose_down(path: &Path) -> Result<()> {

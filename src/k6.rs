@@ -71,7 +71,7 @@ pub struct HttpReqFailedValues {
     pub fails: u64,
 }
 
-pub async fn run(path: &Path) -> Result<K6Run> {
+pub async fn run(path: &Path, script: &str) -> Result<K6Run> {
     let summary_path = path.join("summary.json");
 
     // Clean up any existing summary file
@@ -79,7 +79,7 @@ pub async fn run(path: &Path) -> Result<K6Run> {
         std::fs::remove_file(&summary_path)?;
     }
 
-    tracing::info!("Starting K6 test for benchmark at {:?}", path);
+    tracing::info!("Starting K6 test for benchmark at {:?} using script {}", path, script);
 
     let start = time::OffsetDateTime::now_utc();
 
@@ -89,7 +89,7 @@ pub async fn run(path: &Path) -> Result<K6Run> {
         "run",
         "--summary-trend-stats",
         "count,avg,min,med,max,p(90),p(95),p(99)",
-        "k6.js"
+        script
     )
     .dir(path)
     .run();

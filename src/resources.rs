@@ -6,6 +6,8 @@ use std::sync::Arc;
 use std::time::Duration;
 use tokio::task::JoinHandle;
 
+use crate::docker::ContainerId;
+
 #[derive(Default, Debug, Clone, Serialize, Deserialize)]
 pub struct ResourceStats {
     pub cpu_usage_avg: f64,
@@ -22,7 +24,7 @@ pub struct DockerStatsCollector {
 }
 
 impl DockerStatsCollector {
-    pub async fn start(docker: Docker, container_id: &str) -> anyhow::Result<Self> {
+    pub async fn start(docker: Docker, container_id: &ContainerId) -> anyhow::Result<Self> {
         let is_collecting = Arc::new(AtomicBool::new(true));
         let is_collecting_clone = is_collecting.clone();
 

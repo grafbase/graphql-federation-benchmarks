@@ -1,23 +1,130 @@
-use anyhow::Result;
+use anyhow::{Context as _, Result};
 use bollard::Docker;
-use serde::Serialize;
-use std::path::PathBuf;
-use tokio::io::{AsyncBufReadExt, BufReader};
-use tokio::process::Command;
+use fast_glob::glob_match;
+use serde::{Deserialize, Serialize};
+use std::{
+    collections::HashMap,
+    path::{Path, PathBuf},
+    sync::Arc,
+};
 
 use crate::{
-    config::GatewayConfig,
-    docker,
+    docker::{self, ContainerId},
+    gateway::{wait_for_gateway_health_with_logs, Gateway},
     k6::{self, K6Run},
     resources::{DockerStatsCollector, ResourceStats},
 };
 
-pub struct Benchmark<'a> {
+pub fn load(
+    docker: &Docker,
+    gateways: &[Arc<Gateway>],
+    current_dir: &Path,
+    filter: Option<String>,
+) -> Result<Vec<Benchmark>> {
+    let benchmarks_dir = current_dir.join("benchmarks");
+    if !benchmarks_dir.exists() {
+        return Err(anyhow::anyhow!(
+            "Benchmarks directory not found at {:?}",
+            benchmarks_dir
+        ));
+    }
+
+    let mut benchmarks = Vec::new();
+
+    for entry in std::fs::read_dir(&benchmarks_dir)? {
+        let entry = entry?;
+        let path = entry.path();
+
+        if !path.is_dir() {
+            continue;
+        }
+
+        let name = path.file_name().unwrap().to_str().unwrap().to_lowercase();
+
+        // Load benchmark config
+        let config_path = path.join("config.toml");
+        let config_content = std::fs::read_to_string(&config_path)
+            .with_context(|| format!("Could not read config for benchmark '{}'", name))?;
+
+        let local_benchmarks: HashMap<String, Config> = toml::from_str(&config_content)
+            .with_context(|| format!("Could not parse config for benchmark '{}'", name))?;
+        let n = local_benchmarks.len();
+
+        // Process each benchmark configuration
+        for (suffix, config) in local_benchmarks {
+            let name = if suffix == "default" && n == 1 {
+                name.clone()
+            } else {
+                format!("{name}-{suffix}").to_lowercase()
+            };
+
+            // Apply benchmark filter using glob pattern
+            if let Some(ref filter) = filter {
+                if !glob_match(filter, &name) {
+                    continue;
+                }
+            }
+
+            for gateway_config in config.gateways {
+                // Find matching gateway
+                let gateway = gateways
+                    .iter()
+                    .find(|g| g.name() == gateway_config.name)
+                    .cloned();
+
+                if let Some(gateway) = gateway {
+                    benchmarks.push(Benchmark {
+                        docker: docker.clone(),
+                        path: path.clone(),
+                        gateway,
+                        name: name.clone(),
+                        k6_script: config.k6_script.clone(),
+                        gateway_args: gateway_config.args,
+                        container_id: None,
+                    });
+                } else {
+                    return Err(anyhow::anyhow!(
+                        "Gateway '{}' not found for benchmark '{}'",
+                        gateway_config.name,
+                        name
+                    ));
+                }
+            }
+        }
+    }
+
+    benchmarks.sort_by(|a, b| {
+        a.name()
+            .cmp(b.name())
+            .then_with(|| a.gateway().name().cmp(b.gateway().name()))
+    });
+
+    Ok(benchmarks)
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+struct Config {
+    k6_script: String,
+    gateways: Vec<GatewayConfig>,
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(deny_unknown_fields)]
+struct GatewayConfig {
+    name: String,
+    #[serde(default)]
+    args: Vec<String>,
+}
+
+pub struct Benchmark {
+    docker: Docker,
     path: PathBuf,
-    gateway_name: &'a str,
-    gateway_config: &'a GatewayConfig,
-    docker: &'a Docker,
-    container_id: Option<String>,
+    gateway: Arc<Gateway>,
+    name: String,
+    k6_script: String,
+    gateway_args: Vec<String>,
+    container_id: Option<ContainerId>,
 }
 
 #[derive(Debug, Serialize)]
@@ -28,28 +135,13 @@ pub struct BenchmarkResult {
     pub resource_stats: ResourceStats,
 }
 
-impl<'a> Benchmark<'a> {
-    pub fn new(
-        docker: &'a Docker,
-        path: PathBuf,
-        gateway_name: &'a str,
-        gateway_config: &'a GatewayConfig,
-    ) -> Self {
-        Self {
-            path,
-            gateway_name,
-            gateway_config,
-            docker,
-            container_id: None,
-        }
+impl Benchmark {
+    pub fn name(&self) -> &str {
+        &self.name
     }
 
-    pub fn name(&self) -> String {
-        self.path.file_name().unwrap().to_str().unwrap().to_string()
-    }
-
-    pub fn gateway_name(&self) -> &'a str {
-        self.gateway_name
+    pub fn gateway(&self) -> &Arc<Gateway> {
+        &self.gateway
     }
 
     pub async fn run(&mut self) -> Result<BenchmarkResult> {
@@ -57,29 +149,25 @@ impl<'a> Benchmark<'a> {
         docker::compose_up(&self.path)?;
 
         // Start gateway
-        let container_id = docker::start_gateway(
-            self.gateway_config,
-            &self.path.join("gateways").join(self.gateway_name),
-        )?;
+        let container_id = self.gateway.start(&self.path, self.gateway_args.clone())?;
         self.container_id = Some(container_id.clone());
 
         // Start metrics collection
         let collector = DockerStatsCollector::start(self.docker.clone(), &container_id).await?;
 
         // Start log streaming and wait for gateway to be healthy
-        self.wait_for_gateway_health_with_logs(&container_id)
-            .await?;
+        wait_for_gateway_health_with_logs(&container_id).await?;
 
         // Run K6 test
-        let k6_run = k6::run(&self.path).await?;
+        let k6_run = k6::run(&self.path, &self.k6_script).await?;
 
         // Stop collection and get filtered stats
         let resource_stats = collector.stop_and_filter(k6_run.start, k6_run.end).await?;
 
         // Build result
         Ok(BenchmarkResult {
-            benchmark: self.name(),
-            gateway: self.gateway_config.label.clone(),
+            benchmark: self.name().to_string(),
+            gateway: self.gateway.label().to_string(),
             k6_run,
             resource_stats,
         })
@@ -97,91 +185,5 @@ impl<'a> Benchmark<'a> {
         if let Err(e) = docker::compose_down(&self.path) {
             tracing::error!("Failed to stop subgraphs: {}", e);
         }
-    }
-
-    async fn wait_for_gateway_health_with_logs(&self, container_id: &str) -> Result<()> {
-        const WAIT_DURATION_S: u64 = 30;
-        let client = reqwest::Client::new();
-        let health_query = r#"{"query":"{ __typename }"}"#;
-        let expected_response = r#"{"data":{"__typename":"Query"}}"#;
-
-        tracing::info!("Waiting for gateway to be healthy...");
-
-        // Start log streaming process
-        let mut log_process = Command::new("docker")
-            .args(["logs", "-f", container_id])
-            .stdout(std::process::Stdio::piped())
-            .stderr(std::process::Stdio::piped())
-            .spawn()?;
-
-        // Create readers for stdout and stderr
-        let stdout = log_process.stdout.take().expect("Failed to get stdout");
-        let stderr = log_process.stderr.take().expect("Failed to get stderr");
-        let mut stdout_reader = BufReader::new(stdout).lines();
-        let mut stderr_reader = BufReader::new(stderr).lines();
-
-        // Spawn tasks to read and print logs
-        let (log_tx, mut log_rx) = tokio::sync::mpsc::unbounded_channel::<()>();
-        let log_handle = tokio::spawn(async move {
-            loop {
-                tokio::select! {
-                    line = stdout_reader.next_line() => {
-                        match line {
-                            Ok(Some(line)) => println!("{}", line),
-                            Ok(None) => break,
-                            Err(_) => break,
-                        }
-                    }
-                    line = stderr_reader.next_line() => {
-                        match line {
-                            Ok(Some(line)) => eprintln!("{}", line),
-                            Ok(None) => break,
-                            Err(_) => break,
-                        }
-                    }
-                    _ = log_rx.recv() => {
-                        break;
-                    }
-                }
-            }
-        });
-
-        // Health check loop
-        let start = std::time::Instant::now();
-        while start.elapsed().as_secs() < WAIT_DURATION_S {
-            if let Ok(response) = client
-                .post("http://localhost:4000")
-                .header("Content-Type", "application/json")
-                .body(health_query)
-                .send()
-                .await
-            {
-                if response.status().is_success() {
-                    let body = response.text().await?;
-                    if body.contains(expected_response) {
-                        tracing::info!("Gateway is healthy");
-
-                        // Stop log streaming
-                        let _ = log_tx.send(());
-                        let _ = log_process.kill().await;
-                        let _ = log_handle.await;
-
-                        return Ok(());
-                    }
-                }
-            }
-
-            tokio::time::sleep(std::time::Duration::from_millis(200)).await;
-        }
-
-        // Stop log streaming on timeout
-        let _ = log_tx.send(());
-        let _ = log_process.kill().await;
-        let _ = log_handle.await;
-
-        Err(anyhow::anyhow!(
-            "Gateway did not become healthy after {} seconds",
-            WAIT_DURATION_S
-        ))
     }
 }

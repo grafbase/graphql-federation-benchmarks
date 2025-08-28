@@ -1,0 +1,10 @@
+[default]
+k6_script = "k6.js"
+
+[[default.gateways]]
+name = "grafbase"
+args = ["-s", "/benchmark/schema.graphql"]
+
+[[default.gateways]]
+name = "apollo-router"
+args = ["-s", "/benchmark/schema.graphql"]

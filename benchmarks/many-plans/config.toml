@@ -1,0 +1,10 @@
+[default]
+k6_script = "k6.js"
+
+[[default.gateways]]
+name = "grafbase-no-cache"
+args = ["-s", "/benchmark/schema.graphql"]
+
+[[default.gateways]]
+name = "apollo-router-no-cache"
+args = ["-s", "/benchmark/schema.graphql"]
