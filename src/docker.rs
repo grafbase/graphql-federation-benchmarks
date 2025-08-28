@@ -25,11 +25,18 @@ pub fn compose_up(path: &Path) -> Result<()> {
 pub fn stop(container_id: &str) -> Result<()> {
     tracing::debug!("Stopping container: {}", container_id);
 
-    cmd!("docker", "stop", "-t", "2", container_id)
+    let stop_result = cmd!("docker", "stop", "-t", "2", container_id)
+        .stdout_null()
+        .stderr_null()
+        .run();
+
+    cmd!("docker", "rm", container_id)
         .stdout_null()
         .stderr_null()
         .run()
         .map_err(|e| anyhow::anyhow!("Failed to stop container: {}", e))?;
+
+    let _ = stop_result?;
 
     tracing::debug!("Container stopped and removed");
     Ok(())
@@ -54,7 +61,6 @@ pub fn run(
     let mut args = vec![
         "run".to_string(),
         "-d".to_string(),
-        "--rm".to_string(),
         "--network".to_string(),
         "host".to_string(),
     ];

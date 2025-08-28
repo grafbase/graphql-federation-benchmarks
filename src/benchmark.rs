@@ -65,12 +65,9 @@ pub fn load(
                 }
             }
 
-            for gateway_config in config.gateways {
+            for (gateway_name, gateway_config) in config.gateways {
                 // Find matching gateway
-                let gateway = gateways
-                    .iter()
-                    .find(|g| g.name() == gateway_config.name)
-                    .cloned();
+                let gateway = gateways.iter().find(|g| g.name() == gateway_name).cloned();
 
                 if let Some(gateway) = gateway {
                     benchmarks.push(Benchmark {
@@ -100,13 +97,12 @@ pub fn load(
 #[serde(deny_unknown_fields)]
 struct Config {
     k6_script: String,
-    gateways: Vec<GatewayConfig>,
+    gateways: HashMap<String, GatewayConfig>,
 }
 
 #[derive(Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
 struct GatewayConfig {
-    name: String,
     #[serde(default)]
     args: Vec<String>,
 }

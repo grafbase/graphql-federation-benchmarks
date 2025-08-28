@@ -45,25 +45,28 @@ CPU Boost: Disabled
 
 | Gateway          | Requests | Failures | Subgraph requests (total) |
 | :--------------- | -------: | -------: | ------------------------: |
-| Apollo Router    |      365 |        0 |                   1 (365) |
+| Apollo Router    |      369 |        0 |                   1 (369) |
 | Cosmo Router     |      465 |        0 |                   1 (465) |
-| Grafbase Gateway |      786 |        0 |                   1 (786) |
+| Grafbase Gateway |      790 |        0 |                   1 (790) |
+| Hive Gateway     |      286 |        0 |                   1 (286) |
 
 ### Latencies (ms)
 
 | Gateway          |     Min |     Med |     P90 |     P95 |     P99 |     Max |
 | :--------------- | ------: | ------: | ------: | ------: | ------: | ------: |
-| Apollo Router    |    71.2 |    81.3 |    86.9 |    90.0 |    94.9 |   124.0 |
-| Cosmo Router     |    53.2 |    63.7 |    70.0 |    72.4 |    76.8 |    90.6 |
-| Grafbase Gateway |    34.7 |    37.2 |    40.7 |    41.7 |    44.3 |    56.8 |
+| Apollo Router    |    73.4 |    80.3 |    85.8 |    87.9 |    99.3 |   117.4 |
+| Cosmo Router     |    52.4 |    63.5 |    70.7 |    72.7 |    77.4 |    89.5 |
+| Grafbase Gateway |    34.8 |    37.1 |    40.4 |    41.4 |    43.6 |    56.3 |
+| Hive Gateway     |    98.9 |   103.2 |   107.8 |   110.3 |   132.7 |   199.5 |
 
 ### Resources
 
 | Gateway          |  CPU avg |  CPU max |   MEM avg |   MEM max |
 | :--------------- | -------: | -------: | --------: | --------: |
-| Apollo Router    |      71% |      73% |   491 MiB |   591 MiB |
-| Cosmo Router     |     148% |     159% |    83 MiB |   107 MiB |
-| Grafbase Gateway |      38% |      40% |   158 MiB |   172 MiB |
+| Apollo Router    |      71% |      73% |   484 MiB |   563 MiB |
+| Cosmo Router     |     148% |     163% |    84 MiB |   118 MiB |
+| Grafbase Gateway |      38% |      40% |   149 MiB |   169 MiB |
+| Hive Gateway     |      98% |     102% |   434 MiB |   521 MiB |
 
 ## many-plans
 
@@ -72,24 +75,24 @@ CPU Boost: Disabled
 | Gateway                     | Requests | Failures | Subgraph requests (total) |
 | :-------------------------- | -------: | -------: | ------------------------: |
 | Apollo Router (no cache)    |        9 |        0 |                203 (1827) |
-| Cosmo Router (no cache)     |       73 |        0 |               155 (11344) |
-| Grafbase Gateway (no cache) |     1441 |        0 |               83 (119603) |
+| Cosmo Router (no cache)     |       74 |        0 |               156 (11615) |
+| Grafbase Gateway (no cache) |     1430 |        0 |               83 (118690) |
 
 ### Latencies (ms)
 
 | Gateway                     |     Min |     Med |     P90 |     P95 |     P99 |     Max |
 | :-------------------------- | ------: | ------: | ------: | ------: | ------: | ------: |
-| Apollo Router (no cache)    |  3332.8 |  3345.3 |  3387.0 |  3408.9 |  3426.5 |  3430.9 |
-| Cosmo Router (no cache)     |   401.3 |   411.3 |   416.1 |   418.3 |   423.2 |   424.9 |
-| Grafbase Gateway (no cache) |    18.7 |    20.8 |    21.9 |    22.3 |    23.1 |    56.4 |
+| Apollo Router (no cache)    |  3353.0 |  3358.2 |  3382.5 |  3404.7 |  3422.5 |  3426.9 |
+| Cosmo Router (no cache)     |   400.0 |   410.1 |   417.9 |   419.6 |   422.4 |   424.5 |
+| Grafbase Gateway (no cache) |    18.7 |    21.0 |    22.1 |    22.4 |    23.1 |    57.6 |
 
 ### Resources
 
 | Gateway                     |  CPU avg |  CPU max |   MEM avg |   MEM max |
 | :-------------------------- | -------: | -------: | --------: | --------: |
-| Apollo Router (no cache)    |     100% |     101% |  1392 MiB |  2444 MiB |
-| Cosmo Router (no cache)     |     154% |     173% |    75 MiB |    84 MiB |
-| Grafbase Gateway (no cache) |     107% |     108% |   174 MiB |   226 MiB |
+| Apollo Router (no cache)    |     100% |     101% |  1320 MiB |  2253 MiB |
+| Cosmo Router (no cache)     |     155% |     170% |    74 MiB |    80 MiB |
+| Grafbase Gateway (no cache) |     107% |     108% |   174 MiB |   210 MiB |
 ```
 
 ## Running the benchmarks
