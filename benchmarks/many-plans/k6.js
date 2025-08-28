@@ -21,7 +21,7 @@ const params = {
 };
 
 export default function() {
-  const res = http.post("http://localhost:4000", payload, params);
+  const res = http.post("http://localhost:4000/graphql", payload, params);
 
   check(res, {
     "response code was 200": (res) => res.status === 200,

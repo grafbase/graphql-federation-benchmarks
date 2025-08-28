@@ -1,4 +1,5 @@
 supergraph:
+  path: "/graphql"
   query_planning:
     cache:
       enabled: false

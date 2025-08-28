@@ -8,3 +8,6 @@ args = ["-s", "/benchmark/schema.graphql"]
 [[default.gateways]]
 name = "apollo-router-no-cache"
 args = ["-s", "/benchmark/schema.graphql"]
+
+[[default.gateways]]
+name = "cosmo-no-cache"

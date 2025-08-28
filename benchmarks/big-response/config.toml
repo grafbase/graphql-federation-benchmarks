@@ -8,3 +8,6 @@ args = ["-s", "/benchmark/schema.graphql"]
 [[default.gateways]]
 name = "apollo-router"
 args = ["-s", "/benchmark/schema.graphql"]
+
+[[default.gateways]]
+name = "cosmo"

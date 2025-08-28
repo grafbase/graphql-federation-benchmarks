@@ -46,7 +46,7 @@ pub struct Gateway {
 pub struct Config {
     pub label: String,
     pub image: String,
-    pub arguments: Vec<String>,
+    pub args: Vec<String>,
     #[serde(default)]
     pub environment: HashMap<String, String>,
 }
@@ -75,7 +75,7 @@ impl Gateway {
         ];
 
         // Combine gateway arguments with provided args
-        let mut all_args = self.config.arguments.clone();
+        let mut all_args = self.config.args.clone();
         all_args.extend(args);
 
         docker::run(
@@ -144,7 +144,7 @@ pub async fn wait_for_gateway_health_with_logs(container_id: &str) -> Result<()>
     let start = std::time::Instant::now();
     while start.elapsed().as_secs() < WAIT_DURATION_S {
         if let Ok(response) = client
-            .post("http://localhost:4000")
+            .post("http://localhost:4000/graphql")
             .header("Content-Type", "application/json")
             .body(health_query)
             .send()

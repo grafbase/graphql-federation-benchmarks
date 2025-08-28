@@ -1,0 +1,14 @@
+type Query {
+  nodes(n: Int!): [Node!]!
+}
+
+type Node {
+  id: Int!
+  floats: [Float!]!
+  ints: [Int!]!
+  strings: [String!]!
+  int: Int!
+  float: Float!
+  string: String!
+  nodes(n: Int!): [Node!]!
+}

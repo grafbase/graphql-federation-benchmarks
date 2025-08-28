@@ -1,0 +1,30 @@
+version: 1
+subgraphs:
+  - name: subgraph0
+    routing_url: http://localhost:7000/graphql
+    schema:
+      file: ../subgraph0.graphql
+  - name: subgraph1
+    routing_url: http://localhost:7000/graphql
+    schema:
+      file: ../subgraph1.graphql
+  - name: subgraph2
+    routing_url: http://localhost:7000/graphql
+    schema:
+      file: ../subgraph2.graphql
+  - name: subgraph3
+    routing_url: http://localhost:7000/graphql
+    schema:
+      file: ../subgraph3.graphql
+  - name: subgraph4
+    routing_url: http://localhost:7000/graphql
+    schema:
+      file: ../subgraph4.graphql
+  - name: subgraph5
+    routing_url: http://localhost:7000/graphql
+    schema:
+      file: ../subgraph5.graphql
+  - name: subgraph6
+    routing_url: http://localhost:7000/graphql
+    schema:
+      file: ../subgraph6.graphql

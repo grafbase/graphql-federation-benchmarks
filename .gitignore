@@ -13,3 +13,4 @@ devenv.local.nix
 target
 .grafbase
 summary.json
+node_modules

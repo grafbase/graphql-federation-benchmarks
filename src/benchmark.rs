@@ -82,12 +82,6 @@ pub fn load(
                         gateway_args: gateway_config.args,
                         container_id: None,
                     });
-                } else {
-                    return Err(anyhow::anyhow!(
-                        "Gateway '{}' not found for benchmark '{}'",
-                        gateway_config.name,
-                        name
-                    ));
                 }
             }
         }

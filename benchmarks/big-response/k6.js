@@ -20,8 +20,8 @@ const params = {
   },
 };
 
-export default function () {
-  const response = http.post("http://localhost:4000", payload, params);
+export default function() {
+  const response = http.post("http://localhost:4000/graphql", payload, params);
 
   check(response, {
     "is status 200": (resp) => resp.status === 200,

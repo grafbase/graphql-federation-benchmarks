@@ -2,8 +2,5 @@
 enabled = false
 limit = 0
 
-[graph]
-path = "/"
-
 [network]
-listen_address = "0.0.0.0:4000"
+listen_address = "127.0.0.1:4000"
