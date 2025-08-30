@@ -1,0 +1,83 @@
+schema
+  @link(url: "https://specs.apollo.dev/link/v1.0")
+  @link(url: "https://specs.apollo.dev/join/v0.3", for: EXECUTION) {
+  query: Query
+}
+
+directive @join__enumValue(graph: join__Graph!) repeatable on ENUM_VALUE
+
+directive @join__field(
+  graph: join__Graph
+  requires: join__FieldSet
+  provides: join__FieldSet
+  type: String
+  external: Boolean
+  override: String
+  usedOverridden: Boolean
+) repeatable on FIELD_DEFINITION | INPUT_FIELD_DEFINITION
+
+directive @join__graph(name: String!, url: String!) on ENUM_VALUE
+
+directive @join__implements(
+  graph: join__Graph!
+  interface: String!
+) repeatable on OBJECT | INTERFACE
+
+directive @join__type(
+  graph: join__Graph!
+  key: join__FieldSet
+  extension: Boolean! = false
+  resolvable: Boolean! = true
+  isInterfaceObject: Boolean! = false
+) repeatable on OBJECT | INTERFACE | UNION | ENUM | INPUT_OBJECT | SCALAR
+
+directive @join__unionMember(
+  graph: join__Graph!
+  member: String!
+) repeatable on UNION
+
+directive @link(
+  url: String
+  as: String
+  for: link__Purpose
+  import: [link__Import]
+) repeatable on SCHEMA
+
+scalar join__FieldSet
+
+scalar link__Import
+
+enum link__Purpose {
+  """
+  `SECURITY` features provide metadata necessary to securely resolve fields.
+  """
+  SECURITY
+
+  """
+  `EXECUTION` features provide metadata necessary for operation execution.
+  """
+  EXECUTION
+}
+
+enum join__Graph {
+  SUB0 @join__graph(name: "sub0", url: "http://localhost:7100/graphql/sub0")
+  SUB1 @join__graph(name: "sub1", url: "http://localhost:7100/graphql/sub1")
+}
+
+type Query @join__type(graph: SUB0) {
+  nodes(n: Int!): [Node!]! @join__field(graph: SUB0)
+}
+
+type Node
+  @join__type(graph: SUB0, key: "id")
+  @join__type(graph: SUB1, key: "id") {
+  id: Int! @join__field(graph: SUB0) @join__field(graph: SUB1)
+  name: String @join__field(graph: SUB1)
+  floats: [Float!]! @join__field(graph: SUB0)
+  ints: [Int!]! @join__field(graph: SUB0)
+  strings: [String!]! @join__field(graph: SUB0)
+  int: Int! @join__field(graph: SUB0)
+  float: Float! @join__field(graph: SUB0)
+  string: String! @join__field(graph: SUB0)
+  nodes(n: Int!): [Node!]! @join__field(graph: SUB0)
+}

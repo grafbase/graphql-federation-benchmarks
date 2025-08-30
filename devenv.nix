@@ -1,4 +1,5 @@
-{pkgs, ...}: {
+{ pkgs, ... }:
+{
   packages = with pkgs; [
     git
     rustup
@@ -6,6 +7,7 @@
     cargo-insta
     k6
     nodejs
+    taplo
   ];
 
   enterShell = ''

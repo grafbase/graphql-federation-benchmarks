@@ -1,8 +1,0 @@
-[default]
-k6_script = "k6.js"
-
-[default.gateways]
-grafbase = {}
-apollo-router = {}
-cosmo = {}
-hive = {}

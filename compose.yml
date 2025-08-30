@@ -1,0 +1,38 @@
+services:
+  big-response:
+    restart: unless-stopped
+    network_mode: "host"
+    build:
+      args:
+        BINARY_NAME: big-response
+    environment:
+      PORT: 7100
+      SUB0_DELAY_MS:
+      SUB1_DELAY_MS:
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:7100/healthcheck"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+  many-plans:
+    restart: unless-stopped
+    network_mode: "host"
+    build:
+      args:
+        BINARY_NAME: many-plans
+    environment:
+      PORT: 7000
+      SUB0_DELAY_MS:
+      SUB1_DELAY_MS:
+      SUB2_DELAY_MS:
+      SUB3_DELAY_MS:
+      SUB4_DELAY_MS:
+      SUB5_DELAY_MS:
+      SUB6_DELAY_MS:
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:7000/healthcheck"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s

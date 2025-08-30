@@ -1,0 +1,30 @@
+version: 1
+subgraphs:
+  - name: subgraph0
+    routing_url: http://localhost:7000/graphql/sub0
+    schema:
+      file: ../../../crates/subgraph/many-plans/schemas/subgraph0.graphql
+  - name: subgraph1
+    routing_url: http://localhost:7000/graphql/sub1
+    schema:
+      file: ../../../crates/subgraph/many-plans/schemas/subgraph1.graphql
+  - name: subgraph2
+    routing_url: http://localhost:7000/graphql/sub2
+    schema:
+      file: ../../../crates/subgraph/many-plans/schemas/subgraph2.graphql
+  - name: subgraph3
+    routing_url: http://localhost:7000/graphql/sub3
+    schema:
+      file: ../../../crates/subgraph/many-plans/schemas/subgraph3.graphql
+  - name: subgraph4
+    routing_url: http://localhost:7000/graphql/sub4
+    schema:
+      file: ../../../crates/subgraph/many-plans/schemas/subgraph4.graphql
+  - name: subgraph5
+    routing_url: http://localhost:7000/graphql/sub5
+    schema:
+      file: ../../../crates/subgraph/many-plans/schemas/subgraph5.graphql
+  - name: subgraph6
+    routing_url: http://localhost:7000/graphql/sub6
+    schema:
+      file: ../../../crates/subgraph/many-plans/schemas/subgraph6.graphql

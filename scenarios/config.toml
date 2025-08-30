@@ -1,0 +1,9 @@
+[big-response]
+supergraph = "big-response"
+
+[long-lived-big-response]
+supergraph = "big-response"
+env.SUB1_DELAY_MS = "100"
+
+[many-plans]
+supergraph = "many-plans"

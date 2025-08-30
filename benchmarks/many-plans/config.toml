@@ -1,7 +1,0 @@
-[default]
-k6_script = "k6.js"
-
-[default.gateways]
-grafbase-no-cache = {}
-apollo-router-no-cache = {}
-cosmo-no-cache = {}

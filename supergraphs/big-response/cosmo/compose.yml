@@ -1,0 +1,10 @@
+version: 1
+subgraphs:
+  - name: subgraph0
+    routing_url: http://localhost:7100/graphql/sub0
+    schema:
+      file: ../../../crates/subgraph/big-response/schemas/subgraph0.graphql
+  - name: subgraph1
+    routing_url: http://localhost:7100/graphql/sub1
+    schema:
+      file: ../../../crates/subgraph/big-response/schemas/subgraph1.graphql

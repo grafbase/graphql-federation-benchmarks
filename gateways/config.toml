@@ -5,17 +5,17 @@ args = [
     "--config",
     "/gateways/grafbase/no-cache.toml",
     "-s",
-    "/benchmark/schema.graphql",
+    "/supergraph/schema.graphql",
 ]
 
 [grafbase]
-label = "Grafbase Gateway"
+label = "Grafbase Gateway (no cache)"
 image = "ghcr.io/grafbase/gateway:0.48.0"
 args = [
     "--config",
     "/gateways/grafbase/grafbase.toml",
     "-s",
-    "/benchmark/schema.graphql",
+    "/supergraph/schema.graphql",
 ]
 
 [cosmo]
@@ -42,7 +42,7 @@ args = [
     "-c",
     "/gateways/apollo-router/no-cache.yml",
     "-s",
-    "/benchmark/schema.graphql",
+    "/supergraph/schema.graphql",
 ]
 
 [apollo-router]
@@ -52,10 +52,10 @@ args = [
     "-c",
     "/gateways/apollo-router/router.yml",
     "-s",
-    "/benchmark/schema.graphql",
+    "/supergraph/schema.graphql",
 ]
 
 [hive]
 label = "Hive Gateway"
 image = "ghcr.io/graphql-hive/gateway:1.16.3"
-args = ["supergraph", "/benchmark/schema.graphql", "-p", "4000"]
+args = ["supergraph", "/supergraph/schema.graphql", "-p", "4000"]

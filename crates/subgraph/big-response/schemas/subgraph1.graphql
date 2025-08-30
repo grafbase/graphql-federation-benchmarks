@@ -1,0 +1,4 @@
+type Node @key(fields: "id") {
+  id: Int!
+  name: String
+}

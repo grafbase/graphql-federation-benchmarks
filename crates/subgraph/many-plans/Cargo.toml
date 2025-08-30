@@ -1,0 +1,14 @@
+[package]
+name = "many-plans"
+version.workspace = true
+edition.workspace = true
+publish = false
+
+[dependencies]
+anyhow.workspace = true
+async-graphql.workspace = true
+postcard.workspace = true
+rand.workspace = true
+serde_json.workspace = true
+subgraph.workspace = true
+tokio.workspace = true

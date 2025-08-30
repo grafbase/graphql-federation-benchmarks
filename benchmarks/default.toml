@@ -1,0 +1,11 @@
+[[benchmarks]]
+scenario = "big-response"
+gateway = ["grafbase", "cosmo", "apollo-router", "hive"]
+
+[[benchmarks]]
+scenario = "long-lived-big-response"
+gateway = ["grafbase", "cosmo", "apollo-router", "hive"]
+
+[[benchmarks]]
+scenario = "many-plans"
+gateway = ["grafbase-no-cache", "cosmo-no-cache", "apollo-router-no-cache"]
