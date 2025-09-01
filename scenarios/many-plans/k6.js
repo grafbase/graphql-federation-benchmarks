@@ -7,24 +7,36 @@ export const options = {
     open_model: {
       executor: "constant-vus",
       vus: 1,
-      duration: __ENV.DURATION || "30s",
+      duration: __ENV.DURATION || "60s",
+      gracefulStop: "3s",
     },
   },
 };
 
 const payload = open("./body.json");
 const expected = open("./expected.json");
-const params = {
-  headers: {
-    "Content-Type": "application/json",
-  },
-};
+
+// Generate a random token for this request, this ensures gateways do not abuse the
+// repetitive nature of the benchmark too much.
+function generateRandomToken() {
+  return (
+    Math.random().toString(36).substring(2) +
+    Math.random().toString(36).substring(2)
+  );
+}
 
 export default function () {
-  const res = http.post("http://localhost:4000/graphql", payload, params);
+  const params = {
+    headers: {
+      "Content-Type": "application/json",
+      authorization: `Bearer ${generateRandomToken()}`,
+    },
+  };
 
-  check(res, {
-    "response code was 200": (res) => res.status === 200,
+  const response = http.post("http://localhost:4000/graphql", payload, params);
+
+  check(response, {
+    "response code was 200": (resp) => resp.status === 200,
     "response is correct": (resp) => {
       if (resp.body === expected) {
         return true;

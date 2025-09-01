@@ -1,11 +1,19 @@
 [[benchmarks]]
 scenario = "big-response"
-gateway = ["grafbase", "cosmo", "apollo-router", "hive"]
+gateway = ["grafbase", "cosmo", "apollo-router", "hive-gateway", "hive-router"]
 
 [[benchmarks]]
 scenario = "long-lived-big-response"
-gateway = ["grafbase", "cosmo", "apollo-router", "hive"]
+gateway = ["grafbase", "cosmo", "apollo-router", "hive-gateway", "hive-router"]
 
 [[benchmarks]]
 scenario = "many-plans"
-gateway = ["grafbase-no-cache", "cosmo-no-cache", "apollo-router-no-cache"]
+gateway = ["grafbase-no-cache", "cosmo-no-cache", "apollo-router-no-cache", "grafbase", "cosmo", "apollo-router", "hive-router", "hive-gateway"]
+
+[[benchmarks]]
+scenario = "query"
+gateway = ["grafbase", "cosmo", "apollo-router", "hive-gateway", "hive-router"]
+
+[[benchmarks]]
+scenario = "deduplication"
+gateway = ["grafbase", "cosmo", "apollo-router", "hive-gateway", "hive-router"]

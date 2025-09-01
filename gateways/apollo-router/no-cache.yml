@@ -3,3 +3,8 @@ supergraph:
   query_planning:
     cache:
       enabled: false
+headers:
+  all:
+    request:
+      - propagate:
+          named: "Authorization"

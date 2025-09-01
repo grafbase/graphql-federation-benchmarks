@@ -1,0 +1,10 @@
+supergraph:
+  path: "/graphql"
+headers:
+  all:
+    request:
+      - propagate:
+          named: "Authorization"
+traffic_shaping:
+  all:
+    deduplicate_query: true

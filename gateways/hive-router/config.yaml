@@ -1,0 +1,6 @@
+supergraph:
+  source: file
+  path: /supergraph/schema.graphql
+log:
+  format: pretty-tree
+  level: debug

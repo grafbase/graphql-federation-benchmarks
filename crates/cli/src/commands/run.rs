@@ -3,6 +3,7 @@ use argh::FromArgs;
 use crate::{
     benchmark::{Benchmark, load_benchmarks},
     commands::Context,
+    config::Config,
     report,
     system::SystemInfo,
 };
@@ -23,11 +24,12 @@ pub struct Command {
 pub async fn main(ctx: Context, cmd: Command) -> anyhow::Result<()> {
     let benchmarks = load_benchmarks(&ctx.docker, &ctx.config, &cmd.name)?;
 
-    run_benchmarks(benchmarks, cmd.duration.as_deref()).await
+    run_benchmarks(benchmarks, &ctx.config, cmd.duration.as_deref()).await
 }
 
 pub async fn run_benchmarks(
     benchmarks: Vec<Benchmark>,
+    config: &Config,
     duration: Option<&str>,
 ) -> anyhow::Result<()> {
     let mut results = Vec::new();
@@ -55,8 +57,12 @@ pub async fn run_benchmarks(
     // Generate and print the markdown report
     if !results.is_empty() {
         let system_info = SystemInfo::detect()?;
-        let report =
-            report::generate_report(time::OffsetDateTime::now_utc(), &results, &system_info);
+        let report = report::generate_report(
+            time::OffsetDateTime::now_utc(),
+            &results,
+            &system_info,
+            config,
+        )?;
         println!("\n{}", report);
     }
 

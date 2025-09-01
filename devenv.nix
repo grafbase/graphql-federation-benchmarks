@@ -8,6 +8,7 @@
     k6
     nodejs
     taplo
+    jq
   ];
 
   enterShell = ''

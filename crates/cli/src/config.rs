@@ -1,12 +1,21 @@
 use anyhow::{Context as _, Result};
+use fast_glob::glob_match;
 use serde::Deserialize;
 use std::{
-    collections::BTreeMap,
+    collections::{BTreeMap, HashMap},
     path::{Path, PathBuf},
     sync::Arc,
 };
 
-use crate::gateway::Gateway;
+use crate::docker::{self, ContainerId};
+
+/// The merged configuration file structure
+#[derive(Debug, Deserialize)]
+struct TomlConfig {
+    scenarios: BTreeMap<String, ScenarioConfig>,
+    supergraphs: BTreeMap<String, SupergraphConfig>,
+    gateways: BTreeMap<String, GatewayConfig>,
+}
 
 /// Central configuration for the entire benchmark repository
 pub struct Config {
@@ -19,33 +28,34 @@ pub struct Config {
 impl Config {
     /// Load all configurations from the repository
     pub fn load(current_dir: PathBuf) -> Result<Self> {
-        // Load scenarios
-        let scenarios = load_scenarios(&current_dir)?;
+        // Load the merged config file from root
+        let config_path = current_dir.join("config.toml");
+        let content = std::fs::read_to_string(&config_path)
+            .context("Could not read config.toml from root directory")?;
+        let merged_config: TomlConfig =
+            toml::from_str(&content).context("Could not parse config.toml")?;
 
-        // Load supergraphs
-        let supergraphs = load_supergraphs(&current_dir)?;
-
-        // Load gateways
-        let gateways = crate::gateway::load(&current_dir, None)?;
+        // Convert gateways to the expected format
+        let gateways = build_all(&current_dir, merged_config.gateways, None)?;
 
         Ok(Self {
-            scenarios,
-            supergraphs,
+            scenarios: merged_config.scenarios,
+            supergraphs: merged_config.supergraphs,
             gateways,
             current_dir,
         })
     }
 
     pub fn get_scenario(&self, name: &str) -> Result<&ScenarioConfig> {
-        self.scenarios.get(name).ok_or_else(|| {
-            anyhow::anyhow!("Scenario '{}' not found in scenarios/config.toml", name)
-        })
+        self.scenarios
+            .get(name)
+            .ok_or_else(|| anyhow::anyhow!("Scenario '{}' not found in config.toml", name))
     }
 
     pub fn get_supergraph(&self, name: &str) -> Result<&SupergraphConfig> {
-        self.supergraphs.get(name).ok_or_else(|| {
-            anyhow::anyhow!("Supergraph '{}' not found in supergraphs/config.toml", name)
-        })
+        self.supergraphs
+            .get(name)
+            .ok_or_else(|| anyhow::anyhow!("Supergraph '{}' not found in config.toml", name))
     }
 
     pub fn get_gateway(&self, name: &str) -> Result<Arc<Gateway>> {
@@ -53,7 +63,7 @@ impl Config {
             .iter()
             .find(|g| g.name() == name)
             .cloned()
-            .ok_or_else(|| anyhow::anyhow!("Gateway '{}' not found in gateways/config.toml", name))
+            .ok_or_else(|| anyhow::anyhow!("Gateway '{}' not found in config.toml", name))
     }
 }
 
@@ -61,7 +71,9 @@ impl Config {
 pub struct ScenarioConfig {
     pub supergraph: String,
     #[serde(default)]
-    pub env: std::collections::HashMap<String, String>,
+    pub description: String,
+    #[serde(default)]
+    pub env: HashMap<String, String>,
 }
 
 #[derive(Debug, Clone, Deserialize)]
@@ -69,16 +81,76 @@ pub struct SupergraphConfig {
     pub subgraphs: Vec<String>,
 }
 
-fn load_scenarios(current_dir: &Path) -> Result<BTreeMap<String, ScenarioConfig>> {
-    let config_path = current_dir.join("scenarios").join("config.toml");
-    let content =
-        std::fs::read_to_string(&config_path).context("Could not read scenarios/config.toml")?;
-    toml::from_str(&content).context("Could not parse scenarios/config.toml")
+#[derive(Debug, Clone, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct GatewayConfig {
+    pub label: String,
+    pub image: String,
+    #[serde(default)]
+    pub args: Vec<String>,
+    #[serde(default)]
+    pub env: HashMap<String, String>,
 }
 
-fn load_supergraphs(current_dir: &Path) -> Result<BTreeMap<String, SupergraphConfig>> {
-    let config_path = current_dir.join("supergraphs").join("config.toml");
-    let content =
-        std::fs::read_to_string(&config_path).context("Could not read supergraphs/config.toml")?;
-    toml::from_str(&content).context("Could not parse supergraphs/config.toml")
+pub struct Gateway {
+    pub name: String,
+    pub gateways_path: PathBuf,
+    pub config: GatewayConfig,
+}
+
+impl Gateway {
+    pub fn name(&self) -> &str {
+        &self.name
+    }
+
+    pub fn label(&self) -> &str {
+        &self.config.label
+    }
+
+    pub fn start_with_supergraph(&self, supergraph_path: &Path) -> Result<ContainerId> {
+        let volumes = vec![
+            (
+                self.gateways_path.to_string_lossy().to_string(),
+                "/gateways".to_string(),
+            ),
+            (
+                supergraph_path.to_string_lossy().to_string(),
+                "/supergraph".to_string(),
+            ),
+        ];
+
+        docker::run(
+            &self.config.image,
+            self.config.env.iter().map(|(k, v)| (k.clone(), v.clone())),
+            volumes.into_iter(),
+            self.config.args.clone().into_iter(),
+        )
+    }
+}
+
+/// Load gateways from the merged config structure
+fn build_all(
+    current_dir: &Path,
+    gateways: BTreeMap<String, GatewayConfig>,
+    filter: Option<String>,
+) -> Result<Vec<Arc<Gateway>>> {
+    let gateways_path = current_dir.join("gateways");
+
+    Ok(gateways
+        .into_iter()
+        .filter(|(name, _)| {
+            if let Some(ref filter) = filter {
+                glob_match(filter, name)
+            } else {
+                true
+            }
+        })
+        .map(|(name, config)| {
+            Arc::new(Gateway {
+                gateways_path: gateways_path.clone(),
+                name: name.to_lowercase(),
+                config,
+            })
+        })
+        .collect())
 }

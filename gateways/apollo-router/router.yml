@@ -1,2 +1,7 @@
 supergraph:
   path: "/graphql"
+headers:
+  all:
+    request:
+      - propagate:
+          named: "Authorization"

@@ -1,20 +1,4 @@
 services:
-  big-response:
-    restart: unless-stopped
-    network_mode: "host"
-    build:
-      args:
-        BINARY_NAME: big-response
-    environment:
-      PORT: 7100
-      SUB0_DELAY_MS:
-      SUB1_DELAY_MS:
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:7100/healthcheck"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
   many-plans:
     restart: unless-stopped
     network_mode: "host"
@@ -23,6 +7,7 @@ services:
         BINARY_NAME: many-plans
     environment:
       PORT: 7000
+      DELAY_MS:
       SUB0_DELAY_MS:
       SUB1_DELAY_MS:
       SUB2_DELAY_MS:
@@ -32,6 +17,42 @@ services:
       SUB6_DELAY_MS:
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:7000/healthcheck"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+  big-response:
+    restart: unless-stopped
+    network_mode: "host"
+    build:
+      args:
+        BINARY_NAME: big-response
+    environment:
+      PORT: 7100
+      DELAY_MS:
+      SUB0_DELAY_MS:
+      SUB1_DELAY_MS:
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:7100/healthcheck"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+  fed:
+    restart: unless-stopped
+    network_mode: "host"
+    build:
+      args:
+        BINARY_NAME: fed
+    environment:
+      PORT: 7200
+      DELAY_MS:
+      ACCOUNTS_DELAY_MS:
+      INVENTORY_DELAY_MS:
+      PRODUCTS_DELAY_MS:
+      REVIEWS_DELAY_MS:
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:7200/healthcheck"]
       interval: 30s
       timeout: 10s
       retries: 3

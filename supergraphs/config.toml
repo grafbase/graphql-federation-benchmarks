@@ -1,5 +1,0 @@
-[big-response]
-subgraphs = ["big-response"]
-
-[many-plans]
-subgraphs = ["many-plans"]

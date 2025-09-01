@@ -12,8 +12,10 @@ use crate::docker::ContainerId;
 pub struct ResourceStats {
     pub cpu_usage_avg: f64,
     pub cpu_usage_max: f64,
+    pub cpu_usage_std: f64,
     pub memory_mib_avg: f64,
     pub memory_mib_max: f64,
+    pub memory_mib_std: f64,
     pub throttled_time: Duration,
     pub count: usize,
 }
@@ -83,6 +85,9 @@ impl DockerStatsCollector {
         let start_ix = samples.partition_point(|s| s.preread < start);
 
         let mut stats = ResourceStats::default();
+        let mut cpu_values = Vec::new();
+        let mut memory_values = Vec::new();
+
         for sample in &samples[start_ix..] {
             if sample.read > end {
                 break;
@@ -92,16 +97,27 @@ impl DockerStatsCollector {
 
             let cpu_usage = (sample.cpu_total_usage - sample.precpu_total_usage)
                 .div_duration_f64((sample.read - sample.preread).try_into().unwrap());
+            cpu_values.push(cpu_usage);
             stats.cpu_usage_avg += (cpu_usage - stats.cpu_usage_avg) / (stats.count as f64);
             stats.cpu_usage_max = stats.cpu_usage_max.max(cpu_usage);
 
             let memory_mib = sample.memory_bytes as f64 / ((1 << 20) as f64);
+            memory_values.push(memory_mib);
             if stats.memory_mib_max.total_cmp(&memory_mib).is_lt() {
                 stats.memory_mib_max = memory_mib;
             }
             stats.memory_mib_avg += (memory_mib - stats.memory_mib_avg) / (stats.count as f64);
 
             stats.throttled_time += sample.throttled_time.unwrap_or_default();
+        }
+
+        // Calculate standard deviations using statrs
+        use statrs::statistics::Statistics;
+        if !cpu_values.is_empty() {
+            stats.cpu_usage_std = cpu_values.std_dev();
+        }
+        if !memory_values.is_empty() {
+            stats.memory_mib_std = memory_values.std_dev();
         }
 
         Ok(stats)

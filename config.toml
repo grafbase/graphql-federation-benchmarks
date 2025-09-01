@@ -1,14 +1,42 @@
+# Merged configuration file for GraphQL Federation Benchmarks
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# GATEWAYS
+# ═══════════════════════════════════════════════════════════════════════════════
+
+[gateways.grafbase-no-cache]
+label = "Grafbase Gateway (no cache)"
+# image = "ghcr.io/grafbase/gateway:0.48.0"
+image = "grafbase-gateway-main"
+args = [
+    "--config",
+    "/gateways/grafbase/no-cache.toml",
+    "-s",
+    "/supergraph/schema.graphql",
+]
+
 [gateways.grafbase]
 label = "Grafbase Gateway"
-# Image to use.
-image = "ghcr.io/grafbase/gateway:0.48.0"
-# Arguments to use when running the gateway
-arguments = [
-    "--schema",
-    "/data/schema.graphql",
+# image = "ghcr.io/grafbase/gateway:0.48.0"
+image = "grafbase-gateway-main"
+args = [
     "--config",
-    "/data/grafbase.toml",
+    "/gateways/grafbase/grafbase.toml",
+    "-s",
+    "/supergraph/schema.graphql",
 ]
+
+[gateways.cosmo]
+label = "Cosmo Router"
+# 2025-09-05
+image = "ghcr.io/wundergraph/cosmo/router:0.249.0"
+args = ["/router", "-config", "/gateways/cosmo/config.yml"]
+
+[gateways.cosmo-no-cache]
+label = "Cosmo Router (no cache)"
+# 2025-09-05
+image = "ghcr.io/wundergraph/cosmo/router:0.249.0"
+args = ["/router", "-config", "/gateways/cosmo/no-cache.yml"]
 
 # Compiled from https://github.com/Finistere/router/tree/qp-disable-cache
 # To allow disabling the query plan cache entirely which the Apollo router doesn't allow (must be at least 1).
@@ -18,9 +46,115 @@ arguments = [
 [gateways.apollo-router-no-cache]
 label = "Apollo Router (no cache)"
 image = "apollo-router-no-cache"
-arguments = ["-s", "/data/schema.graphql", "-c", "/data/router.yml"]
+args = [
+    "-c",
+    "/gateways/apollo-router/no-cache.yml",
+    "-s",
+    "/supergraph/schema.graphql",
+]
 
 [gateways.apollo-router]
 label = "Apollo Router"
-image = "ghcr.io/apollographql/router:v2.5.0"
-arguments = ["-s", "/data/schema.graphql", "-c", "/data/router.yml"]
+image = "ghcr.io/apollographql/router:v2.6.0"
+args = [
+    "-c",
+    "/gateways/apollo-router/router.yml",
+    "-s",
+    "/supergraph/schema.graphql",
+]
+
+[gateways.apollo-router-dedup]
+label = "Apollo Router (with dedup)"
+image = "ghcr.io/apollographql/router:v2.6.0"
+args = [
+    "-c",
+    "/gateways/apollo-router/deduplication.yml",
+    "-s",
+    "/supergraph/schema.graphql",
+]
+
+[gateways.hive-router]
+label = "Hive Router"
+image = "ghcr.io/graphql-hive/router:0.0.8"
+env.ROUTER_CONFIG_FILE_PATH = "/gateways/hive-router/config.yaml"
+
+[gateways.hive-gateway]
+label = "Hive Gateway"
+image = "ghcr.io/graphql-hive/gateway:1.16.3"
+args = ["supergraph", "/supergraph/schema.graphql", "-p", "4000", "-c", "/gateways/hive-gateway/config.ts"]
+
+[gateways.hive-gateway-no-cache]
+label = "Hive Gateway (no cache?)"
+image = "ghcr.io/graphql-hive/gateway:1.16.3"
+args = ["supergraph", "/supergraph/schema.graphql", "-p", "4000", "-c", "/gateways/hive-gateway/no-cache.config.ts"]
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# SCENARIOS
+# ═══════════════════════════════════════════════════════════════════════════════
+
+[scenarios.big-response]
+supergraph = "big-response"
+description = """
+Tests gateway performance with large GraphQL response payloads (~8MiB) containing a mix of lists, objects strings, floats and ints.
+
+K6 runs with a single VU, executing requests sequentially, to measure the best case latencies a gateway could provide.
+"""
+
+[scenarios.long-lived-big-response]
+supergraph = "big-response"
+env.SUB1_DELAY_MS = "100"
+description = """
+A very similar paylaod to big-response (~8MiB) is used, but now we add an extra subgraph request that takes 100ms. This forces the
+gateway to keep the response for longer in memory and gives us a more realistic idea of how much cpu and memory a gateway would need.
+
+K6 runs with 10 VUs to put some pressure on the gateways.
+"""
+
+[scenarios.many-plans]
+supergraph = "many-plans"
+description = """
+We use 7 subgraphs with very similar schemas and execute a fairly large and deep query retrieving all possible fields.
+This forces the gateway query planner to consider many different possible plans as each individual field can be resolved by multiple
+subgraphs and every object is an entity that allows for entity joins.
+
+The goal being to measure how efficient query planning is, this scenario is only relevant for gateways that have caching disabled.
+We only really care about the query planning performance and how many subgraph requests end up being executed. The subgraph requests
+themselves are so small and simple that they shouldn't have any significant impact.
+
+Query Planning performance is important during the re-deployment of gateways where many plans need to be re-computed.
+
+K6 runs with a single VU.
+"""
+
+[scenarios.query]
+supergraph = "fed"
+env.DELAY_MS = "10"
+description = """
+Fairly complex query requiring a dozen subgraph requests with some duplicate plans/requests. The goal here is to measure how well the gateways
+behaves under a certain throughput.
+
+K6 runs with a constant throughput of 100 requests/s
+"""
+
+[scenarios.deduplication]
+supergraph = "fed"
+env.DELAY_MS = "10"
+description = """
+Fairly complex query requiring a dozen subgraph requests with some duplicate plans/requests. The goal here is to measure how well the gateways
+behaves under a certain throughput.
+
+K6 runs with a constant throughput.
+"""
+
+# ═══════════════════════════════════════════════════════════════════════════════
+# SUPERGRAPHS
+# ═══════════════════════════════════════════════════════════════════════════════
+
+[supergraphs.big-response]
+subgraphs = ["big-response"]
+
+[supergraphs.many-plans]
+subgraphs = ["many-plans"]
+
+[supergraphs.fed]
+subgraphs = ["fed"]

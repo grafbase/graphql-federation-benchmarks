@@ -13,6 +13,7 @@ futures-util.workspace = true
 reqwest.workspace = true
 serde.workspace = true
 serde_json.workspace = true
+statrs.workspace = true
 time.workspace = true
 tokio.workspace = true
 toml.workspace = true

@@ -1,3 +1,3 @@
 {
-  "query": "query { nodes(n: 8) { name lists: nodes(n: 6) { ...L nodes(n: 8) { ...L  nodes(n: 8) { ...L } } } objects: nodes(n: 14) { ...O nodes(n: 16) { ...O  nodes(n: 16) { ...O } } } } } fragment L on Node { id floats ints strings } fragment O on Node { id float int string }"
+  "query": "query { nodes(n: 4) { name lists: nodes(n: 7) { ...L nodes(n: 8) { ...L  nodes(n: 8) { ...L } } } objects: nodes(n: 14) { ...O nodes(n: 16) { ...O  nodes(n: 16) { ...O } } } } } fragment L on Node { id floats ints strings } fragment O on Node { id float int string }"
 }

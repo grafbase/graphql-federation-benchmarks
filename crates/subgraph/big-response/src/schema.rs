@@ -54,9 +54,10 @@ static NODES: Lazy<Vec<Arc<Node>>> = Lazy::new(|| {
 
     (0..1000)
         .map(|id| {
-            let float_count = rng.random_range(0..=16);
-            let int_count = rng.random_range(0..=32);
-            let string_count = rng.random_range(0..=8);
+            // Some numerical data
+            let float_count = rng.random_range(0..=64);
+            let int_count = rng.random_range(0..=64);
+            let string_count = rng.random_range(0..=64);
 
             let floats: Vec<f64> = (0..float_count)
                 .map(|_| rng.random_range(-1000.0..1000.0))
@@ -66,9 +67,10 @@ static NODES: Lazy<Vec<Arc<Node>>> = Lazy::new(|| {
                 .map(|_| rng.random_range(-10000..10000))
                 .collect();
 
+            // Most strings tend to be simple text that doesn't need escaping.
             let strings: Vec<String> = (0..string_count)
                 .map(|_| {
-                    let len = rng.random_range(0..=256);
+                    let len = rng.random_range(0..=128);
                     (0..len)
                         .map(|_| {
                             let c = rng.random_range(b'a'..=b'z');
@@ -78,10 +80,11 @@ static NODES: Lazy<Vec<Arc<Node>>> = Lazy::new(|| {
                 })
                 .collect();
 
-            let string_len = rng.random_range(10..=100);
+            // But we still want some that requires escaping.
+            let string_len = rng.random_range(10..=128);
             let string: String = (0..string_len)
                 .map(|_| {
-                    let c = rng.random_range(b'A'..=b'Z');
+                    let c = rng.random_range(b'!'..=b'}');
                     c as char
                 })
                 .collect();

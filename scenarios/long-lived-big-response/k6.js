@@ -6,27 +6,39 @@ export const options = {
   scenarios: {
     constant_load: {
       executor: "constant-vus",
-      vus: 20,
-      duration: __ENV.DURATION || "30s",
+      vus: 10,
+      duration: __ENV.DURATION || "60s",
+      gracefulStop: "3s",
     },
   },
 };
 
 const payload = open("./body.json");
-const params = {
-  headers: {
-    "Content-Type": "application/json",
-  },
-};
 
-export default function() {
+// Generate a random token for this request, this ensures gateways do not abuse the
+// repetitive nature of the benchmark too much.
+function generateRandomToken() {
+  return (
+    Math.random().toString(36).substring(2) +
+    Math.random().toString(36).substring(2)
+  );
+}
+
+export default function () {
+  const params = {
+    headers: {
+      "Content-Type": "application/json",
+      authorization: `Bearer ${generateRandomToken()}`,
+    },
+  };
+
   const response = http.post("http://localhost:4000/graphql", payload, params);
 
   check(response, {
     "is status 200": (resp) => resp.status === 200,
     "response is correct": (resp) => {
       // Too big to commit
-      if (resp.body.length === 6305964) {
+      if (resp.body.length === 7916003) {
         return true;
       }
 

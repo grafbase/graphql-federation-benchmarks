@@ -25,6 +25,8 @@ For Apollo Router, we had to fork the project to disable the plan caching as the
 The gateway and the subgraphs are docker containers with `--network host` to avoid any overhead. The load testing and latency measure is done by K6.
 The subgraphs keep track of the number of incoming GraphQL requests, excluding health checks. K6 retrieves any statistics computed by the subgraph at the end and propagates it in its summary. During the tests, we track the resource usage (CPU & MEM) of the gateway through `docker stats`. We only keep the measurements when K6 was running.
 
+Every request has a unique `authorization` header value which is propagated to the subgraph. This ensures that gateways don't abuse the repetitive nature of the benchmark. Unless explicitly specified scenarios are not testing how good a gateway can de-duplicate requests.
+
 A report is provided at the end.
 
 ## Latest report

@@ -5,9 +5,9 @@ use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, path::PathBuf, sync::Arc};
 
 use crate::{
-    config::Config,
+    config::{Config, Gateway},
     docker::{self, ContainerId},
-    gateway::{Gateway, wait_for_gateway_health_with_logs},
+    gateway::wait_for_gateway_health_with_logs,
     k6::{self, K6Run},
     resources::{DockerStatsCollector, ResourceStats},
 };
@@ -77,12 +77,25 @@ pub fn load_benchmarks(docker: &Docker, config: &Config, name: &str) -> Result<V
 
     // Process each benchmark entry
     for entry in &benchmark_config.benchmarks {
-        benchmarks.extend(create_benchmarks(
-            docker,
-            config,
-            &entry.gateway,
-            &entry.scenario,
-        )?);
+        // If gateways are empty, use all available gateways
+        let gateways = if entry.gateway.is_empty() {
+            config
+                .gateways
+                .iter()
+                .map(|g| g.name().to_string())
+                .collect()
+        } else {
+            entry.gateway.clone()
+        };
+
+        // If scenarios are empty, use all available scenarios
+        let scenarios = if entry.scenario.is_empty() {
+            config.scenarios.keys().cloned().collect()
+        } else {
+            entry.scenario.clone()
+        };
+
+        benchmarks.extend(create_benchmarks(docker, config, &gateways, &scenarios)?);
     }
 
     benchmarks.sort_by(|a, b| {
@@ -102,8 +115,10 @@ struct BenchmarkConfig {
 #[serde_with::serde_as]
 #[derive(Debug, Deserialize)]
 struct BenchmarkEntry {
+    #[serde(default)]
     #[serde_as(as = "serde_with::OneOrMany<_>")]
     scenario: Vec<String>,
+    #[serde(default)]
     #[serde_as(as = "serde_with::OneOrMany<_>")]
     gateway: Vec<String>,
 }

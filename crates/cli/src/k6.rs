@@ -12,8 +12,15 @@ pub struct K6Run {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct K6Summary {
+    pub state: K6SummaryState,
     pub subgraph_stats: SubgraphStats,
     pub metrics: K6SummaryMetrics,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct K6SummaryState {
+    #[serde(rename = "testRunDurationMs")]
+    pub test_run_duration_ms: f64,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -23,11 +30,9 @@ pub struct SubgraphStats {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct K6SummaryMetrics {
-    pub data_received: CounterMetric,
-    pub data_sent: CounterMetric,
-    pub http_req_duration: TrendMetric,
-    pub checks: CheckMetric,
-    pub http_reqs: CounterMetric,
+    pub http_req_duration: Option<TrendMetric>,
+    pub checks: Option<CheckMetric>,
+    pub http_reqs: Option<CounterMetric>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -113,7 +118,7 @@ pub async fn run(path: &Path, script: &str, duration: Option<&str>) -> Result<K6
 
     let content = std::fs::read_to_string(summary_path)?;
     let summary: K6Summary = serde_json::from_str(&content)
-        .map_err(|e| anyhow::anyhow!("Failed to parse K6 summary: {}", e))?;
+        .map_err(|e| anyhow::anyhow!("Failed to parse K6 summary: {}\n{content}", e))?;
 
     Ok(K6Run {
         summary,

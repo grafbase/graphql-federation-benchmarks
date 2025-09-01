@@ -2,3 +2,8 @@ router_config_path: /supergraph/cosmo/supergraph.json
 listen_addr: 127.0.0.1:4000
 engine:
   execution_plan_cache_size: 0
+headers:
+  all:
+    request:
+      - op: "propagate"
+        named: Authorization

@@ -1,0 +1,18 @@
+version: 1
+subgraphs:
+  - name: accounts
+    routing_url: http://localhost:7200/graphql/accounts
+    schema:
+      file: ../../../crates/subgraph/fed/schemas/accounts.graphql
+  - name: products
+    routing_url: http://localhost:7200/graphql/products
+    schema:
+      file: ../../../crates/subgraph/fed/schemas/products.graphql
+  - name: reviews
+    routing_url: http://localhost:7200/graphql/reviews
+    schema:
+      file: ../../../crates/subgraph/fed/schemas/reviews.graphql
+  - name: inventory
+    routing_url: http://localhost:7200/graphql/inventory
+    schema:
+      file: ../../../crates/subgraph/fed/schemas/inventory.graphql
