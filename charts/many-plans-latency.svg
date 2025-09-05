@@ -1,0 +1,92 @@
+<svg width="800" height="600" viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg">
+<text x="400" y="15" dy="0.76em" text-anchor="middle" font-family="sans-serif" font-size="24.193548387096776" opacity="1" fill="#000000">
+many-plans - Latency Distribution
+</text>
+<text x="10" y="302" dy="0.76em" text-anchor="middle" font-family="sans-serif" font-size="12.096774193548388" opacity="1" fill="#000000" transform="rotate(270, 10, 302)">
+Latency (ms)
+</text>
+<text x="430" y="590" dy="-0.5ex" text-anchor="middle" font-family="sans-serif" font-size="12.096774193548388" opacity="1" fill="#000000">
+
+</text>
+<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="69,45 69,559 "/>
+<text x="60" y="559" dy="0.5ex" text-anchor="end" font-family="sans-serif" font-size="9.67741935483871" opacity="1" fill="#000000">
+0.0
+</text>
+<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="64,559 69,559 "/>
+<text x="60" y="474" dy="0.5ex" text-anchor="end" font-family="sans-serif" font-size="9.67741935483871" opacity="1" fill="#000000">
+0.5
+</text>
+<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="64,474 69,474 "/>
+<text x="60" y="388" dy="0.5ex" text-anchor="end" font-family="sans-serif" font-size="9.67741935483871" opacity="1" fill="#000000">
+1.0
+</text>
+<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="64,388 69,388 "/>
+<text x="60" y="302" dy="0.5ex" text-anchor="end" font-family="sans-serif" font-size="9.67741935483871" opacity="1" fill="#000000">
+1.5
+</text>
+<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="64,302 69,302 "/>
+<text x="60" y="217" dy="0.5ex" text-anchor="end" font-family="sans-serif" font-size="9.67741935483871" opacity="1" fill="#000000">
+2.0
+</text>
+<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="64,217 69,217 "/>
+<text x="60" y="131" dy="0.5ex" text-anchor="end" font-family="sans-serif" font-size="9.67741935483871" opacity="1" fill="#000000">
+2.5
+</text>
+<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="64,131 69,131 "/>
+<text x="60" y="45" dy="0.5ex" text-anchor="end" font-family="sans-serif" font-size="9.67741935483871" opacity="1" fill="#000000">
+3.0
+</text>
+<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="64,45 69,45 "/>
+<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="70,560 789,560 "/>
+<text x="70" y="570" dy="0.76em" text-anchor="middle" font-family="sans-serif" font-size="9.67741935483871" opacity="1" fill="#000000">
+
+</text>
+<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="70,560 70,565 "/>
+<text x="141" y="570" dy="0.76em" text-anchor="middle" font-family="sans-serif" font-size="9.67741935483871" opacity="1" fill="#000000">
+Median
+</text>
+<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="141,560 141,565 "/>
+<text x="213" y="570" dy="0.76em" text-anchor="middle" font-family="sans-serif" font-size="9.67741935483871" opacity="1" fill="#000000">
+
+</text>
+<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="213,560 213,565 "/>
+<text x="285" y="570" dy="0.76em" text-anchor="middle" font-family="sans-serif" font-size="9.67741935483871" opacity="1" fill="#000000">
+
+</text>
+<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="285,560 285,565 "/>
+<text x="357" y="570" dy="0.76em" text-anchor="middle" font-family="sans-serif" font-size="9.67741935483871" opacity="1" fill="#000000">
+
+</text>
+<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="357,560 357,565 "/>
+<text x="429" y="570" dy="0.76em" text-anchor="middle" font-family="sans-serif" font-size="9.67741935483871" opacity="1" fill="#000000">
+P95
+</text>
+<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="429,560 429,565 "/>
+<text x="501" y="570" dy="0.76em" text-anchor="middle" font-family="sans-serif" font-size="9.67741935483871" opacity="1" fill="#000000">
+
+</text>
+<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="501,560 501,565 "/>
+<text x="573" y="570" dy="0.76em" text-anchor="middle" font-family="sans-serif" font-size="9.67741935483871" opacity="1" fill="#000000">
+
+</text>
+<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="573,560 573,565 "/>
+<text x="645" y="570" dy="0.76em" text-anchor="middle" font-family="sans-serif" font-size="9.67741935483871" opacity="1" fill="#000000">
+
+</text>
+<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="645,560 645,565 "/>
+<text x="717" y="570" dy="0.76em" text-anchor="middle" font-family="sans-serif" font-size="9.67741935483871" opacity="1" fill="#000000">
+P99
+</text>
+<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="717,560 717,565 "/>
+<text x="789" y="570" dy="0.76em" text-anchor="middle" font-family="sans-serif" font-size="9.67741935483871" opacity="1" fill="#000000">
+
+</text>
+<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="789,560 789,565 "/>
+<rect x="113" y="207" width="57" height="352" opacity="1" fill="#07A865" stroke="none"/>
+<rect x="400" y="159" width="58" height="400" opacity="1" fill="#07A865" stroke="none"/>
+<rect x="688" y="108" width="57" height="451" opacity="1" fill="#07A865" stroke="none"/>
+<text x="688" y="60" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="9.67741935483871" opacity="1" fill="#000000">
+Grafbase Gateway
+</text>
+<rect x="658" y="65" width="10" height="10" opacity="1" fill="#07A865" stroke="none"/>
+</svg>

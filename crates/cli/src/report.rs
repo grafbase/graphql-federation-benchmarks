@@ -7,10 +7,18 @@ use std::path::PathBuf;
 
 const ERR_PLACEHOLDER: &str = "<err>";
 
-#[derive(Default)]
 pub struct ReportOptions {
-    pub generate_charts: bool,
     pub charts_dir: Option<PathBuf>,
+    pub compact_mode: bool,
+}
+
+impl Default for ReportOptions {
+    fn default() -> Self {
+        Self {
+            charts_dir: None,
+            compact_mode: true,
+        }
+    }
 }
 
 #[cfg(test)]
@@ -75,9 +83,9 @@ pub fn generate_report_with_options(
     for (benchmark_name, benchmark_results) in grouped_results {
         report.push_str(&format!("## {}\n\n", benchmark_name));
 
-        // Add description if available from the config
+        // Add description if available from the config and not in compact mode
         let scenario = config.get_scenario(&benchmark_name)?;
-        if !scenario.description.is_empty() {
+        if !options.compact_mode && !scenario.description.is_empty() {
             report.push_str(&format!("{}\n\n", scenario.description));
         }
 
@@ -230,33 +238,28 @@ pub fn generate_report_with_options(
         }
 
         // Generate and add chart if requested
-        if options.generate_charts {
+        if let Some(charts_dir) = options.charts_dir.as_ref() {
+            std::fs::create_dir_all(charts_dir)?;
+            let chart_filename = format!("{}-latency.svg", benchmark_name.replace(' ', "-"));
+            let chart_path = charts_dir.join(&chart_filename);
+
+            charts::generate_latency_chart_to_file(
+                &benchmark_name,
+                &benchmark_results,
+                &chart_path,
+            )?;
+        }
+        // Only embed in report if not in compact mode
+        if !options.compact_mode {
             report.push('\n');
-
-            if let Some(charts_dir) = &options.charts_dir {
-                // Save chart to file
-                std::fs::create_dir_all(charts_dir)?;
-                let chart_filename = format!("{}-latency.svg", benchmark_name.replace(' ', "-"));
-                let chart_path = charts_dir.join(&chart_filename);
-
-                charts::generate_latency_chart_to_file(
-                    &benchmark_name,
-                    &benchmark_results,
-                    &chart_path,
-                )?;
-
-                report.push_str(&format!("![Latency Chart](./charts/{})\n", chart_filename));
-            } else {
-                // Embed chart as base64 data URL
-                let svg_content =
-                    charts::generate_latency_chart(&benchmark_name, &benchmark_results)?;
-                use base64::Engine;
-                let encoded = base64::engine::general_purpose::STANDARD.encode(&svg_content);
-                report.push_str(&format!(
-                    "![Latency Chart](data:image/svg+xml;base64,{})\n",
-                    encoded
-                ));
-            }
+            // Embed chart as base64 data URL
+            let svg_content = charts::generate_latency_chart(&benchmark_name, &benchmark_results)?;
+            use base64::Engine;
+            let encoded = base64::engine::general_purpose::STANDARD.encode(&svg_content);
+            report.push_str(&format!(
+                "![Latency Chart](data:image/svg+xml;base64,{})\n",
+                encoded
+            ));
             report.push('\n');
         }
 

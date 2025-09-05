@@ -20,21 +20,17 @@ pub struct Command {
     #[argh(option, short = 'd')]
     pub duration: Option<String>,
 
-    /// generate SVG charts for latency metrics
+    /// compact report mode (hides charts and descriptions)
     #[argh(switch, short = 'c')]
-    pub charts: bool,
-
-    /// directory to save charts (defaults to embedding in report)
-    #[argh(option)]
-    pub charts_dir: Option<String>,
+    pub compact_report: bool,
 }
 
 pub async fn main(ctx: Context, cmd: Command) -> anyhow::Result<()> {
     let benchmarks = load_benchmarks(&ctx.docker, &ctx.config, &cmd.name)?;
 
     let report_options = ReportOptions {
-        generate_charts: cmd.charts,
-        charts_dir: cmd.charts_dir.map(std::path::PathBuf::from),
+        charts_dir: Some(ctx.config.current_dir.join("charts")),
+        compact_mode: cmd.compact_report,
     };
 
     run_benchmarks(
@@ -52,6 +48,8 @@ pub async fn run_benchmarks(
     duration: Option<&str>,
     report_options: ReportOptions,
 ) -> anyhow::Result<()> {
+    // Clean up any existing Docker containers before starting
+    tracing::info!("Cleaning up existing Docker containers...");
     let mut results = Vec::new();
 
     for mut benchmark in benchmarks {
@@ -60,6 +58,24 @@ pub async fn run_benchmarks(
             benchmark.name(),
             benchmark.gateway().name()
         );
+        let clean_result = std::process::Command::new("sh")
+            .arg("./docker-clean.sh")
+            .output();
+
+        match clean_result {
+            Ok(output) => {
+                if !output.status.success() {
+                    let stderr = String::from_utf8_lossy(&output.stderr);
+                    // Don't fail if cleanup fails - there might be no containers to clean
+                    tracing::debug!("Docker cleanup script returned non-zero status: {}", stderr);
+                } else {
+                    tracing::info!("Docker cleanup completed successfully");
+                }
+            }
+            Err(e) => {
+                tracing::warn!("Could not run docker cleanup script: {}", e);
+            }
+        }
 
         match benchmark.run(duration).await {
             Ok(result) => {

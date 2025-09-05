@@ -1,133 +1,168 @@
 use crate::benchmark::BenchmarkResult;
 use plotters::prelude::*;
 
-const CHART_WIDTH: u32 = 800;
+const CHART_WIDTH: u32 = 900; // Increased to accommodate legend on the side
 const CHART_HEIGHT: u32 = 600;
+const LEGEND_WIDTH: u32 = 150; // Space for legend on the right
 
 const GATEWAY_COLORS: &[RGBColor] = &[
-    RGBColor(37, 99, 235),  // blue
-    RGBColor(220, 38, 38),  // red
-    RGBColor(22, 163, 74),  // green
-    RGBColor(147, 51, 234), // purple
-    RGBColor(245, 158, 11), // amber
-    RGBColor(236, 72, 153), // pink
-    RGBColor(20, 184, 166), // teal
-    RGBColor(251, 146, 60), // orange
+    RGBColor(7, 168, 101),   // #07A865 - green
+    RGBColor(30, 144, 255),  // #1E90FF - dodger blue
+    RGBColor(231, 150, 243), // #E796F3 - light purple/pink
+    RGBColor(223, 104, 45),  // #DF682D - burnt orange
+    RGBColor(189, 229, 108), // #BDE56C - light green
+    RGBColor(158, 177, 255), // #9EB1FF - light blue
 ];
 
 pub fn generate_latency_chart(
     scenario_name: &str,
     results: &[&BenchmarkResult],
 ) -> anyhow::Result<String> {
-    // Collect data for valid results (no failures)
-    let mut chart_data: Vec<(&str, f64, f64, f64)> = Vec::new();
-    let mut max_latency = 0.0f64;
+    use plotters::style::IntoFont;
 
-    for result in results {
-        let failures = result
-            .k6_run
-            .summary
-            .metrics
-            .checks
-            .as_ref()
-            .map(|c| c.values.fails)
-            .unwrap_or(0);
-
-        if failures == 0
-            && let Some(http_req_duration) = &result.k6_run.summary.metrics.http_req_duration
-        {
-            let values = &http_req_duration.values;
-            chart_data.push((&result.gateway, values.med, values.p95, values.p99));
-            max_latency = max_latency.max(values.p99);
-        }
-    }
-
-    if chart_data.is_empty() {
-        // Return empty SVG
-        return Ok(String::from("<svg></svg>"));
-    }
-
-    let mut svg_buffer = String::new();
+    let mut buffer = String::new();
     {
-        let root = SVGBackend::with_string(&mut svg_buffer, (CHART_WIDTH, CHART_HEIGHT))
-            .into_drawing_area();
-        root.fill(&WHITE)?;
+        let root =
+            SVGBackend::with_string(&mut buffer, (CHART_WIDTH, CHART_HEIGHT)).into_drawing_area();
 
-        // Add 10% margin to max value for better visualization
+        // Transparent background
+        root.fill(&RGBColor(255, 255, 255).mix(0.0))?;
+
+        // Split the drawing area: chart on the left, legend on the right
+        let (chart_area, legend_area) = root.split_horizontally(CHART_WIDTH - LEGEND_WIDTH);
+
+        // Create sorted vector of (gateway_name, TrendValues), sorted by median (lowest first)
+        let mut gateway_data: Vec<(&str, &crate::k6::TrendValues)> = results
+            .iter()
+            .filter_map(|r| {
+                r.k6_run.summary.metrics.http_req_duration.as_ref()
+                    .map(|metric| (r.gateway.as_str(), &metric.values))
+            })
+            .collect();
+        
+        gateway_data.sort_by(|a, b| a.1.med.partial_cmp(&b.1.med).unwrap());
+        
+        // Create a color mapping based on alphabetically sorted gateway names for consistency
+        let mut gateway_names: Vec<&str> = gateway_data.iter().map(|(name, _)| *name).collect();
+        gateway_names.sort();
+        let color_map: std::collections::HashMap<&str, RGBColor> = gateway_names
+            .iter()
+            .enumerate()
+            .map(|(idx, name)| (*name, GATEWAY_COLORS[idx % GATEWAY_COLORS.len()]))
+            .collect();
+        
+        // Find max latency for y-axis scaling
+        let max_latency = gateway_data
+            .iter()
+            .flat_map(|(_, values)| vec![values.med, values.p95, values.p99])
+            .fold(0.0f64, |acc, val| acc.max(val));
+
         let y_max = (max_latency * 1.1).ceil();
 
-        let mut chart = ChartBuilder::on(&root)
+        let percentile_labels = ["Median", "p95", "p99"];
+
+        // Draw bars for each gateway
+        // We'll use a numeric x-axis for proper bar positioning
+        let num_gateways = gateway_data.len();
+
+        let mut chart = ChartBuilder::on(&chart_area)
             .caption(
-                format!("{} - Latency Distribution", scenario_name),
+                &format!("{} - Latency Distribution", scenario_name),
                 ("sans-serif", 30).into_font(),
             )
-            .margin(10)
-            .x_label_area_size(30)
+            .margin(20)
+            .x_label_area_size(40)
             .y_label_area_size(60)
-            .build_cartesian_2d(
-                0f64..10f64, // X range for positioning bars
-                0f64..y_max,
-            )?;
+            .build_cartesian_2d(-0.5f64..2.5f64, 0.0..y_max)?;
 
         chart
             .configure_mesh()
             .y_desc("Latency (ms)")
-            .x_desc("Percentiles")
-            .x_label_formatter(&|x| match x.round() as i32 {
-                1 => "Median".to_string(),
-                5 => "P95".to_string(),
-                9 => "P99".to_string(),
-                _ => "".to_string(),
+            .y_label_formatter(&|y| format!("{:.0}", y))
+            .x_label_formatter(&|x| {
+                let idx = (*x + 0.5) as usize;
+                percentile_labels.get(idx).unwrap_or(&"").to_string()
             })
+            .x_labels(3)
+            .disable_x_mesh()
+            .disable_y_mesh()
             .draw()?;
 
-        // Calculate bar width and positions
-        let num_gateways = chart_data.len();
-        let bar_width = 0.8 / num_gateways as f64;
-        let group_positions = [1.0, 5.0, 9.0]; // X positions for Median, P95, P99
+        // Calculate bar positions
+        let group_width = 0.8;
+        let bar_width = group_width / num_gateways as f64;
 
-        // Draw bars for each gateway
-        for (gateway_idx, (gateway_name, median, p95, p99)) in chart_data.iter().enumerate() {
-            let color = GATEWAY_COLORS[gateway_idx % GATEWAY_COLORS.len()];
-            let offset = (gateway_idx as f64 - num_gateways as f64 / 2.0 + 0.5) * bar_width;
+        for (gateway_idx, (gateway_name, trend_values)) in gateway_data.iter().enumerate() {
+            let color = color_map[gateway_name];
 
-            // Draw median bar
-            let x = group_positions[0] + offset;
-            chart.draw_series(std::iter::once(Rectangle::new(
-                [(x - bar_width / 2.0, 0.0), (x + bar_width / 2.0, *median)],
-                color.filled(),
-            )))?;
+            // Calculate offset for this gateway's bars within each group
+            let offset = -group_width / 2.0 + bar_width * (gateway_idx as f64 + 0.5);
 
-            // Draw p95 bar
-            let x = group_positions[1] + offset;
-            chart.draw_series(std::iter::once(Rectangle::new(
-                [(x - bar_width / 2.0, 0.0), (x + bar_width / 2.0, *p95)],
-                color.filled(),
-            )))?;
+            let values = vec![
+                (0.0, trend_values.med),
+                (1.0, trend_values.p95),
+                (2.0, trend_values.p99),
+            ];
 
-            // Draw p99 bar with legend
-            let x = group_positions[2] + offset;
-            chart
-                .draw_series(std::iter::once(Rectangle::new(
-                    [(x - bar_width / 2.0, 0.0), (x + bar_width / 2.0, *p99)],
-                    color.filled(),
-                )))?
-                .label(*gateway_name)
-                .legend(move |(x, y)| Rectangle::new([(x, y), (x + 10, y + 10)], color.filled()));
+            // Draw bars for this gateway
+            let bars = values.iter().map(|(x, y)| {
+                Rectangle::new(
+                    [
+                        (x + offset - bar_width / 2.0, 0.0),
+                        (x + offset + bar_width / 2.0, *y),
+                    ],
+                    ShapeStyle::from(color).filled(),
+                )
+            });
+
+            chart.draw_series(bars)?;
+
+            // Draw value labels at 45 degrees
+            for (x, y) in &values {
+                let label_x = x + offset;
+                let label_y = *y + (y_max * 0.02); // Slightly above the bar
+
+                // Parameterize decimal places
+                let decimal_places = if *y < 100.0 { 1 } else { 0 };
+                let label_text = format!("{:.prec$}", y, prec = decimal_places);
+
+                chart.draw_series(std::iter::once(Text::new(
+                    label_text,
+                    (label_x, label_y),
+                    ("sans-serif", 12)
+                        .into_font()
+                        .transform(FontTransform::Rotate270)
+                        .color(&BLACK),
+                )))?;
+            }
         }
 
-        // Draw legend
-        chart
-            .configure_series_labels()
-            .position(SeriesLabelPosition::UpperRight)
-            .background_style(WHITE.mix(0.8))
-            .border_style(BLACK)
-            .draw()?;
+        // Draw legend manually in the legend area
+        let legend_y_start = 60;
+        let legend_item_height = 25;
+
+        for (idx, (gateway_name, _)) in gateway_data.iter().enumerate() {
+            let color = color_map[gateway_name];
+            let y_pos = legend_y_start + (idx as i32 * legend_item_height);
+
+            // Draw color box
+            legend_area.draw(&Rectangle::new(
+                [(10, y_pos), (25, y_pos + 15)],
+                color.filled(),
+            ))?;
+
+            // Draw gateway name
+            legend_area.draw(&Text::new(
+                gateway_name.to_string(),
+                (30, y_pos + 3),
+                ("sans-serif", 14).into_font(),
+            ))?;
+        }
 
         root.present()?;
     }
 
-    Ok(svg_buffer)
+    Ok(buffer)
 }
 
 pub fn generate_latency_chart_to_file(
@@ -248,4 +283,3 @@ mod tests {
         assert!(svg.contains("Gateway B"));
     }
 }
-

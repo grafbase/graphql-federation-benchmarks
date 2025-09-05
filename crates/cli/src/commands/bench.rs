@@ -18,13 +18,9 @@ pub struct Command {
     #[argh(option, short = 'd')]
     pub duration: Option<String>,
 
-    /// generate SVG charts for latency metrics
+    /// compact report mode (hides charts and descriptions)
     #[argh(switch, short = 'c')]
-    pub charts: bool,
-
-    /// directory to save charts (defaults to embedding in report)
-    #[argh(option)]
-    pub charts_dir: Option<String>,
+    pub compact_report: bool,
 }
 
 pub async fn main(ctx: Context, cmd: Command) -> anyhow::Result<()> {
@@ -47,8 +43,8 @@ pub async fn main(ctx: Context, cmd: Command) -> anyhow::Result<()> {
         crate::benchmark::create_benchmarks(&ctx.docker, &ctx.config, &gateways, &scenarios)?;
 
     let report_options = ReportOptions {
-        generate_charts: cmd.charts,
-        charts_dir: cmd.charts_dir.map(std::path::PathBuf::from),
+        charts_dir: Some(ctx.config.current_dir.join("charts")),
+        compact_mode: cmd.compact_report,
     };
 
     super::run::run_benchmarks(
