@@ -6,12 +6,18 @@ This repo contains a list of complex benchmark cases to measure the performance 
 
 [report (2025-09-05)](./REPORT.md)
 
-## Protocol
+## Methodology
 
 Every service, gateway and subgraphs, are running in docker containers with `--network host` to avoid any overhead.
 Usually, a single service exposing all the subgrpahs composing a supergraph. Subgraphs are optimized for speed and serve responses mostly from cache.
 
-Every request has a unique `authorization` header value which is propagated, except for Hive Router as of 2025-09-05, to the subgraph. This ensures that gateways don't abuse the repetitive nature of the benchmark. Unless explicitly specified scenarios are not testing how good a gateway can de-duplicate requests.
+Every request has a unique `authorization` header value which is propagated (except for Hive Router 0.0.8 which seems to ignore it as of 2025-09-05) to the subgraph.
+This ensures that gateways don't abuse the repetitive nature of the benchmarks. It's only repetitive because:
+
+- it's hard to generate good non-repetitive workloads.
+- it provides a lot of data points for a scenario.
+
+So unless specified the goal is not to test how a gateway behaves against recurrent queries.
 
 The load testing itself is done with K6. Multiple scenarios have been created to benchmark different situations.
 
@@ -47,7 +53,8 @@ echo "0" | sudo tee /sys/devices/system/cpu/cpufreq/boost
 
 ### Commands
 
-Be warned that those commands will stop and delete _all_ docker containers without any mercy. If you don't want that, adjust the `docker-clean.sh` script. But for a reason that escapes me for now, sometimes it's needed.
+Be warned that those commands will stop and delete _all_ docker containers without any mercy.
+You can adjust this behavior in the `docker-clean.sh` script. But, sometimes the clean up is needed...
 
 ```bash
 # Run all benchmarks with all gateways
@@ -55,12 +62,4 @@ Be warned that those commands will stop and delete _all_ docker containers witho
 
 # Run specific benchmark with specific gateway
 ./cli.sh bench --scenario many-plans --gateway grafbase
-```
-
-### Troubleshoot
-
-If you encounter errors, you might need to clean your running containers:
-
-```sh
- docker stop $(docker ps -a -q) -t 2 && docker rm $(docker ps -a -q)
 ```
