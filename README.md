@@ -118,7 +118,7 @@ echo "0" | sudo tee /sys/devices/system/cpu/cpufreq/boost
 
 ### Commands
 
-Be warned that those commands will stop _all_ docker containers without any mercy.
+Be warned that those commands will stop and delete _all_ docker containers without any mercy. If you don't want that, adjust the `docker-clean.sh` script. But for a reason that escapes me for now, sometimes it's needed.
 
 ```bash
 # Run all benchmarks with all gateways

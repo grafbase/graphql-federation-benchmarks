@@ -19,25 +19,15 @@ pub struct Command {
     /// override K6 test duration (e.g., "30s", "1m", "2m30s")
     #[argh(option, short = 'd')]
     pub duration: Option<String>,
-
-    /// compact report mode (hides charts and descriptions)
-    #[argh(switch, short = 'c')]
-    pub compact_report: bool,
 }
 
 pub async fn main(ctx: Context, cmd: Command) -> anyhow::Result<()> {
     let benchmarks = load_benchmarks(&ctx.docker, &ctx.config, &cmd.name)?;
 
-    let report_options = ReportOptions {
-        charts_dir: Some(ctx.config.current_dir.join("charts")),
-        compact_mode: cmd.compact_report,
-    };
-
     run_benchmarks(
         benchmarks,
         &ctx.config,
         cmd.duration.as_deref(),
-        report_options,
     )
     .await
 }
@@ -46,7 +36,6 @@ pub async fn run_benchmarks(
     benchmarks: Vec<Benchmark>,
     config: &Config,
     duration: Option<&str>,
-    report_options: ReportOptions,
 ) -> anyhow::Result<()> {
     // Clean up any existing Docker containers before starting
     tracing::info!("Cleaning up existing Docker containers...");
@@ -93,14 +82,34 @@ pub async fn run_benchmarks(
     // Generate and print the markdown report
     if !results.is_empty() {
         let system_info = SystemInfo::detect()?;
-        let report = report::generate_report_with_options(
-            time::OffsetDateTime::now_utc(),
+        let timestamp = time::OffsetDateTime::now_utc();
+        
+        // Print TTY report to terminal
+        let tty_report = report::generate_report_with_options(
+            timestamp,
             &results,
             &system_info,
             config,
-            &report_options,
+            &ReportOptions { is_tty: true },
         )?;
-        println!("\n{}", report);
+        println!("\n{}", tty_report);
+        
+        // Write full report to REPORT.md
+        let full_report = report::generate_report_with_options(
+            timestamp,
+            &results,
+            &system_info,
+            config,
+            &ReportOptions { is_tty: false },
+        )?;
+        let report_path = config.current_dir.join("REPORT.md");
+        std::fs::write(&report_path, full_report)?;
+        tracing::info!("Full report written to {:?}", report_path);
+        
+        // Write charts to the charts directory
+        let charts_dir = config.current_dir.join("charts");
+        crate::charts::write_charts(&results, config, &charts_dir)?;
+        tracing::info!("Charts written to {:?}", charts_dir);
     }
 
     Ok(())

@@ -1,40 +1,18 @@
 use crate::benchmark::BenchmarkResult;
-use crate::charts;
 use crate::config::Config;
 use crate::system::SystemInfo;
 use std::collections::BTreeMap;
-use std::path::PathBuf;
 
 const ERR_PLACEHOLDER: &str = "<err>";
 
 pub struct ReportOptions {
-    pub charts_dir: Option<PathBuf>,
-    pub compact_mode: bool,
+    pub is_tty: bool,
 }
 
 impl Default for ReportOptions {
     fn default() -> Self {
-        Self {
-            charts_dir: None,
-            compact_mode: true,
-        }
+        Self { is_tty: true }
     }
-}
-
-#[cfg(test)]
-pub fn generate_report(
-    timestamp: time::OffsetDateTime,
-    results: &[BenchmarkResult],
-    system_info: &SystemInfo,
-    config: &Config,
-) -> anyhow::Result<String> {
-    generate_report_with_options(
-        timestamp,
-        results,
-        system_info,
-        config,
-        &ReportOptions::default(),
-    )
 }
 
 pub fn generate_report_with_options(
@@ -48,7 +26,7 @@ pub fn generate_report_with_options(
 
     for result in results {
         grouped_results
-            .entry(result.benchmark.clone())
+            .entry(result.scenario.clone())
             .or_default()
             .push(result);
     }
@@ -56,36 +34,47 @@ pub fn generate_report_with_options(
     let mut report = String::new();
 
     // Add system information at the beginning
-    report.push_str("# System Information\n\n");
-    report.push_str(&format!("Date: {}\n", timestamp.date()));
-    report.push_str(&format!("CPU: {}\n", system_info.cpu_model));
-    report.push_str(&format!(
-        "Memory: {:.1} GiB\n",
-        system_info.total_memory_mib as f64 / 1024.0,
-    ));
-    if let Some(boost) = system_info.cpu_boost_enabled {
+    if options.is_tty {
+        // In TTY mode, only show CPU boost status if available
+        if let Some(boost) = system_info.cpu_boost_enabled {
+            report.push_str(&format!(
+                "CPU Boost: {}\n\n",
+                if boost { "Enabled" } else { "Disabled" }
+            ));
+        }
+    } else {
+        // In file mode, show full system information
+        report.push_str("# System Information\n\n");
+        report.push_str(&format!("Date: {}\n", timestamp.date()));
+        report.push_str(&format!("CPU: {}\n", system_info.cpu_model));
         report.push_str(&format!(
-            "CPU Boost: {}\n",
-            if boost { "Enabled" } else { "Disabled" }
+            "Memory: {:.1} GiB\n",
+            system_info.total_memory_mib as f64 / 1024.0,
         ));
+        if let Some(boost) = system_info.cpu_boost_enabled {
+            report.push_str(&format!(
+                "CPU Boost: {}\n",
+                if boost { "Enabled" } else { "Disabled" }
+            ));
+        }
+        if let Some(git_commit) = &system_info.git_commit {
+            report.push_str(&format!("Git Commit: {}\n", git_commit));
+        }
+        if let Some(linux_version) = &system_info.linux_version {
+            report.push_str(&format!("Linux Version: {}\n", linux_version));
+        }
+        if let Some(docker_version) = &system_info.docker_version {
+            report.push_str(&format!("Docker Version: {}\n", docker_version));
+        }
+        report.push_str("\n# Benchmarks\n\n");
     }
-    if let Some(git_commit) = &system_info.git_commit {
-        report.push_str(&format!("Git Commit: {}\n", git_commit));
-    }
-    if let Some(linux_version) = &system_info.linux_version {
-        report.push_str(&format!("Linux Version: {}\n", linux_version));
-    }
-    if let Some(docker_version) = &system_info.docker_version {
-        report.push_str(&format!("Docker Version: {}\n", docker_version));
-    }
-    report.push_str("\n# Benchmarks\n\n");
 
-    for (benchmark_name, benchmark_results) in grouped_results {
-        report.push_str(&format!("## {}\n\n", benchmark_name));
+    for (scenario_name, benchmark_results) in grouped_results {
+        report.push_str(&format!("## {}\n\n", scenario_name));
 
-        // Add description if available from the config and not in compact mode
-        let scenario = config.get_scenario(&benchmark_name)?;
-        if !options.compact_mode && !scenario.description.is_empty() {
+        // Add description if available from the config and not in tty mode
+        let scenario = config.get_scenario(&scenario_name)?;
+        if !options.is_tty && !scenario.description.is_empty() {
             report.push_str(&format!("{}\n\n", scenario.description));
         }
 
@@ -97,8 +86,16 @@ pub fn generate_report_with_options(
             .unwrap_or(7)
             .max(7); // At least as wide as "Gateway"
 
-        // Requests table
-        report.push_str("### Requests\n\n");
+        // Requests table with quality chart
+        if !options.is_tty {
+            report.push_str("### Requests\n\n");
+            // Add quality chart image before the table
+            let quality_chart_path = format!("{}-quality.svg", scenario_name);
+            report.push_str(&format!(
+                "![Quality Chart](charts/{})\n\n",
+                quality_chart_path
+            ));
+        }
         report.push_str(&format!(
             "| {:<width$} | {:>8} | {:>8} | {:>25} |\n",
             "Gateway",
@@ -156,7 +153,17 @@ pub fn generate_report_with_options(
             ));
         }
 
-        report.push_str("\n### Latencies (ms)\n\n");
+        if !options.is_tty {
+            report.push_str("\n### Latencies (ms)\n\n");
+            // Add latency chart image before the table
+            let latency_chart_path = format!("{}-latency.svg", scenario_name);
+            report.push_str(&format!(
+                "![Latency Chart](charts/{})\n\n",
+                latency_chart_path
+            ));
+        } else {
+            report.push('\n');
+        }
 
         // Latencies table
         report.push_str(&format!(
@@ -237,71 +244,17 @@ pub fn generate_report_with_options(
             }
         }
 
-        // Generate and add charts if requested
-        if let Some(charts_dir) = options.charts_dir.as_ref() {
-            std::fs::create_dir_all(charts_dir)?;
-            
-            // Generate latency chart
-            let latency_filename = format!("{}-latency.svg", benchmark_name.replace(' ', "-"));
-            let latency_path = charts_dir.join(&latency_filename);
-            charts::generate_latency_chart_to_file(
-                &benchmark_name,
-                &benchmark_results,
-                &latency_path,
-            )?;
-            
-            // Generate efficiency chart
-            let efficiency_filename = format!("{}-efficiency.svg", benchmark_name.replace(' ', "-"));
-            let efficiency_path = charts_dir.join(&efficiency_filename);
-            charts::generate_efficiency_chart_to_file(
-                &benchmark_name,
-                &benchmark_results,
-                &efficiency_path,
-            )?;
-            
-            // Generate quality chart
-            let quality_filename = format!("{}-quality.svg", benchmark_name.replace(' ', "-"));
-            let quality_path = charts_dir.join(&quality_filename);
-            charts::generate_quality_chart_to_file(
-                &benchmark_name,
-                &benchmark_results,
-                &quality_path,
-            )?;
-        }
-        
-        // Only embed charts in report if not in compact mode
-        if !options.compact_mode {
-            report.push('\n');
-            
-            // Embed latency chart as base64 data URL
-            let latency_svg = charts::generate_latency_chart(&benchmark_name, &benchmark_results)?;
-            use base64::Engine;
-            let latency_encoded = base64::engine::general_purpose::STANDARD.encode(&latency_svg);
+        if !options.is_tty {
+            report.push_str("\n### Resources\n\n");
+            // Add efficiency chart image before the table
+            let efficiency_chart_path = format!("{}-efficiency.svg", scenario_name);
             report.push_str(&format!(
-                "![Latency Chart](data:image/svg+xml;base64,{})\n\n",
-                latency_encoded
+                "![Efficiency Chart](charts/{})\n\n",
+                efficiency_chart_path
             ));
-            
-            // Embed efficiency chart as base64 data URL
-            let efficiency_svg = charts::generate_efficiency_chart(&benchmark_name, &benchmark_results)?;
-            let efficiency_encoded = base64::engine::general_purpose::STANDARD.encode(&efficiency_svg);
-            report.push_str(&format!(
-                "![Efficiency Chart](data:image/svg+xml;base64,{})\n\n",
-                efficiency_encoded
-            ));
-            
-            // Embed quality chart as base64 data URL
-            let quality_svg = charts::generate_quality_chart(&benchmark_name, &benchmark_results)?;
-            let quality_encoded = base64::engine::general_purpose::STANDARD.encode(&quality_svg);
-            report.push_str(&format!(
-                "![Quality Chart](data:image/svg+xml;base64,{})\n",
-                quality_encoded
-            ));
-            
+        } else {
             report.push('\n');
         }
-
-        report.push_str("\n### Resources\n\n");
 
         // Resource usage table
         report.push_str(&format!(
@@ -435,7 +388,7 @@ mod tests {
     fn test_generate_report_formatting() {
         let results = vec![
             BenchmarkResult {
-                benchmark: "simple-query".to_string(),
+                scenario: "simple-query".to_string(),
                 gateway: "A".to_string(),
                 k6_run: K6Run {
                     start: time::OffsetDateTime::now_utc(),
@@ -482,7 +435,7 @@ mod tests {
                 },
             },
             BenchmarkResult {
-                benchmark: "simple-query".to_string(),
+                scenario: "simple-query".to_string(),
                 gateway: "B".to_string(),
                 k6_run: K6Run {
                     start: time::OffsetDateTime::now_utc(),
@@ -529,7 +482,7 @@ mod tests {
                 },
             },
             BenchmarkResult {
-                benchmark: "complex-nested-query".to_string(),
+                scenario: "complex-nested-query".to_string(),
                 gateway: "C".to_string(),
                 k6_run: K6Run {
                     start: time::OffsetDateTime::now_utc(),
@@ -577,7 +530,7 @@ mod tests {
             },
             // Add test case for gateway with no responses
             BenchmarkResult {
-                benchmark: "complex-nested-query".to_string(),
+                scenario: "complex-nested-query".to_string(),
                 gateway: "D-NoResponse".to_string(),
                 k6_run: K6Run {
                     start: time::OffsetDateTime::now_utc(),
@@ -642,12 +595,13 @@ mod tests {
             current_dir: std::path::PathBuf::from("/test"),
         };
 
-        // Use compact mode for test to avoid large embedded charts
-        let report = generate_report(
+        // Use file mode (non-TTY) for test to get full output
+        let report = generate_report_with_options(
             time::macros::datetime!(2019-01-01 0:00 UTC),
             &results,
             &system_info,
             &config,
+            &ReportOptions { is_tty: false },
         )
         .unwrap();
         insta::assert_snapshot!(report, @r"
@@ -665,7 +619,11 @@ mod tests {
 
         ## complex-nested-query
 
+        Test scenario for complex nested GraphQL queries
+
         ### Requests
+
+        ![Quality Chart](charts/complex-nested-query-quality.svg)
 
         | Gateway      | Requests | Failures | Subgraph requests (total) |
         | :----------- | -------: | -------: | ------------------------: |
@@ -674,6 +632,8 @@ mod tests {
 
         ### Latencies (ms)
 
+        ![Latency Chart](charts/complex-nested-query-latency.svg)
+
         | Gateway      |     Min |     Med |     P90 |     P95 |     P99 |     Max |
         | :----------- | ------: | ------: | ------: | ------: | ------: | ------: |
         | C            |   <err> |   <err> |   <err> |   <err> |   <err> |   <err> |
@@ -681,12 +641,16 @@ mod tests {
 
         ### Resources
 
+        ![Efficiency Chart](charts/complex-nested-query-efficiency.svg)
+
         | Gateway      |          CPU |  CPU max |         Memory |   MEM max |  requests/core.s |  requests/GB.s |
         | :----------- | -----------: | -------: | -------------: | --------: | ---------------: | -------------: |
         | C            |      12% ±9% |      46% |   512 ±156 MiB |  1025 MiB |            <err> |          <err> |
         | D-NoResponse |       1% ±0% |       2% |     100 ±5 MiB |   110 MiB |              0.0 |            0.0 |
 
         ## simple-query
+
+        Test scenario for simple GraphQL queries
 
         ### Requests
 

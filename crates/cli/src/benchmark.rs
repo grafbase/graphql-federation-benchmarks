@@ -137,7 +137,7 @@ pub struct Benchmark {
 
 #[derive(Debug, Serialize)]
 pub struct BenchmarkResult {
-    pub benchmark: String,
+    pub scenario: String,
     pub gateway: String,
     pub k6_run: K6Run,
     pub resource_stats: ResourceStats,
@@ -181,7 +181,7 @@ impl Benchmark {
 
         // Build result
         Ok(BenchmarkResult {
-            benchmark: self.scenario_name.clone(),
+            scenario: self.scenario_name.clone(),
             gateway: self.gateway.label().to_string(),
             k6_run,
             resource_stats,

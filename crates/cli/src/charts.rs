@@ -2,10 +2,13 @@ use crate::benchmark::BenchmarkResult;
 use plotters::prelude::*;
 use plotters::style::text_anchor::{HPos, Pos, VPos};
 
+// Chart dimensions
 const CHART_WIDTH: u32 = 900; // Increased to accommodate legend on the side
 const CHART_HEIGHT: u32 = 600;
 const LEGEND_WIDTH: u32 = 195; // Space for legend on the right (increased by 30%)
 
+// Colors
+const TRANSPARENT_BACKGROUND: RGBAColor = RGBAColor(255, 255, 255, 0.0);
 const GATEWAY_COLORS: &[RGBColor] = &[
     RGBColor(7, 168, 101),   // #07A865 - green
     RGBColor(30, 144, 255),  // #1E90FF - dodger blue
@@ -14,6 +17,34 @@ const GATEWAY_COLORS: &[RGBColor] = &[
     RGBColor(189, 229, 108), // #BDE56C - light green
     RGBColor(158, 177, 255), // #9EB1FF - light blue
 ];
+
+// Font settings
+const FONT_FAMILY: &str = "sans-serif";
+const TITLE_FONT_SIZE: i32 = 30;
+const CAPTION_FONT_SIZE: i32 = 20;
+const LEGEND_FONT_SIZE: i32 = 18;
+const LABEL_FONT_SIZE: i32 = 16;
+const VALUE_FONT_SIZE: i32 = 16;
+
+// Layout settings
+const CHART_MARGIN: i32 = 20;
+const PANEL_MARGIN: i32 = 10;
+const X_LABEL_AREA_SIZE: i32 = 50;
+const Y_LABEL_AREA_SIZE: i32 = 70;
+const Y_LABEL_AREA_SIZE_SMALL: i32 = 50; // For panels without x-labels
+const LEGEND_Y_START: i32 = 60;
+const LEGEND_ITEM_HEIGHT: i32 = 25;
+const LEGEND_BOX_X: i32 = 5;
+const LEGEND_BOX_SIZE: i32 = 15;
+const LEGEND_TEXT_X: i32 = 25;
+const LEGEND_TEXT_Y_OFFSET: i32 = 3;
+
+// Bar chart settings
+const BAR_WIDTH_RATIO: f64 = 0.8;
+const VALUE_LABEL_Y_OFFSET_RATIO: f64 = 0.02; // Offset as ratio of y_max
+
+// Data formatting
+const KILO_THRESHOLD: f64 = 1000.0;
 
 pub fn generate_latency_chart(
     scenario_name: &str,
@@ -27,7 +58,7 @@ pub fn generate_latency_chart(
             SVGBackend::with_string(&mut buffer, (CHART_WIDTH, CHART_HEIGHT)).into_drawing_area();
 
         // Transparent background
-        root.fill(&RGBColor(255, 255, 255).mix(0.0))?;
+        root.fill(&TRANSPARENT_BACKGROUND)?;
 
         // Split the drawing area: chart on the left, legend on the right
         let (chart_area, legend_area) = root.split_horizontally(CHART_WIDTH - LEGEND_WIDTH);
@@ -36,13 +67,17 @@ pub fn generate_latency_chart(
         let mut gateway_data: Vec<(&str, &crate::k6::TrendValues)> = results
             .iter()
             .filter_map(|r| {
-                r.k6_run.summary.metrics.http_req_duration.as_ref()
+                r.k6_run
+                    .summary
+                    .metrics
+                    .http_req_duration
+                    .as_ref()
                     .map(|metric| (r.gateway.as_str(), &metric.values))
             })
             .collect();
-        
+
         gateway_data.sort_by(|a, b| a.1.med.partial_cmp(&b.1.med).unwrap());
-        
+
         // Create a color mapping based on alphabetically sorted gateway names for consistency
         let mut gateway_names: Vec<&str> = gateway_data.iter().map(|(name, _)| *name).collect();
         gateway_names.sort();
@@ -51,7 +86,7 @@ pub fn generate_latency_chart(
             .enumerate()
             .map(|(idx, name)| (*name, GATEWAY_COLORS[idx % GATEWAY_COLORS.len()]))
             .collect();
-        
+
         // Find max latency for y-axis scaling
         let max_latency = gateway_data
             .iter()
@@ -69,11 +104,11 @@ pub fn generate_latency_chart(
         let mut chart = ChartBuilder::on(&chart_area)
             .caption(
                 &format!("{} - latencies", scenario_name),
-                ("sans-serif", 30).into_font(),
+                (FONT_FAMILY, TITLE_FONT_SIZE).into_font(),
             )
-            .margin(20)
-            .x_label_area_size(50)
-            .y_label_area_size(70)
+            .margin(CHART_MARGIN)
+            .x_label_area_size(X_LABEL_AREA_SIZE)
+            .y_label_area_size(Y_LABEL_AREA_SIZE)
             .build_cartesian_2d(-0.5f64..2.5f64, 0.0..y_max)?;
 
         chart
@@ -85,14 +120,14 @@ pub fn generate_latency_chart(
                 percentile_labels.get(idx).unwrap_or(&"").to_string()
             })
             .x_labels(3)
-            .x_label_style(("sans-serif", 16))
-            .y_label_style(("sans-serif", 16))
+            .x_label_style((FONT_FAMILY, LABEL_FONT_SIZE))
+            .y_label_style((FONT_FAMILY, LABEL_FONT_SIZE))
             .disable_x_mesh()
             .disable_y_mesh()
             .draw()?;
 
         // Calculate bar positions
-        let group_width = 0.8;
+        let group_width = BAR_WIDTH_RATIO;
         let bar_width = group_width / num_gateways as f64;
 
         for (gateway_idx, (gateway_name, trend_values)) in gateway_data.iter().enumerate() {
@@ -123,7 +158,7 @@ pub fn generate_latency_chart(
             // Draw value labels at 45 degrees
             for (x, y) in &values {
                 let label_x = x + offset;
-                let label_y = *y + (y_max * 0.02); // Slightly above the bar
+                let label_y = *y + (y_max * VALUE_LABEL_Y_OFFSET_RATIO); // Slightly above the bar
 
                 // Parameterize decimal places
                 let decimal_places = if *y < 100.0 { 1 } else { 0 };
@@ -132,7 +167,7 @@ pub fn generate_latency_chart(
                 chart.draw_series(std::iter::once(Text::new(
                     label_text,
                     (label_x, label_y),
-                    ("sans-serif", 16)
+                    (FONT_FAMILY, VALUE_FONT_SIZE)
                         .into_font()
                         .transform(FontTransform::Rotate270)
                         .color(&BLACK),
@@ -141,8 +176,8 @@ pub fn generate_latency_chart(
         }
 
         // Draw legend manually in the legend area
-        let legend_y_start = 60;
-        let legend_item_height = 25;
+        let legend_y_start = LEGEND_Y_START;
+        let legend_item_height = LEGEND_ITEM_HEIGHT;
 
         for (idx, (gateway_name, _)) in gateway_data.iter().enumerate() {
             let color = color_map[gateway_name];
@@ -158,7 +193,7 @@ pub fn generate_latency_chart(
             legend_area.draw(&Text::new(
                 gateway_name.to_string(),
                 (30, y_pos + 3),
-                ("sans-serif", 18).into_font(),
+                (FONT_FAMILY, LEGEND_FONT_SIZE).into_font(),
             ))?;
         }
 
@@ -190,32 +225,31 @@ pub fn generate_efficiency_chart(
             SVGBackend::with_string(&mut buffer, (CHART_WIDTH, CHART_HEIGHT)).into_drawing_area();
 
         // Transparent background
-        root.fill(&RGBColor(255, 255, 255).mix(0.0))?;
-        
+        root.fill(&TRANSPARENT_BACKGROUND)?;
+
         // Split the drawing area: title + charts on the left, legend on the right
         let (main_area, legend_area) = root.split_horizontally(CHART_WIDTH - LEGEND_WIDTH);
-        
+
         // Split main area into title and chart areas
         let (title_area, chart_area) = main_area.split_vertically(40);
-        
+
         // Add title centered in the title area
         let title_text = format!("{} - efficiency", scenario_name);
-        let title_style = TextStyle::from(("sans-serif", 30).into_font()).pos(Pos::new(HPos::Center, VPos::Center));
+        let title_style = TextStyle::from((FONT_FAMILY, TITLE_FONT_SIZE).into_font())
+            .pos(Pos::new(HPos::Center, VPos::Center));
         title_area.draw(&Text::new(
             title_text,
             (title_area.dim_in_pixel().0 as i32 / 2, 20),
             title_style,
         ))?;
-        
+
         // Split chart area into two panels horizontally (removed subgraph requests)
         let panels: Vec<_> = chart_area.split_evenly((1, 2));
-        
+
         // Create vector of gateway names and data (unsorted - each panel will sort independently)
-        let gateway_data: Vec<(&str, &BenchmarkResult)> = results
-            .iter()
-            .map(|r| (r.gateway.as_str(), *r))
-            .collect();
-        
+        let gateway_data: Vec<(&str, &BenchmarkResult)> =
+            results.iter().map(|r| (r.gateway.as_str(), *r)).collect();
+
         // Create color mapping based on alphabetically sorted gateway names
         let mut gateway_names: Vec<&str> = gateway_data.iter().map(|(name, _)| *name).collect();
         gateway_names.sort();
@@ -224,7 +258,7 @@ pub fn generate_efficiency_chart(
             .enumerate()
             .map(|(idx, name)| (*name, GATEWAY_COLORS[idx % GATEWAY_COLORS.len()]))
             .collect();
-        
+
         // Draw CPU efficiency panel
         draw_efficiency_panel(
             &panels[0],
@@ -240,7 +274,7 @@ pub fn generate_efficiency_chart(
                 }
             },
         )?;
-        
+
         // Draw Memory efficiency panel
         draw_efficiency_panel(
             &panels[1],
@@ -257,26 +291,29 @@ pub fn generate_efficiency_chart(
                 }
             },
         )?;
-        
+
         // Draw legend manually in the legend area
-        let legend_y_start = 60;
-        let legend_item_height = 25;
-        
+        let legend_y_start = LEGEND_Y_START;
+        let legend_item_height = LEGEND_ITEM_HEIGHT;
+
         for (idx, (gateway_name, _)) in gateway_data.iter().enumerate() {
             let color = color_map[gateway_name];
             let y_pos = legend_y_start + (idx as i32 * legend_item_height);
-            
+
             // Draw color box (moved closer to chart)
             legend_area.draw(&Rectangle::new(
-                [(5, y_pos), (20, y_pos + 15)],
+                [
+                    (LEGEND_BOX_X, y_pos),
+                    (LEGEND_BOX_X + LEGEND_BOX_SIZE, y_pos + LEGEND_BOX_SIZE),
+                ],
                 color.filled(),
             ))?;
-            
+
             // Draw gateway name
             legend_area.draw(&Text::new(
                 gateway_name.to_string(),
-                (25, y_pos + 3),
-                ("sans-serif", 18).into_font(),
+                (LEGEND_TEXT_X, y_pos + LEGEND_TEXT_Y_OFFSET),
+                (FONT_FAMILY, LEGEND_FONT_SIZE).into_font(),
             ))?;
         }
 
@@ -288,7 +325,11 @@ pub fn generate_efficiency_chart(
 
 fn calculate_request_rate(result: &BenchmarkResult) -> f64 {
     let duration_ms = result.k6_run.summary.state.test_run_duration_ms;
-    let requests_count = result.k6_run.summary.metrics.http_req_duration
+    let requests_count = result
+        .k6_run
+        .summary
+        .metrics
+        .http_req_duration
         .as_ref()
         .map(|m| m.values.count)
         .unwrap_or(0) as f64;
@@ -306,7 +347,7 @@ where
     F: Fn(&BenchmarkResult) -> f64,
 {
     use plotters::style::IntoFont;
-    
+
     // Create sorted data for this specific metric (highest to lowest)
     let mut sorted_data: Vec<_> = gateway_data
         .iter()
@@ -316,48 +357,52 @@ where
         })
         .collect();
     sorted_data.sort_by(|a, b| b.2.partial_cmp(&a.2).unwrap());
-    
-    let max_value = sorted_data.iter().map(|(_, _, v)| *v).fold(0.0f64, |acc, val| acc.max(val));
+
+    let max_value = sorted_data
+        .iter()
+        .map(|(_, _, v)| *v)
+        .fold(0.0f64, |acc, val| acc.max(val));
     let y_max = (max_value * 1.1).ceil();
-    
+
     let num_gateways = gateway_data.len();
     let x_range = -0.5f64..(num_gateways as f64 - 0.5);
-    
+
     // Add caption at the top of the panel
     let (caption_area, chart_area) = area.split_vertically(30);
     caption_area.draw(&Text::new(
         caption,
         (caption_area.dim_in_pixel().0 as i32 / 2, 15),
-        TextStyle::from(("sans-serif", 20).into_font()).pos(Pos::new(HPos::Center, VPos::Center)),
+        TextStyle::from((FONT_FAMILY, CAPTION_FONT_SIZE).into_font())
+            .pos(Pos::new(HPos::Center, VPos::Center)),
     ))?;
-    
+
     let mut chart = ChartBuilder::on(&chart_area)
-        .margin(10)
+        .margin(PANEL_MARGIN)
         .x_label_area_size(0) // No x-label area
-        .y_label_area_size(50)
+        .y_label_area_size(Y_LABEL_AREA_SIZE_SMALL)
         .build_cartesian_2d(x_range, 0.0..y_max)?;
-    
+
     chart
         .configure_mesh()
         .y_label_formatter(&|y| {
-            if *y >= 1000.0 {
-                format!("{:.0}k", y / 1000.0)
+            if *y >= KILO_THRESHOLD {
+                format!("{:.0}k", y / KILO_THRESHOLD)
             } else {
                 format!("{:.0}", y)
             }
         })
         .x_labels(0) // No x-axis labels
-        .y_label_style(("sans-serif", 16))
+        .y_label_style((FONT_FAMILY, LABEL_FONT_SIZE))
         .disable_x_mesh()
         .disable_y_mesh()
         .draw()?;
-    
+
     // Draw bars using sorted data
-    let bar_width = 0.8;
-    
+    let bar_width = BAR_WIDTH_RATIO;
+
     for (idx, (gateway_name, _result, value)) in sorted_data.iter().enumerate() {
         let color = color_map[gateway_name];
-        
+
         chart.draw_series(std::iter::once(Rectangle::new(
             [
                 (idx as f64 - bar_width / 2.0, 0.0),
@@ -365,25 +410,25 @@ where
             ],
             ShapeStyle::from(color).filled(),
         )))?;
-        
+
         // Draw value label
         let decimal_places = if *value < 10.0 { 1 } else { 0 };
-        let label_text = if *value >= 1000.0 {
-            format!("{:.prec$}k", value / 1000.0, prec = decimal_places)
+        let label_text = if *value >= KILO_THRESHOLD {
+            format!("{:.prec$}k", value / KILO_THRESHOLD, prec = decimal_places)
         } else {
             format!("{:.prec$}", value, prec = decimal_places)
         };
-        
+
         chart.draw_series(std::iter::once(Text::new(
             label_text,
-            (idx as f64, value + y_max * 0.02),
-            ("sans-serif", 16)
+            (idx as f64, value + y_max * VALUE_LABEL_Y_OFFSET_RATIO),
+            (FONT_FAMILY, VALUE_FONT_SIZE)
                 .into_font()
                 .transform(FontTransform::Rotate270)
                 .color(&BLACK),
         )))?;
     }
-    
+
     Ok(())
 }
 
@@ -409,29 +454,28 @@ pub fn generate_quality_chart(
             SVGBackend::with_string(&mut buffer, (CHART_WIDTH, CHART_HEIGHT)).into_drawing_area();
 
         // Transparent background
-        root.fill(&RGBColor(255, 255, 255).mix(0.0))?;
-        
+        root.fill(&TRANSPARENT_BACKGROUND)?;
+
         // Split the drawing area: title + charts on the left, legend on the right
         let (main_area, legend_area) = root.split_horizontally(CHART_WIDTH - LEGEND_WIDTH);
-        
+
         // Split main area into title and chart areas
         let (title_area, chart_area) = main_area.split_vertically(40);
-        
+
         // Add title centered in the title area
         let title_text = format!("{} - quality", scenario_name);
-        let title_style = TextStyle::from(("sans-serif", 30).into_font()).pos(Pos::new(HPos::Center, VPos::Center));
+        let title_style = TextStyle::from((FONT_FAMILY, TITLE_FONT_SIZE).into_font())
+            .pos(Pos::new(HPos::Center, VPos::Center));
         title_area.draw(&Text::new(
             title_text,
             (title_area.dim_in_pixel().0 as i32 / 2, 20),
             title_style,
         ))?;
-        
+
         // Create vector of gateway names and data (will be sorted in draw_efficiency_panel)
-        let gateway_data: Vec<(&str, &BenchmarkResult)> = results
-            .iter()
-            .map(|r| (r.gateway.as_str(), *r))
-            .collect();
-        
+        let gateway_data: Vec<(&str, &BenchmarkResult)> =
+            results.iter().map(|r| (r.gateway.as_str(), *r)).collect();
+
         // Create color mapping based on alphabetically sorted gateway names
         let mut gateway_names: Vec<&str> = gateway_data.iter().map(|(name, _)| *name).collect();
         gateway_names.sort();
@@ -440,7 +484,7 @@ pub fn generate_quality_chart(
             .enumerate()
             .map(|(idx, name)| (*name, GATEWAY_COLORS[idx % GATEWAY_COLORS.len()]))
             .collect();
-        
+
         // Draw single panel for subgraph requests (sorted lowest to highest since lower is better)
         draw_quality_panel(
             &chart_area,
@@ -449,26 +493,29 @@ pub fn generate_quality_chart(
             "Average Subgraph Requests",
             calculate_avg_subgraph_requests,
         )?;
-        
+
         // Draw legend manually in the legend area
-        let legend_y_start = 60;
-        let legend_item_height = 25;
-        
+        let legend_y_start = LEGEND_Y_START;
+        let legend_item_height = LEGEND_ITEM_HEIGHT;
+
         for (idx, (gateway_name, _)) in gateway_data.iter().enumerate() {
             let color = color_map[gateway_name];
             let y_pos = legend_y_start + (idx as i32 * legend_item_height);
-            
+
             // Draw color box (moved closer to chart)
             legend_area.draw(&Rectangle::new(
-                [(5, y_pos), (20, y_pos + 15)],
+                [
+                    (LEGEND_BOX_X, y_pos),
+                    (LEGEND_BOX_X + LEGEND_BOX_SIZE, y_pos + LEGEND_BOX_SIZE),
+                ],
                 color.filled(),
             ))?;
-            
+
             // Draw gateway name
             legend_area.draw(&Text::new(
                 gateway_name.to_string(),
-                (25, y_pos + 3),
-                ("sans-serif", 18).into_font(),
+                (LEGEND_TEXT_X, y_pos + LEGEND_TEXT_Y_OFFSET),
+                (FONT_FAMILY, LEGEND_FONT_SIZE).into_font(),
             ))?;
         }
 
@@ -479,7 +526,11 @@ pub fn generate_quality_chart(
 }
 
 fn calculate_avg_subgraph_requests(result: &BenchmarkResult) -> f64 {
-    let requests_count = result.k6_run.summary.metrics.http_req_duration
+    let requests_count = result
+        .k6_run
+        .summary
+        .metrics
+        .http_req_duration
         .as_ref()
         .map(|m| m.values.count)
         .unwrap_or(1) as f64;
@@ -498,7 +549,7 @@ where
     F: Fn(&BenchmarkResult) -> f64,
 {
     use plotters::style::IntoFont;
-    
+
     // Create sorted data for this specific metric (lowest to highest - lower is better)
     let mut sorted_data: Vec<_> = gateway_data
         .iter()
@@ -508,48 +559,52 @@ where
         })
         .collect();
     sorted_data.sort_by(|a, b| a.2.partial_cmp(&b.2).unwrap());
-    
-    let max_value = sorted_data.iter().map(|(_, _, v)| *v).fold(0.0f64, |acc, val| acc.max(val));
+
+    let max_value = sorted_data
+        .iter()
+        .map(|(_, _, v)| *v)
+        .fold(0.0f64, |acc, val| acc.max(val));
     let y_max = (max_value * 1.1).ceil();
-    
+
     let num_gateways = gateway_data.len();
     let x_range = -0.5f64..(num_gateways as f64 - 0.5);
-    
+
     // Add caption at the top of the panel
     let (caption_area, chart_area) = area.split_vertically(30);
     caption_area.draw(&Text::new(
         caption,
         (caption_area.dim_in_pixel().0 as i32 / 2, 15),
-        TextStyle::from(("sans-serif", 20).into_font()).pos(Pos::new(HPos::Center, VPos::Center)),
+        TextStyle::from((FONT_FAMILY, CAPTION_FONT_SIZE).into_font())
+            .pos(Pos::new(HPos::Center, VPos::Center)),
     ))?;
-    
+
     let mut chart = ChartBuilder::on(&chart_area)
-        .margin(10)
+        .margin(PANEL_MARGIN)
         .x_label_area_size(0) // No x-label area
-        .y_label_area_size(50)
+        .y_label_area_size(Y_LABEL_AREA_SIZE_SMALL)
         .build_cartesian_2d(x_range, 0.0..y_max)?;
-    
+
     chart
         .configure_mesh()
         .y_label_formatter(&|y| {
-            if *y >= 1000.0 {
-                format!("{:.0}k", y / 1000.0)
+            if *y >= KILO_THRESHOLD {
+                format!("{:.0}k", y / KILO_THRESHOLD)
             } else {
                 format!("{:.0}", y)
             }
         })
         .x_labels(0) // No x-axis labels
-        .y_label_style(("sans-serif", 16))
+        .y_label_style((FONT_FAMILY, LABEL_FONT_SIZE))
         .disable_x_mesh()
         .disable_y_mesh()
         .draw()?;
-    
+
     // Draw bars using sorted data
-    let bar_width = 0.8;
-    
+    let bar_width = BAR_WIDTH_RATIO;
+
     for (idx, (gateway_name, _result, value)) in sorted_data.iter().enumerate() {
         let color = color_map[gateway_name];
-        
+
         chart.draw_series(std::iter::once(Rectangle::new(
             [
                 (idx as f64 - bar_width / 2.0, 0.0),
@@ -557,25 +612,25 @@ where
             ],
             ShapeStyle::from(color).filled(),
         )))?;
-        
+
         // Draw value label
         let decimal_places = if *value < 10.0 { 1 } else { 0 };
-        let label_text = if *value >= 1000.0 {
-            format!("{:.prec$}k", value / 1000.0, prec = decimal_places)
+        let label_text = if *value >= KILO_THRESHOLD {
+            format!("{:.prec$}k", value / KILO_THRESHOLD, prec = decimal_places)
         } else {
             format!("{:.prec$}", value, prec = decimal_places)
         };
-        
+
         chart.draw_series(std::iter::once(Text::new(
             label_text,
-            (idx as f64, value + y_max * 0.02),
-            ("sans-serif", 16)
+            (idx as f64, value + y_max * VALUE_LABEL_Y_OFFSET_RATIO),
+            (FONT_FAMILY, VALUE_FONT_SIZE)
                 .into_font()
                 .transform(FontTransform::Rotate270)
                 .color(&BLACK),
         )))?;
     }
-    
+
     Ok(())
 }
 
@@ -603,7 +658,7 @@ mod tests {
     fn test_generate_latency_chart() {
         let results = vec![
             BenchmarkResult {
-                benchmark: "test-scenario".to_string(),
+                scenario: "test-scenario".to_string(),
                 gateway: "Gateway A".to_string(),
                 k6_run: K6Run {
                     start: time::OffsetDateTime::now_utc(),
@@ -645,7 +700,7 @@ mod tests {
                 },
             },
             BenchmarkResult {
-                benchmark: "test-scenario".to_string(),
+                scenario: "test-scenario".to_string(),
                 gateway: "Gateway B".to_string(),
                 k6_run: K6Run {
                     start: time::OffsetDateTime::now_utc(),
@@ -696,12 +751,12 @@ mod tests {
         assert!(svg.contains("Gateway A"));
         assert!(svg.contains("Gateway B"));
     }
-    
+
     #[test]
     fn test_generate_efficiency_chart() {
         let results = vec![
             BenchmarkResult {
-                benchmark: "test-scenario".to_string(),
+                scenario: "test-scenario".to_string(),
                 gateway: "Gateway A".to_string(),
                 k6_run: K6Run {
                     start: time::OffsetDateTime::now_utc(),
@@ -743,7 +798,7 @@ mod tests {
                 },
             },
             BenchmarkResult {
-                benchmark: "test-scenario".to_string(),
+                scenario: "test-scenario".to_string(),
                 gateway: "Gateway B".to_string(),
                 k6_run: K6Run {
                     start: time::OffsetDateTime::now_utc(),
@@ -796,12 +851,12 @@ mod tests {
         assert!(svg.contains("Gateway A"));
         assert!(svg.contains("Gateway B"));
     }
-    
+
     #[test]
     fn test_generate_quality_chart() {
         let results = vec![
             BenchmarkResult {
-                benchmark: "test-scenario".to_string(),
+                scenario: "test-scenario".to_string(),
                 gateway: "Gateway A".to_string(),
                 k6_run: K6Run {
                     start: time::OffsetDateTime::now_utc(),
@@ -843,7 +898,7 @@ mod tests {
                 },
             },
             BenchmarkResult {
-                benchmark: "test-scenario".to_string(),
+                scenario: "test-scenario".to_string(),
                 gateway: "Gateway B".to_string(),
                 k6_run: K6Run {
                     start: time::OffsetDateTime::now_utc(),

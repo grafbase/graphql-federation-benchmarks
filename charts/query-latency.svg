@@ -1,6 +1,6 @@
 <svg width="900" height="600" viewBox="0 0 900 600" xmlns="http://www.w3.org/2000/svg">
 <text x="352" y="25" dy="0.76em" text-anchor="middle" font-family="sans-serif" font-size="24.193548387096776" opacity="1" fill="#000000">
-query - Latency Distribution
+query - latencies
 </text>
 <text x="20" y="292" dy="0.76em" text-anchor="middle" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 20, 292)">
 Latency (ms)
@@ -44,51 +44,51 @@ p99
 </text>
 <polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="585,530 585,535 "/>
 <rect x="109" y="145" width="53" height="384" opacity="1" fill="#E796F3" stroke="none"/>
-<rect x="307" y="134" width="53" height="395" opacity="1" fill="#E796F3" stroke="none"/>
-<rect x="505" y="129" width="53" height="400" opacity="1" fill="#E796F3" stroke="none"/>
-<text x="136" y="135" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 136, 135)">
+<rect x="307" y="133" width="53" height="396" opacity="1" fill="#E796F3" stroke="none"/>
+<rect x="505" y="128" width="53" height="401" opacity="1" fill="#E796F3" stroke="none"/>
+<text x="136" y="136" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 136, 136)">
 45.4
 </text>
-<text x="334" y="125" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 334, 125)">
-46.7
+<text x="334" y="124" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 334, 124)">
+46.8
 </text>
-<text x="532" y="119" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 532, 119)">
-47.3
+<text x="532" y="118" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 532, 118)">
+47.5
 </text>
 <rect x="162" y="134" width="53" height="395" opacity="1" fill="#1E90FF" stroke="none"/>
-<rect x="360" y="120" width="53" height="409" opacity="1" fill="#1E90FF" stroke="none"/>
-<rect x="558" y="116" width="53" height="413" opacity="1" fill="#1E90FF" stroke="none"/>
+<rect x="360" y="119" width="53" height="410" opacity="1" fill="#1E90FF" stroke="none"/>
+<rect x="558" y="115" width="53" height="414" opacity="1" fill="#1E90FF" stroke="none"/>
 <text x="189" y="124" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 189, 124)">
-46.7
+46.8
 </text>
-<text x="387" y="111" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 387, 111)">
+<text x="387" y="110" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 387, 110)">
 48.4
 </text>
-<text x="585" y="106" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 585, 106)">
-48.9
+<text x="585" y="105" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 585, 105)">
+49.0
 </text>
 <rect x="215" y="124" width="53" height="405" opacity="1" fill="#07A865" stroke="none"/>
-<rect x="413" y="105" width="53" height="424" opacity="1" fill="#07A865" stroke="none"/>
-<rect x="611" y="99" width="53" height="430" opacity="1" fill="#07A865" stroke="none"/>
+<rect x="413" y="109" width="53" height="420" opacity="1" fill="#07A865" stroke="none"/>
+<rect x="611" y="102" width="53" height="427" opacity="1" fill="#07A865" stroke="none"/>
 <text x="241" y="114" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 241, 114)">
-48.0
+47.9
 </text>
-<text x="439" y="96" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 439, 96)">
-50.1
+<text x="439" y="100" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 439, 100)">
+49.7
 </text>
-<text x="637" y="90" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 637, 90)">
-50.8
+<text x="637" y="93" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 637, 93)">
+50.5
 </text>
-<rect x="715" y="60" width="15" height="15" opacity="1" fill="#E796F3" stroke="none"/>
-<text x="735" y="63" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="14.516129032258064" opacity="1" fill="#000000">
-Grafbase Gateway
+<rect x="710" y="60" width="15" height="15" opacity="1" fill="#07A865" stroke="none"/>
+<text x="730" y="63" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="14.516129032258064" opacity="1" fill="#000000">
+Apollo Router
 </text>
-<rect x="715" y="85" width="15" height="15" opacity="1" fill="#1E90FF" stroke="none"/>
-<text x="735" y="88" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="14.516129032258064" opacity="1" fill="#000000">
+<rect x="710" y="85" width="15" height="15" opacity="1" fill="#1E90FF" stroke="none"/>
+<text x="730" y="88" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="14.516129032258064" opacity="1" fill="#000000">
 Cosmo Router
 </text>
-<rect x="715" y="110" width="15" height="15" opacity="1" fill="#07A865" stroke="none"/>
-<text x="735" y="113" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="14.516129032258064" opacity="1" fill="#000000">
-Apollo Router
+<rect x="710" y="110" width="15" height="15" opacity="1" fill="#E796F3" stroke="none"/>
+<text x="730" y="113" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="14.516129032258064" opacity="1" fill="#000000">
+Grafbase Gateway
 </text>
 </svg>

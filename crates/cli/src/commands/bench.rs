@@ -1,6 +1,6 @@
 use argh::FromArgs;
 
-use crate::{commands::Context, report::ReportOptions};
+use crate::commands::Context;
 
 #[derive(FromArgs)]
 #[argh(subcommand, name = "bench")]
@@ -17,10 +17,6 @@ pub struct Command {
     /// override K6 test duration (e.g., "30s", "1m", "2m30s")
     #[argh(option, short = 'd')]
     pub duration: Option<String>,
-
-    /// compact report mode (hides charts and descriptions)
-    #[argh(switch, short = 'c')]
-    pub compact_report: bool,
 }
 
 pub async fn main(ctx: Context, cmd: Command) -> anyhow::Result<()> {
@@ -42,16 +38,10 @@ pub async fn main(ctx: Context, cmd: Command) -> anyhow::Result<()> {
     let benchmarks =
         crate::benchmark::create_benchmarks(&ctx.docker, &ctx.config, &gateways, &scenarios)?;
 
-    let report_options = ReportOptions {
-        charts_dir: Some(ctx.config.current_dir.join("charts")),
-        compact_mode: cmd.compact_report,
-    };
-
     super::run::run_benchmarks(
         benchmarks,
         &ctx.config,
         cmd.duration.as_deref(),
-        report_options,
     )
     .await
 }
