@@ -154,7 +154,7 @@ impl BenchmarkResult {
             .metrics
             .http_req_duration
             .as_ref()
-            .map(|m| m.values.median)
+            .map(|m| m.values.med)
             .unwrap_or(0.0)
     }
 

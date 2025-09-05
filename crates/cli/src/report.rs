@@ -45,27 +45,28 @@ pub fn generate_report_with_options(
     } else {
         // In file mode, show full system information
         report.push_str("# System Information\n\n");
-        report.push_str(&format!("Date: {}\n", timestamp.date()));
-        report.push_str(&format!("CPU: {}\n", system_info.cpu_model));
+        report.push_str(&format!("- Date: {}\n", timestamp.date()));
+        report.push_str(&format!("- CPU: {}\n", system_info.cpu_model));
         report.push_str(&format!(
-            "Memory: {:.1} GiB\n",
+            "- Memory: {:.1} GiB\n",
             system_info.total_memory_mib as f64 / 1024.0,
         ));
         if let Some(boost) = system_info.cpu_boost_enabled {
             report.push_str(&format!(
-                "CPU Boost: {}\n",
+                "- CPU Boost: {}\n",
                 if boost { "Enabled" } else { "Disabled" }
             ));
         }
         if let Some(git_commit) = &system_info.git_commit {
-            report.push_str(&format!("Git Commit: {}\n", git_commit));
+            report.push_str(&format!("- Git Commit: {}\n", git_commit));
         }
         if let Some(linux_version) = &system_info.linux_version {
-            report.push_str(&format!("Linux Version: {}\n", linux_version));
+            report.push_str(&format!("- Linux Version: {}\n", linux_version));
         }
         if let Some(docker_version) = &system_info.docker_version {
-            report.push_str(&format!("Docker Version: {}\n", docker_version));
+            report.push_str(&format!("- Docker Version: {}\n", docker_version));
         }
+        report.push('\n');
     }
 
     for (scenario_name, benchmark_results) in grouped_results {
@@ -614,7 +615,7 @@ mod tests {
 
         | Gateway      |     Min |     Med |     P90 |     P95 |     P99 |     Max |
         | :----------- | ------: | ------: | ------: | ------: | ------: | ------: |
-        | C            |     err |     err |     err |     err |     err |     err |
+        | C            |  errors |  errors |  errors |  errors |  errors |  errors |
         | D-NoResponse |    >60s |    >60s |    >60s |    >60s |    >60s |    >60s |
 
         ## Resources
@@ -623,7 +624,7 @@ mod tests {
 
         | Gateway      |          CPU |  CPU max |         Memory |   MEM max |  requests/core.s |  requests/GB.s |
         | :----------- | -----------: | -------: | -------------: | --------: | ---------------: | -------------: |
-        | C            |      12% ±9% |      46% |   512 ±156 MiB |  1025 MiB |              err |            err |
+        | C            |      12% ±9% |      46% |   512 ±156 MiB |  1025 MiB |           errors |         errors |
         | D-NoResponse |       1% ±0% |       2% |     100 ±5 MiB |   110 MiB |              0.0 |            0.0 |
 
         ## Requests

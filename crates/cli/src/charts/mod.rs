@@ -52,9 +52,10 @@ pub fn write_charts(
 }
 
 // Chart dimensions
-const CHART_WIDTH: u32 = 900; // Increased to accommodate legend on the side
+const CHART_WIDTH: u32 = 900; // Total width including legend
 const CHART_HEIGHT: u32 = 600;
-const LEGEND_WIDTH: u32 = 195; // Space for legend on the right (increased by 30%)
+const MIN_LEGEND_WIDTH: u32 = 150; // Minimum legend width
+const LEGEND_CHAR_WIDTH: u32 = 10; // Approximate width per character for legend text
 
 // Colors
 const CHART_BACKGROUND: RGBAColor = RGBAColor(250, 250, 252, 1.0); // #fafafc
@@ -104,6 +105,21 @@ const VALUE_LABEL_Y_OFFSET_RATIO: f64 = 0.02; // Offset as ratio of y_max
 
 // Data formatting
 const KILO_THRESHOLD: f64 = 1000.0;
+
+/// Calculate the legend width based on gateway names
+fn calculate_legend_width(results: &[&BenchmarkResult]) -> u32 {
+    let max_name_len = results
+        .iter()
+        .filter(|r| r.is_valid())
+        .map(|r| r.gateway.len())
+        .max()
+        .unwrap_or(0) as u32;
+
+    // Calculate width: box + spacing + text
+    let width =
+        LEGEND_BOX_X as u32 + LEGEND_BOX_SIZE as u32 + 10 + (max_name_len * LEGEND_CHAR_WIDTH);
+    width.max(MIN_LEGEND_WIDTH)
+}
 
 /// Create color mapping based on alphabetically sorted gateway names
 fn create_color_map<'a>(results: &[&'a BenchmarkResult]) -> HashMap<&'a str, RGBColor> {

@@ -17,8 +17,11 @@ pub fn generate_quality_chart(
         // Chart background
         root.fill(&CHART_BACKGROUND)?;
 
+        // Calculate dynamic legend width based on gateway names
+        let legend_width = calculate_legend_width(results);
+
         // Split the drawing area: title + charts on the left, legend on the right
-        let (main_area, legend_area) = root.split_horizontally(CHART_WIDTH - LEGEND_WIDTH);
+        let (main_area, legend_area) = root.split_horizontally(CHART_WIDTH - legend_width);
 
         // Split main area into title and chart areas
         let (title_area, chart_area) = main_area.split_vertically(40);

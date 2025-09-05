@@ -16,8 +16,11 @@ pub fn generate_latency_chart(
         // Chart background
         root.fill(&CHART_BACKGROUND)?;
 
+        // Calculate dynamic legend width based on gateway names
+        let legend_width = calculate_legend_width(results);
+
         // Split the drawing area: chart on the left, legend on the right
-        let (chart_area, legend_area) = root.split_horizontally(CHART_WIDTH - LEGEND_WIDTH);
+        let (chart_area, legend_area) = root.split_horizontally(CHART_WIDTH - legend_width);
 
         // Create sorted vector of (gateway_name, TrendValues), sorted by median (lowest first)
         // Exclude gateways with failures
