@@ -14,36 +14,46 @@ pub fn generate_efficiency_chart(
         let root =
             SVGBackend::with_string(&mut buffer, (CHART_WIDTH, CHART_HEIGHT)).into_drawing_area();
 
-        // Transparent background
-        root.fill(&TRANSPARENT_BACKGROUND)?;
-        
+        // Chart background
+        root.fill(&CHART_BACKGROUND)?;
+
         // Split the drawing area: title + charts on the left, legend on the right
         let (main_area, legend_area) = root.split_horizontally(CHART_WIDTH - LEGEND_WIDTH);
-        
+
         // Split main area into title and chart areas
         let (title_area, chart_area) = main_area.split_vertically(40);
-        
+
         // Add title centered in the title area
         let title_text = format!("{} - efficiency", scenario_name);
-        let title_style = TextStyle::from((FONT_FAMILY, TITLE_FONT_SIZE).into_font()).pos(Pos::new(HPos::Center, VPos::Center));
+        let title_style = TextStyle::from((FONT_FAMILY, TITLE_FONT_SIZE).into_font())
+            .pos(Pos::new(HPos::Center, VPos::Center));
         title_area.draw(&Text::new(
             title_text,
             (title_area.dim_in_pixel().0 as i32 / 2, 20),
             title_style,
         ))?;
-        
+
         // Split chart area into two panels horizontally (removed subgraph requests)
         let panels: Vec<_> = chart_area.split_evenly((1, 2));
-        
+
         // Create vector of gateway names and data (unsorted - each panel will sort independently)
+        // Exclude gateways with failures
         let gateway_data: Vec<(&str, &BenchmarkResult)> = results
             .iter()
+            .filter(|r| {
+                // Check if there are failures
+                let has_failures = r.k6_run.summary.metrics.checks
+                    .as_ref()
+                    .map(|c| c.values.fails > 0)
+                    .unwrap_or(false);
+                !has_failures
+            })
             .map(|r| (r.gateway.as_str(), *r))
             .collect();
-        
+
         // Create color mapping based on alphabetically sorted gateway names
         let color_map = create_color_map(results);
-        
+
         // Draw CPU efficiency panel
         draw_efficiency_panel(
             &panels[0],
@@ -59,7 +69,7 @@ pub fn generate_efficiency_chart(
                 }
             },
         )?;
-        
+
         // Draw Memory efficiency panel
         draw_efficiency_panel(
             &panels[1],
@@ -76,7 +86,7 @@ pub fn generate_efficiency_chart(
                 }
             },
         )?;
-        
+
         // Draw legend manually in the legend area
         draw_legend(&legend_area, &gateway_data, &color_map)?;
 
@@ -97,7 +107,7 @@ where
     F: Fn(&BenchmarkResult) -> f64,
 {
     use plotters::style::IntoFont;
-    
+
     // Create sorted data for this specific metric (highest to lowest)
     let mut sorted_data: Vec<_> = gateway_data
         .iter()
@@ -107,27 +117,31 @@ where
         })
         .collect();
     sorted_data.sort_by(|a, b| b.2.partial_cmp(&a.2).unwrap());
-    
-    let max_value = sorted_data.iter().map(|(_, _, v)| *v).fold(0.0f64, |acc, val| acc.max(val));
+
+    let max_value = sorted_data
+        .iter()
+        .map(|(_, _, v)| *v)
+        .fold(0.0f64, |acc, val| acc.max(val));
     let y_max = (max_value * 1.1).ceil();
-    
+
     let num_gateways = gateway_data.len();
     let x_range = -0.5f64..(num_gateways as f64 - 0.5);
-    
+
     // Add caption at the top of the panel
     let (caption_area, chart_area) = area.split_vertically(30);
     caption_area.draw(&Text::new(
         caption,
         (caption_area.dim_in_pixel().0 as i32 / 2, 15),
-        TextStyle::from((FONT_FAMILY, CAPTION_FONT_SIZE).into_font()).pos(Pos::new(HPos::Center, VPos::Center)),
+        TextStyle::from((FONT_FAMILY, CAPTION_FONT_SIZE).into_font())
+            .pos(Pos::new(HPos::Center, VPos::Center)),
     ))?;
-    
+
     let mut chart = ChartBuilder::on(&chart_area)
         .margin(PANEL_MARGIN)
         .x_label_area_size(0) // No x-label area
         .y_label_area_size(Y_LABEL_AREA_SIZE_SMALL)
         .build_cartesian_2d(x_range, 0.0..y_max)?;
-    
+
     chart
         .configure_mesh()
         .y_label_formatter(&|y| {
@@ -142,13 +156,13 @@ where
         .disable_x_mesh()
         .disable_y_mesh()
         .draw()?;
-    
+
     // Draw bars using sorted data
     let bar_width = BAR_WIDTH_RATIO;
-    
+
     for (idx, (gateway_name, _result, value)) in sorted_data.iter().enumerate() {
         let color = color_map[gateway_name];
-        
+
         chart.draw_series(std::iter::once(Rectangle::new(
             [
                 (idx as f64 - bar_width / 2.0, 0.0),
@@ -156,7 +170,7 @@ where
             ],
             ShapeStyle::from(color).filled(),
         )))?;
-        
+
         // Draw value label
         let decimal_places = if *value < 10.0 { 1 } else { 0 };
         let label_text = if *value >= KILO_THRESHOLD {
@@ -164,7 +178,7 @@ where
         } else {
             format!("{:.prec$}", value, prec = decimal_places)
         };
-        
+
         chart.draw_series(std::iter::once(Text::new(
             label_text,
             (idx as f64, value + y_max * VALUE_LABEL_Y_OFFSET_RATIO),
@@ -174,7 +188,7 @@ where
                 .color(&BLACK),
         )))?;
     }
-    
+
     Ok(())
 }
 
@@ -192,12 +206,12 @@ pub fn generate_efficiency_chart_to_file(
 mod tests {
     use super::*;
     use crate::charts::tests::*;
-    
+
     #[test]
     fn test_generate_efficiency_chart() {
         let results = vec![
             BenchmarkResult {
-                benchmark: "test-scenario".to_string(),
+                scenario: "test-scenario".to_string(),
                 gateway: "Gateway A".to_string(),
                 k6_run: K6Run {
                     start: time::OffsetDateTime::now_utc(),
@@ -239,7 +253,7 @@ mod tests {
                 },
             },
             BenchmarkResult {
-                benchmark: "test-scenario".to_string(),
+                scenario: "test-scenario".to_string(),
                 gateway: "Gateway B".to_string(),
                 k6_run: K6Run {
                     start: time::OffsetDateTime::now_utc(),

@@ -24,12 +24,7 @@ pub struct Command {
 pub async fn main(ctx: Context, cmd: Command) -> anyhow::Result<()> {
     let benchmarks = load_benchmarks(&ctx.docker, &ctx.config, &cmd.name)?;
 
-    run_benchmarks(
-        benchmarks,
-        &ctx.config,
-        cmd.duration.as_deref(),
-    )
-    .await
+    run_benchmarks(benchmarks, &ctx.config, cmd.duration.as_deref()).await
 }
 
 pub async fn run_benchmarks(
@@ -83,7 +78,7 @@ pub async fn run_benchmarks(
     if !results.is_empty() {
         let system_info = SystemInfo::detect()?;
         let timestamp = time::OffsetDateTime::now_utc();
-        
+
         // Print TTY report to terminal
         let tty_report = report::generate_report_with_options(
             timestamp,
@@ -93,7 +88,7 @@ pub async fn run_benchmarks(
             &ReportOptions { is_tty: true },
         )?;
         println!("\n{}", tty_report);
-        
+
         // Write full report to REPORT.md
         let full_report = report::generate_report_with_options(
             timestamp,
@@ -105,7 +100,7 @@ pub async fn run_benchmarks(
         let report_path = config.current_dir.join("REPORT.md");
         std::fs::write(&report_path, full_report)?;
         tracing::info!("Full report written to {:?}", report_path);
-        
+
         // Write charts to the charts directory
         let charts_dir = config.current_dir.join("charts");
         crate::charts::write_charts(&results, config, &charts_dir)?;

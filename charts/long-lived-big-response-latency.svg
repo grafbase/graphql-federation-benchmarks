@@ -1,0 +1,134 @@
+<svg width="900" height="600" viewBox="0 0 900 600" xmlns="http://www.w3.org/2000/svg">
+<text x="352" y="25" dy="0.76em" text-anchor="middle" font-family="sans-serif" font-size="24.193548387096776" opacity="1" fill="#000000">
+long-lived-big-response - latencies
+</text>
+<text x="20" y="292" dy="0.76em" text-anchor="middle" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 20, 292)">
+Latency (ms)
+</text>
+<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="89,55 89,529 "/>
+<text x="80" y="529" dy="0.5ex" text-anchor="end" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000">
+0
+</text>
+<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="84,529 89,529 "/>
+<text x="80" y="465" dy="0.5ex" text-anchor="end" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000">
+500
+</text>
+<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="84,465 89,465 "/>
+<text x="80" y="400" dy="0.5ex" text-anchor="end" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000">
+1000
+</text>
+<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="84,400 89,400 "/>
+<text x="80" y="335" dy="0.5ex" text-anchor="end" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000">
+1500
+</text>
+<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="84,335 89,335 "/>
+<text x="80" y="270" dy="0.5ex" text-anchor="end" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000">
+2000
+</text>
+<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="84,270 89,270 "/>
+<text x="80" y="205" dy="0.5ex" text-anchor="end" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000">
+2500
+</text>
+<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="84,205 89,205 "/>
+<text x="80" y="140" dy="0.5ex" text-anchor="end" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000">
+3000
+</text>
+<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="84,140 89,140 "/>
+<text x="80" y="75" dy="0.5ex" text-anchor="end" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000">
+3500
+</text>
+<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="84,75 89,75 "/>
+<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="90,530 684,530 "/>
+<text x="189" y="540" dy="0.76em" text-anchor="middle" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000">
+Median
+</text>
+<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="189,530 189,535 "/>
+<text x="387" y="540" dy="0.76em" text-anchor="middle" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000">
+p95
+</text>
+<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="387,530 387,535 "/>
+<text x="585" y="540" dy="0.76em" text-anchor="middle" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000">
+p99
+</text>
+<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="585,530 585,535 "/>
+<rect x="109" y="528" width="32" height="1" opacity="1" fill="#BDE56C" stroke="none"/>
+<rect x="307" y="528" width="32" height="1" opacity="1" fill="#BDE56C" stroke="none"/>
+<rect x="505" y="527" width="32" height="2" opacity="1" fill="#BDE56C" stroke="none"/>
+<text x="125" y="519" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 125, 519)">
+9.1
+</text>
+<text x="323" y="518" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 323, 518)">
+13.9
+</text>
+<text x="521" y="518" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 521, 518)">
+17.0
+</text>
+<rect x="141" y="509" width="32" height="20" opacity="1" fill="#E796F3" stroke="none"/>
+<rect x="339" y="505" width="32" height="24" opacity="1" fill="#E796F3" stroke="none"/>
+<rect x="537" y="495" width="32" height="34" opacity="1" fill="#E796F3" stroke="none"/>
+<text x="157" y="499" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 157, 499)">
+162
+</text>
+<text x="355" y="495" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 355, 495)">
+190
+</text>
+<text x="553" y="485" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 553, 485)">
+266
+</text>
+<rect x="173" y="503" width="31" height="26" opacity="1" fill="#1E90FF" stroke="none"/>
+<rect x="371" y="498" width="31" height="31" opacity="1" fill="#1E90FF" stroke="none"/>
+<rect x="569" y="481" width="31" height="48" opacity="1" fill="#1E90FF" stroke="none"/>
+<text x="189" y="493" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 189, 493)">
+206
+</text>
+<text x="387" y="488" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 387, 488)">
+245
+</text>
+<text x="585" y="472" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 585, 472)">
+370
+</text>
+<rect x="204" y="490" width="32" height="39" opacity="1" fill="#07A865" stroke="none"/>
+<rect x="402" y="476" width="32" height="53" opacity="1" fill="#07A865" stroke="none"/>
+<rect x="600" y="456" width="32" height="73" opacity="1" fill="#07A865" stroke="none"/>
+<text x="220" y="481" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 220, 481)">
+304
+</text>
+<text x="418" y="467" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 418, 467)">
+409
+</text>
+<text x="616" y="447" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 616, 447)">
+562
+</text>
+<rect x="236" y="317" width="32" height="212" opacity="1" fill="#DF682D" stroke="none"/>
+<rect x="434" y="129" width="32" height="400" opacity="1" fill="#DF682D" stroke="none"/>
+<rect x="632" y="99" width="32" height="430" opacity="1" fill="#DF682D" stroke="none"/>
+<text x="252" y="307" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 252, 307)">
+1638
+</text>
+<text x="450" y="120" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 450, 120)">
+3081
+</text>
+<text x="648" y="89" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 648, 89)">
+3317
+</text>
+<rect x="710" y="60" width="15" height="15" opacity="1" fill="#07A865" stroke="none"/>
+<text x="730" y="63" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="14.516129032258064" opacity="1" fill="#000000">
+Apollo Router
+</text>
+<rect x="710" y="85" width="15" height="15" opacity="1" fill="#1E90FF" stroke="none"/>
+<text x="730" y="88" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="14.516129032258064" opacity="1" fill="#000000">
+Cosmo Router
+</text>
+<rect x="710" y="110" width="15" height="15" opacity="1" fill="#E796F3" stroke="none"/>
+<text x="730" y="113" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="14.516129032258064" opacity="1" fill="#000000">
+Grafbase Gateway
+</text>
+<rect x="710" y="135" width="15" height="15" opacity="1" fill="#DF682D" stroke="none"/>
+<text x="730" y="138" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="14.516129032258064" opacity="1" fill="#000000">
+Hive Gateway
+</text>
+<rect x="710" y="160" width="15" height="15" opacity="1" fill="#BDE56C" stroke="none"/>
+<text x="730" y="163" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="14.516129032258064" opacity="1" fill="#000000">
+Hive Router
+</text>
+</svg>

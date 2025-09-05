@@ -86,83 +86,15 @@ pub fn generate_report_with_options(
             .unwrap_or(7)
             .max(7); // At least as wide as "Gateway"
 
-        // Requests table with quality chart
+        // Latencies table first
         if !options.is_tty {
-            report.push_str("### Requests\n\n");
-            // Add quality chart image before the table
-            let quality_chart_path = format!("{}-quality.svg", scenario_name);
-            report.push_str(&format!(
-                "![Quality Chart](charts/{})\n\n",
-                quality_chart_path
-            ));
-        }
-        report.push_str(&format!(
-            "| {:<width$} | {:>8} | {:>8} | {:>25} |\n",
-            "Gateway",
-            "Requests",
-            "Failures",
-            "Subgraph requests (total)",
-            width = gateway_width
-        ));
-
-        report.push_str(&format!(
-            "| {:-<width$} | {:->8} | {:->8} | {:->25} |\n",
-            ":",
-            ":",
-            ":",
-            ":",
-            width = gateway_width
-        ));
-
-        for result in benchmark_results.iter() {
-            let requests_count = result
-                .k6_run
-                .summary
-                .metrics
-                .http_req_duration
-                .as_ref()
-                .map(|m| m.values.count)
-                .unwrap_or(0);
-
-            let failures = result
-                .k6_run
-                .summary
-                .metrics
-                .checks
-                .as_ref()
-                .map(|c| c.values.fails)
-                .unwrap_or(0);
-
-            let sub = if requests_count > 0 {
-                format!(
-                    "{:.2} ({})",
-                    result.k6_run.summary.subgraph_stats.count as f64 / requests_count as f64,
-                    result.k6_run.summary.subgraph_stats.count,
-                )
-            } else {
-                "0 (0)".to_string()
-            };
-
-            report.push_str(&format!(
-                "| {:<width$} | {:>8} | {:>8} | {:>25} |\n",
-                result.gateway,
-                requests_count,
-                failures,
-                sub,
-                width = gateway_width
-            ));
-        }
-
-        if !options.is_tty {
-            report.push_str("\n### Latencies (ms)\n\n");
+            report.push_str("### Latencies (ms)\n\n");
             // Add latency chart image before the table
             let latency_chart_path = format!("{}-latency.svg", scenario_name);
             report.push_str(&format!(
                 "![Latency Chart](charts/{})\n\n",
                 latency_chart_path
             ));
-        } else {
-            report.push('\n');
         }
 
         // Latencies table
@@ -281,7 +213,7 @@ pub fn generate_report_with_options(
             width = gateway_width
         ));
 
-        for result in benchmark_results {
+        for result in &benchmark_results {
             tracing::debug!(
                 "Benchmark results: {}",
                 serde_json::to_string_pretty(result).unwrap()
@@ -362,6 +294,76 @@ pub fn generate_report_with_options(
                     width = gateway_width
                 ));
             }
+        }
+
+        // Requests table last (after Resources)
+        if !options.is_tty {
+            report.push_str("\n### Requests\n\n");
+            // Add quality chart image before the table
+            let quality_chart_path = format!("{}-quality.svg", scenario_name);
+            report.push_str(&format!(
+                "![Quality Chart](charts/{})\n\n",
+                quality_chart_path
+            ));
+        } else {
+            report.push('\n');
+        }
+
+        report.push_str(&format!(
+            "| {:<width$} | {:>8} | {:>8} | {:>25} |\n",
+            "Gateway",
+            "Requests",
+            "Failures",
+            "Subgraph requests (total)",
+            width = gateway_width
+        ));
+
+        report.push_str(&format!(
+            "| {:-<width$} | {:->8} | {:->8} | {:->25} |\n",
+            ":",
+            ":",
+            ":",
+            ":",
+            width = gateway_width
+        ));
+
+        for result in benchmark_results.iter() {
+            let requests_count = result
+                .k6_run
+                .summary
+                .metrics
+                .http_req_duration
+                .as_ref()
+                .map(|m| m.values.count)
+                .unwrap_or(0);
+
+            let failures = result
+                .k6_run
+                .summary
+                .metrics
+                .checks
+                .as_ref()
+                .map(|c| c.values.fails)
+                .unwrap_or(0);
+
+            let sub = if requests_count > 0 {
+                format!(
+                    "{:.2} ({})",
+                    result.k6_run.summary.subgraph_stats.count as f64 / requests_count as f64,
+                    result.k6_run.summary.subgraph_stats.count,
+                )
+            } else {
+                "0 (0)".to_string()
+            };
+
+            report.push_str(&format!(
+                "| {:<width$} | {:>8} | {:>8} | {:>25} |\n",
+                result.gateway,
+                requests_count,
+                failures,
+                sub,
+                width = gateway_width
+            ));
         }
 
         report.push('\n');
@@ -621,15 +623,6 @@ mod tests {
 
         Test scenario for complex nested GraphQL queries
 
-        ### Requests
-
-        ![Quality Chart](charts/complex-nested-query-quality.svg)
-
-        | Gateway      | Requests | Failures | Subgraph requests (total) |
-        | :----------- | -------: | -------: | ------------------------: |
-        | C            |      234 |       10 |                2.15 (502) |
-        | D-NoResponse |        0 |        0 |                     0 (0) |
-
         ### Latencies (ms)
 
         ![Latency Chart](charts/complex-nested-query-latency.svg)
@@ -648,18 +641,22 @@ mod tests {
         | C            |      12% ±9% |      46% |   512 ±156 MiB |  1025 MiB |            <err> |          <err> |
         | D-NoResponse |       1% ±0% |       2% |     100 ±5 MiB |   110 MiB |              0.0 |            0.0 |
 
+        ### Requests
+
+        ![Quality Chart](charts/complex-nested-query-quality.svg)
+
+        | Gateway      | Requests | Failures | Subgraph requests (total) |
+        | :----------- | -------: | -------: | ------------------------: |
+        | C            |      234 |       10 |                2.15 (502) |
+        | D-NoResponse |        0 |        0 |                     0 (0) |
+
         ## simple-query
 
         Test scenario for simple GraphQL queries
 
-        ### Requests
-
-        | Gateway | Requests | Failures | Subgraph requests (total) |
-        | :------ | -------: | -------: | ------------------------: |
-        | A       |      251 |        0 |                2.00 (502) |
-        | B       |      234 |        0 |                2.15 (502) |
-
         ### Latencies (ms)
+
+        ![Latency Chart](charts/simple-query-latency.svg)
 
         | Gateway |     Min |     Med |     P90 |     P95 |     P99 |     Max |
         | :------ | ------: | ------: | ------: | ------: | ------: | ------: |
@@ -668,10 +665,21 @@ mod tests {
 
         ### Resources
 
+        ![Efficiency Chart](charts/simple-query-efficiency.svg)
+
         | Gateway |          CPU |  CPU max |         Memory |   MEM max |  requests/core.s |  requests/GB.s |
         | :------ | -----------: | -------: | -------------: | --------: | ---------------: | -------------: |
         | A       |       3% ±2% |      10% |     192 ±8 MiB |   205 MiB |            476.5 |          249.5 |
         | B       |       4% ±3% |      15% |    220 ±12 MiB |   246 MiB |            327.6 |          207.5 |
+
+        ### Requests
+
+        ![Quality Chart](charts/simple-query-quality.svg)
+
+        | Gateway | Requests | Failures | Subgraph requests (total) |
+        | :------ | -------: | -------: | ------------------------: |
+        | A       |      251 |        0 |                2.00 (502) |
+        | B       |      234 |        0 |                2.15 (502) |
         ");
     }
 }

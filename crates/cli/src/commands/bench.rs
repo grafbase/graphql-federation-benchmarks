@@ -38,10 +38,5 @@ pub async fn main(ctx: Context, cmd: Command) -> anyhow::Result<()> {
     let benchmarks =
         crate::benchmark::create_benchmarks(&ctx.docker, &ctx.config, &gateways, &scenarios)?;
 
-    super::run::run_benchmarks(
-        benchmarks,
-        &ctx.config,
-        cmd.duration.as_deref(),
-    )
-    .await
+    super::run::run_benchmarks(benchmarks, &ctx.config, cmd.duration.as_deref()).await
 }

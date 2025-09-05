@@ -13,26 +13,42 @@ pub fn generate_latency_chart(
         let root =
             SVGBackend::with_string(&mut buffer, (CHART_WIDTH, CHART_HEIGHT)).into_drawing_area();
 
-        // Transparent background
-        root.fill(&TRANSPARENT_BACKGROUND)?;
+        // Chart background
+        root.fill(&CHART_BACKGROUND)?;
 
         // Split the drawing area: chart on the left, legend on the right
         let (chart_area, legend_area) = root.split_horizontally(CHART_WIDTH - LEGEND_WIDTH);
 
         // Create sorted vector of (gateway_name, TrendValues), sorted by median (lowest first)
+        // Exclude gateways with failures
         let mut gateway_data: Vec<(&str, &crate::k6::TrendValues)> = results
             .iter()
             .filter_map(|r| {
-                r.k6_run.summary.metrics.http_req_duration.as_ref()
-                    .map(|metric| (r.gateway.as_str(), &metric.values))
+                // Check if there are failures
+                let has_failures = r.k6_run.summary.metrics.checks
+                    .as_ref()
+                    .map(|c| c.values.fails > 0)
+                    .unwrap_or(false);
+                
+                // Only include if no failures and has duration data
+                if !has_failures {
+                    r.k6_run
+                        .summary
+                        .metrics
+                        .http_req_duration
+                        .as_ref()
+                        .map(|metric| (r.gateway.as_str(), &metric.values))
+                } else {
+                    None
+                }
             })
             .collect();
-        
+
         gateway_data.sort_by(|a, b| a.1.med.partial_cmp(&b.1.med).unwrap());
-        
+
         // Create a color mapping based on alphabetically sorted gateway names for consistency
         let color_map = create_color_map(results);
-        
+
         // Find max latency for y-axis scaling
         let max_latency = gateway_data
             .iter()
@@ -40,10 +56,10 @@ pub fn generate_latency_chart(
             .fold(0.0f64, |acc, val| acc.max(val));
 
         let y_max = (max_latency * 1.1).ceil();
-        
+
         let percentile_labels = ["Median", "p95", "p99"];
 
-        // Draw bars for each gateway  
+        // Draw bars for each gateway
         // We'll use a numeric x-axis for proper bar positioning
         let num_gateways = gateway_data.len();
 
@@ -123,9 +139,16 @@ pub fn generate_latency_chart(
 
         // Draw legend manually in the legend area
         // Convert TrendValues to BenchmarkResult references for draw_legend
+        // Exclude gateways with failures
         let legend_data: Vec<(&str, &BenchmarkResult)> = results
             .iter()
-            .filter(|r| r.k6_run.summary.metrics.http_req_duration.is_some())
+            .filter(|r| {
+                let has_failures = r.k6_run.summary.metrics.checks
+                    .as_ref()
+                    .map(|c| c.values.fails > 0)
+                    .unwrap_or(false);
+                !has_failures && r.k6_run.summary.metrics.http_req_duration.is_some()
+            })
             .map(|r| (r.gateway.as_str(), *r))
             .collect();
         draw_legend(&legend_area, &legend_data, &color_map)?;
@@ -152,10 +175,109 @@ mod tests {
     use crate::charts::tests::*;
 
     #[test]
+    fn test_generate_latency_chart_excludes_failures() {
+        let results = vec![
+            BenchmarkResult {
+                scenario: "test-scenario".to_string(),
+                gateway: "Gateway A".to_string(),
+                k6_run: K6Run {
+                    start: time::OffsetDateTime::now_utc(),
+                    end: time::OffsetDateTime::now_utc(),
+                    summary: K6Summary {
+                        state: K6SummaryState {
+                            test_run_duration_ms: 60000.0,
+                        },
+                        subgraph_stats: SubgraphStats { count: 100 },
+                        metrics: K6SummaryMetrics {
+                            http_req_duration: Some(TrendMetric {
+                                values: TrendValues {
+                                    count: 100,
+                                    avg: 25.0,
+                                    min: 10.0,
+                                    med: 20.0,
+                                    max: 100.0,
+                                    p90: 35.0,
+                                    p95: 45.0,
+                                    p99: 80.0,
+                                },
+                            }),
+                            checks: Some(CheckMetric {
+                                values: HttpReqFailedValues { fails: 0 },
+                            }),
+                            http_reqs: None,
+                        },
+                    },
+                },
+                resource_stats: ResourceStats {
+                    cpu_usage_avg: 0.5,
+                    cpu_usage_max: 0.8,
+                    cpu_usage_std: 0.1,
+                    memory_mib_avg: 256.0,
+                    memory_mib_max: 512.0,
+                    memory_mib_std: 50.0,
+                    throttled_time: Duration::from_secs(0),
+                    count: 100,
+                },
+            },
+            // Gateway B has failures and should be excluded
+            BenchmarkResult {
+                scenario: "test-scenario".to_string(),
+                gateway: "Gateway B".to_string(),
+                k6_run: K6Run {
+                    start: time::OffsetDateTime::now_utc(),
+                    end: time::OffsetDateTime::now_utc(),
+                    summary: K6Summary {
+                        state: K6SummaryState {
+                            test_run_duration_ms: 60000.0,
+                        },
+                        subgraph_stats: SubgraphStats { count: 100 },
+                        metrics: K6SummaryMetrics {
+                            http_req_duration: Some(TrendMetric {
+                                values: TrendValues {
+                                    count: 100,
+                                    avg: 30.0,
+                                    min: 15.0,
+                                    med: 25.0,
+                                    max: 120.0,
+                                    p90: 40.0,
+                                    p95: 55.0,
+                                    p99: 95.0,
+                                },
+                            }),
+                            checks: Some(CheckMetric {
+                                values: HttpReqFailedValues { fails: 10 }, // Has failures
+                            }),
+                            http_reqs: None,
+                        },
+                    },
+                },
+                resource_stats: ResourceStats {
+                    cpu_usage_avg: 0.6,
+                    cpu_usage_max: 0.9,
+                    cpu_usage_std: 0.15,
+                    memory_mib_avg: 300.0,
+                    memory_mib_max: 600.0,
+                    memory_mib_std: 60.0,
+                    throttled_time: Duration::from_secs(0),
+                    count: 100,
+                },
+            },
+        ];
+
+        let refs: Vec<&BenchmarkResult> = results.iter().collect();
+        let svg = generate_latency_chart("Test Scenario", &refs).unwrap();
+
+        // Should contain Gateway A
+        assert!(svg.contains("Gateway A"));
+        // Should NOT contain Gateway B (has failures)
+        assert!(!svg.contains("Gateway B"));
+    }
+
+    #[test]
     fn test_generate_latency_chart() {
         let results = vec![
             BenchmarkResult {
-                benchmark: "test-scenario".to_string(),
+                scenario: "test-scenario".to_string(),
                 gateway: "Gateway A".to_string(),
                 k6_run: K6Run {
                     start: time::OffsetDateTime::now_utc(),
@@ -197,7 +319,7 @@ mod tests {
                 },
             },
             BenchmarkResult {
-                benchmark: "test-scenario".to_string(),
+                scenario: "test-scenario".to_string(),
                 gateway: "Gateway B".to_string(),
                 k6_run: K6Run {
                     start: time::OffsetDateTime::now_utc(),

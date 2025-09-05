@@ -20,46 +20,34 @@ pub fn write_charts(
 ) -> anyhow::Result<()> {
     // Create the output directory if it doesn't exist
     std::fs::create_dir_all(dir)?;
-    
+
     // Group results by benchmark name
     let mut grouped_results: BTreeMap<String, Vec<&BenchmarkResult>> = BTreeMap::new();
     for result in results {
         grouped_results
-            .entry(result.benchmark.clone())
+            .entry(result.scenario.clone())
             .or_default()
             .push(result);
     }
-    
+
     // Generate charts for each benchmark
     for (benchmark_name, benchmark_results) in grouped_results {
         // Generate latency chart
         let latency_filename = format!("{}-latency.svg", benchmark_name.replace(' ', "-"));
         let latency_path = dir.join(&latency_filename);
-        generate_latency_chart_to_file(
-            &benchmark_name,
-            &benchmark_results,
-            &latency_path,
-        )?;
-        
+        generate_latency_chart_to_file(&benchmark_name, &benchmark_results, &latency_path)?;
+
         // Generate efficiency chart
         let efficiency_filename = format!("{}-efficiency.svg", benchmark_name.replace(' ', "-"));
         let efficiency_path = dir.join(&efficiency_filename);
-        generate_efficiency_chart_to_file(
-            &benchmark_name,
-            &benchmark_results,
-            &efficiency_path,
-        )?;
-        
+        generate_efficiency_chart_to_file(&benchmark_name, &benchmark_results, &efficiency_path)?;
+
         // Generate quality chart
         let quality_filename = format!("{}-quality.svg", benchmark_name.replace(' ', "-"));
         let quality_path = dir.join(&quality_filename);
-        generate_quality_chart_to_file(
-            &benchmark_name,
-            &benchmark_results,
-            &quality_path,
-        )?;
+        generate_quality_chart_to_file(&benchmark_name, &benchmark_results, &quality_path)?;
     }
-    
+
     Ok(())
 }
 
@@ -69,7 +57,7 @@ const CHART_HEIGHT: u32 = 600;
 const LEGEND_WIDTH: u32 = 195; // Space for legend on the right (increased by 30%)
 
 // Colors
-const TRANSPARENT_BACKGROUND: RGBAColor = RGBAColor(255, 255, 255, 0.0);
+const CHART_BACKGROUND: RGBAColor = RGBAColor(250, 250, 252, 1.0); // #fafafc
 const GATEWAY_COLORS: &[RGBColor] = &[
     RGBColor(7, 168, 101),   // #07A865 - green
     RGBColor(30, 144, 255),  // #1E90FF - dodger blue
@@ -77,6 +65,16 @@ const GATEWAY_COLORS: &[RGBColor] = &[
     RGBColor(223, 104, 45),  // #DF682D - burnt orange
     RGBColor(189, 229, 108), // #BDE56C - light green
     RGBColor(158, 177, 255), // #9EB1FF - light blue
+    RGBColor(255, 193, 7),   // #FFC107 - amber
+    RGBColor(156, 39, 176),  // #9C27B0 - deep purple
+    RGBColor(0, 188, 212),   // #00BCD4 - cyan
+    RGBColor(255, 87, 34),   // #FF5722 - deep orange
+    RGBColor(139, 195, 74),  // #8BC34A - light green
+    RGBColor(103, 58, 183),  // #673AB7 - indigo
+    RGBColor(244, 67, 54),   // #F44336 - red
+    RGBColor(33, 150, 243),  // #2196F3 - blue
+    RGBColor(76, 175, 80),   // #4CAF50 - green
+    RGBColor(255, 152, 0),   // #FF9800 - orange
 ];
 
 // Font settings
@@ -112,7 +110,7 @@ fn create_color_map<'a>(results: &[&'a BenchmarkResult]) -> HashMap<&'a str, RGB
     let mut gateway_names: Vec<&str> = results.iter().map(|r| r.gateway.as_str()).collect();
     gateway_names.sort();
     gateway_names.dedup();
-    
+
     gateway_names
         .iter()
         .enumerate()
@@ -135,7 +133,10 @@ fn draw_legend(
 
         // Draw color box (moved closer to chart)
         legend_area.draw(&Rectangle::new(
-            [(LEGEND_BOX_X, y_pos), (LEGEND_BOX_X + LEGEND_BOX_SIZE, y_pos + LEGEND_BOX_SIZE)],
+            [
+                (LEGEND_BOX_X, y_pos),
+                (LEGEND_BOX_X + LEGEND_BOX_SIZE, y_pos + LEGEND_BOX_SIZE),
+            ],
             color.filled(),
         ))?;
 
@@ -146,14 +147,18 @@ fn draw_legend(
             (FONT_FAMILY, LEGEND_FONT_SIZE).into_font(),
         ))?;
     }
-    
+
     Ok(())
 }
 
 /// Calculate request rate from benchmark result
 fn calculate_request_rate(result: &BenchmarkResult) -> f64 {
     let duration_ms = result.k6_run.summary.state.test_run_duration_ms;
-    let requests_count = result.k6_run.summary.metrics.http_req_duration
+    let requests_count = result
+        .k6_run
+        .summary
+        .metrics
+        .http_req_duration
         .as_ref()
         .map(|m| m.values.count)
         .unwrap_or(0) as f64;
@@ -162,7 +167,11 @@ fn calculate_request_rate(result: &BenchmarkResult) -> f64 {
 
 /// Calculate average subgraph requests per gateway request
 fn calculate_avg_subgraph_requests(result: &BenchmarkResult) -> f64 {
-    let requests_count = result.k6_run.summary.metrics.http_req_duration
+    let requests_count = result
+        .k6_run
+        .summary
+        .metrics
+        .http_req_duration
         .as_ref()
         .map(|m| m.values.count)
         .unwrap_or(1) as f64;
