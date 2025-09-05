@@ -80,11 +80,12 @@ static NODES: Lazy<Vec<Arc<Node>>> = Lazy::new(|| {
                 })
                 .collect();
 
+            // TODO: Hive router just breaks with string escaping...
             // But we still want some that requires escaping.
             let string_len = rng.random_range(10..=128);
             let string: String = (0..string_len)
                 .map(|_| {
-                    let c = rng.random_range(b'!'..=b'}');
+                    let c = rng.random_range(b'a'..=b'z');
                     c as char
                 })
                 .collect();

@@ -1,3 +1,5 @@
+//! Copied and adjust from The Guild's GraphQL Gateways Benchmark
+//! https://github.com/graphql-hive/graphql-gateways-benchmark
 import http from "k6/http";
 import { check } from "k6";
 import { textSummary } from "https://jslib.k6.io/k6-summary/0.1.0/index.js";
@@ -79,7 +81,7 @@ const payload = JSON.stringify({
 });
 const expected = open("./expected.json");
 
-export default function () {
+export default function() {
   const params = {
     headers: {
       "Content-Type": "application/json",

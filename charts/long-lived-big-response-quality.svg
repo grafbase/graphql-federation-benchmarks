@@ -35,20 +35,24 @@ Average Subgraph Requests
 3
 </text>
 <polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="54,80 59,80 "/>
-<rect x="75" y="250" width="128" height="339" opacity="1" fill="#07A865" stroke="none"/>
-<text x="139" y="240" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 139, 240)">
+<rect x="72" y="525" width="103" height="64" opacity="1" fill="#BDE56C" stroke="none"/>
+<text x="123" y="515" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 123, 515)">
+0.4
+</text>
+<rect x="200" y="250" width="102" height="339" opacity="1" fill="#07A865" stroke="none"/>
+<text x="251" y="240" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 251, 240)">
 2.0
 </text>
-<rect x="235" y="250" width="128" height="339" opacity="1" fill="#1E90FF" stroke="none"/>
-<text x="299" y="240" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 299, 240)">
+<rect x="328" y="250" width="102" height="339" opacity="1" fill="#1E90FF" stroke="none"/>
+<text x="379" y="240" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 379, 240)">
 2.0
 </text>
-<rect x="395" y="250" width="128" height="339" opacity="1" fill="#E796F3" stroke="none"/>
-<text x="459" y="240" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 459, 240)">
+<rect x="456" y="250" width="102" height="339" opacity="1" fill="#E796F3" stroke="none"/>
+<text x="507" y="240" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 507, 240)">
 2.0
 </text>
-<rect x="555" y="250" width="128" height="339" opacity="1" fill="#DF682D" stroke="none"/>
-<text x="619" y="240" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 619, 240)">
+<rect x="583" y="250" width="103" height="339" opacity="1" fill="#DF682D" stroke="none"/>
+<text x="635" y="240" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 635, 240)">
 2.0
 </text>
 <rect x="715" y="60" width="15" height="15" opacity="1" fill="#07A865" stroke="none"/>
@@ -67,8 +71,8 @@ Grafbase Gateway
 <text x="735" y="138" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="14.516129032258064" opacity="1" fill="#000000">
 Hive Gateway
 </text>
-<rect x="715" y="160" width="15" height="15" opacity="1" fill="#C8C8C8" stroke="none"/>
-<text x="735" y="163" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="14.516129032258064" opacity="1" fill="#808080">
+<rect x="715" y="160" width="15" height="15" opacity="1" fill="#BDE56C" stroke="none"/>
+<text x="735" y="163" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="14.516129032258064" opacity="1" fill="#000000">
 Hive Router
 </text>
 </svg>

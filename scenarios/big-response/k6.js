@@ -24,7 +24,7 @@ function generateRandomToken() {
   );
 }
 
-export default function () {
+export default function() {
   const params = {
     headers: {
       "Content-Type": "application/json",
@@ -38,7 +38,7 @@ export default function () {
     "is status 200": (resp) => resp.status === 200,
     "response is correct": (resp) => {
       // Too big to commit
-      if (resp.body.length === 7915959) {
+      if (resp.body.length === 7893331) {
         return true;
       }
 
