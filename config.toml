@@ -131,7 +131,7 @@ description = """
 Fairly complex query requiring a dozen subgraph requests with some duplicate plans/requests. The goal here is to measure how well the gateways
 behaves under a certain throughput.
 
-K6 runs with a constant throughput of 100 requests/s
+K6 runs with a constant throughput of 500 requests/s
 """
 
 [scenarios.deduplication]
