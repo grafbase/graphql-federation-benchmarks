@@ -4,12 +4,26 @@ This repo contains a list of complex benchmark cases to measure the performance 
 
 ## Protocol
 
-The gateway and the subgraphs are docker containers with `--network host` to avoid any overhead. The load testing and latency measure is done by K6.
-The subgraphs keep track of the number of incoming GraphQL requests, excluding health checks. K6 retrieves any statistics computed by the subgraph at the end and propagates it in its summary. During the tests, we track the resource usage (CPU & MEM) of the gateway through `docker stats`. We only keep the measurements when K6 was running.
+Every service, gateway and subgraphs, are running in docker containers with `--network host` to avoid any overhead.
+Usually, a single service exposing all the subgrpahs composing a supergraph. Subgraphs are optimized for speed and serve responses mostly from cache.
 
-Every request has a unique `authorization` header value which is propagated to the subgraph. This ensures that gateways don't abuse the repetitive nature of the benchmark. Unless explicitly specified scenarios are not testing how good a gateway can de-duplicate requests.
+Every request has a unique `authorization` header value which is propagated, except for Hive Router as of 2025-09-05, to the subgraph. This ensures that gateways don't abuse the repetitive nature of the benchmark. Unless explicitly specified scenarios are not testing how good a gateway can de-duplicate requests.
 
-A report is provided at the end.
+The load testing itself is done with K6. Multiple scenarios have been created to benchmark different situations.
+
+We measure the following:
+
+| Metric                | Source                                              |
+| --------------------- | --------------------------------------------------- |
+| Response latencies    | K6                                                  |
+| Response count & rate | K6                                                  |
+| Subgraph requests     | Subgraph service\* (retrieved by K6 at the end)     |
+| CPU                   | `cpu_stats.cpu_usage.total_usage` from docker stats |
+| Memory                | `memory_stats.usage` from docker stats              |
+
+\* health checks are excluded.
+
+A report is provided at the end with all the numerical results. Charts are also generated, but we only use the data from successful benchmark runs. Gateways that have errors or don't return a response will simply grayed out as whatever we measured is not comparable.
 
 ## Latest report
 
