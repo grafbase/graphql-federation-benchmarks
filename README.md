@@ -27,7 +27,7 @@ We measure the following:
 
 \* health checks are excluded.
 
-A report is provided at the end with all the numerical results. Charts are also generated, but we only use the data from successful benchmark runs. Gateways that have errors or don't return a response will simply grayed out as whatever we measured is not comparable.
+A report is provided at the end with all the numerical results. Charts are also generated, but we only use the data from successful benchmark runs. Gateways that have errors or don't return a response are grayed out. Whatever we measured is not comparable.
 
 ## Running the benchmarks
 
