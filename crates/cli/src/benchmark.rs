@@ -144,9 +144,26 @@ pub struct BenchmarkResult {
 }
 
 impl BenchmarkResult {
+    pub fn is_valid(&self) -> bool {
+        !self.has_failures() && self.request_count() > 0
+    }
+
+    pub fn median_latency(&self) -> f64 {
+        self.k6_run
+            .summary
+            .metrics
+            .http_req_duration
+            .as_ref()
+            .map(|m| m.values.median)
+            .unwrap_or(0.0)
+    }
+
     /// Check if there are request failures
     pub fn has_failures(&self) -> bool {
-        self.k6_run.summary.metrics.checks
+        self.k6_run
+            .summary
+            .metrics
+            .checks
             .as_ref()
             .map(|c| c.values.fails > 0)
             .unwrap_or(false)
@@ -154,7 +171,10 @@ impl BenchmarkResult {
 
     /// Get the number of failures
     pub fn failure_count(&self) -> u64 {
-        self.k6_run.summary.metrics.checks
+        self.k6_run
+            .summary
+            .metrics
+            .checks
             .as_ref()
             .map(|c| c.values.fails)
             .unwrap_or(0)

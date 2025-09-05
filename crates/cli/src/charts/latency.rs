@@ -25,7 +25,7 @@ pub fn generate_latency_chart(
             .iter()
             .filter_map(|r| {
                 // Only include if no failures and has duration data
-                if !r.has_failures() {
+                if r.is_valid() {
                     r.k6_run
                         .summary
                         .metrics

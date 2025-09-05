@@ -3,7 +3,7 @@ use crate::config::Config;
 use crate::system::SystemInfo;
 use std::collections::BTreeMap;
 
-const ERR_PLACEHOLDER: &str = "err";
+const ERR_PLACEHOLDER: &str = "errors";
 
 pub struct ReportOptions {
     pub is_tty: bool,
@@ -121,7 +121,18 @@ pub fn generate_report_with_options(
             width = gateway_width
         ));
 
-        for result in benchmark_results.iter() {
+        // Sort results for latencies table: by median (lowest first), errors at end
+        let mut sorted_results = benchmark_results.clone();
+        sorted_results.sort_by(|a, b| {
+            match (a.is_valid(), b.is_valid()) {
+                (true, true) => a.median_latency().total_cmp(&b.median_latency()),
+                (true, false) => std::cmp::Ordering::Less, // a has data, b doesn't -> a comes first
+                (false, true) => std::cmp::Ordering::Greater, // b has data, a doesn't -> b comes first
+                (false, false) => a.gateway.cmp(&b.gateway),  // Neither has data, sort by name
+            }
+        });
+
+        for result in sorted_results.iter() {
             if result.has_failures() {
                 report.push_str(&format!(
                     "| {:<width$} | {:>7} | {:>7} | {:>7} | {:>7} | {:>7} | {:>7} |\n",
@@ -203,7 +214,23 @@ pub fn generate_report_with_options(
             width = gateway_width
         ));
 
-        for result in &benchmark_results {
+        // Sort results for resources table: by requests per core (highest first), errors at end
+        let mut sorted_results = benchmark_results.clone();
+        sorted_results.sort_by(|a, b| {
+            match (a.is_valid(), b.is_valid()) {
+                (true, true) => {
+                    // Both have data, sort by requests per core (highest first)
+                    let a_rpc = a.requests_per_core_s();
+                    let b_rpc = b.requests_per_core_s();
+                    b_rpc.total_cmp(&a_rpc) // Reversed for descending order
+                }
+                (true, false) => std::cmp::Ordering::Less, // a has data, b doesn't -> a comes first
+                (false, true) => std::cmp::Ordering::Greater, // b has data, a doesn't -> b comes first
+                (false, false) => a.gateway.cmp(&b.gateway),  // Neither has data, sort by name
+            }
+        });
+
+        for result in &sorted_results {
             tracing::debug!(
                 "Benchmark results: {}",
                 serde_json::to_string_pretty(result).unwrap()
@@ -281,7 +308,23 @@ pub fn generate_report_with_options(
             width = gateway_width
         ));
 
-        for result in benchmark_results.iter() {
+        // Sort results for requests table: by average subgraph requests (lowest first), errors at end
+        let mut sorted_results = benchmark_results.clone();
+        sorted_results.sort_by(|a, b| {
+            match (a.is_valid(), b.is_valid()) {
+                (true, true) => {
+                    // Both have data, sort by average subgraph requests (lowest first)
+                    let a_avg = a.average_subgraph_requests();
+                    let b_avg = b.average_subgraph_requests();
+                    a_avg.partial_cmp(&b_avg).unwrap()
+                }
+                (true, false) => std::cmp::Ordering::Less, // a has data, b doesn't -> a comes first
+                (false, true) => std::cmp::Ordering::Greater, // b has data, a doesn't -> b comes first
+                (false, false) => a.gateway.cmp(&b.gateway),  // Neither has data, sort by name
+            }
+        });
+
+        for result in sorted_results.iter() {
             let requests_count = result.request_count();
             let failures = result.failure_count();
 
@@ -561,32 +604,29 @@ mod tests {
         Git Commit: abc123def456
         Linux Version: 6.16.1
         Docker Version: 24.0.7
-
-        # Benchmarks
-
-        ## complex-nested-query
+        # complex-nested-query
 
         Test scenario for complex nested GraphQL queries
 
-        ### Latencies (ms)
+        ## Latencies (ms)
 
         ![Latency Chart](charts/complex-nested-query-latency.svg)
 
         | Gateway      |     Min |     Med |     P90 |     P95 |     P99 |     Max |
         | :----------- | ------: | ------: | ------: | ------: | ------: | ------: |
-        | C            |   <err> |   <err> |   <err> |   <err> |   <err> |   <err> |
+        | C            |     err |     err |     err |     err |     err |     err |
         | D-NoResponse |    >60s |    >60s |    >60s |    >60s |    >60s |    >60s |
 
-        ### Resources
+        ## Resources
 
         ![Efficiency Chart](charts/complex-nested-query-efficiency.svg)
 
         | Gateway      |          CPU |  CPU max |         Memory |   MEM max |  requests/core.s |  requests/GB.s |
         | :----------- | -----------: | -------: | -------------: | --------: | ---------------: | -------------: |
-        | C            |      12% ±9% |      46% |   512 ±156 MiB |  1025 MiB |            <err> |          <err> |
+        | C            |      12% ±9% |      46% |   512 ±156 MiB |  1025 MiB |              err |            err |
         | D-NoResponse |       1% ±0% |       2% |     100 ±5 MiB |   110 MiB |              0.0 |            0.0 |
 
-        ### Requests
+        ## Requests
 
         ![Quality Chart](charts/complex-nested-query-quality.svg)
 
@@ -595,11 +635,11 @@ mod tests {
         | C            |      234 |       10 |                2.15 (502) |
         | D-NoResponse |        0 |        0 |                     0 (0) |
 
-        ## simple-query
+        # simple-query
 
         Test scenario for simple GraphQL queries
 
-        ### Latencies (ms)
+        ## Latencies (ms)
 
         ![Latency Chart](charts/simple-query-latency.svg)
 
@@ -608,7 +648,7 @@ mod tests {
         | A       |    16.5 |    19.1 |    21.2 |    24.4 |    27.3 |    63.6 |
         | B       |    18.2 |    21.5 |    24.1 |    27.2 |    31.5 |    72.3 |
 
-        ### Resources
+        ## Resources
 
         ![Efficiency Chart](charts/simple-query-efficiency.svg)
 
@@ -617,7 +657,7 @@ mod tests {
         | A       |       3% ±2% |      10% |     192 ±8 MiB |   205 MiB |            476.5 |          249.5 |
         | B       |       4% ±3% |      15% |    220 ±12 MiB |   246 MiB |            327.6 |          207.5 |
 
-        ### Requests
+        ## Requests
 
         ![Quality Chart](charts/simple-query-quality.svg)
 
