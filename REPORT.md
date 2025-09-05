@@ -4,7 +4,7 @@
 - CPU: AMD Ryzen 9 7950X3D 16-Core Processor
 - Memory: 93.4 GiB
 - CPU Boost: Disabled
-- Git Commit: 52a632516b7f1f3b8bd1888b622f5ed1f40473f2
+- Git Commit: b1e6d366a32ad413aac6729c486b8ea9a42e05c3
 - Linux Version: 6.16.1
 - Docker Version: 28.3.3
 
@@ -61,37 +61,37 @@ K6 runs with a constant throughput of 1000 requests/s
 
 ![Latency Chart](charts/deduplication-latency.svg)
 
-| Gateway          |   Min |    Med |    P90 |    P95 |     P99 |     Max |
-| :--------------- | ----: | -----: | -----: | -----: | ------: | ------: |
-| Hive Router      |  13.2 |   40.0 |   45.5 |   46.4 |    47.7 |    49.9 |
-| Grafbase Gateway |  22.7 |   41.5 |   46.0 |   46.9 |    48.3 |    67.0 |
-| Cosmo Router     |  14.4 |   43.6 |   50.2 |   51.6 |    54.1 |    61.5 |
-| Apollo Router    |  46.0 |   48.6 |   49.9 |   50.4 |    51.5 |    95.1 |
-| Hive Gateway     | 153.3 | 1319.5 | 1685.0 | 1734.8 | 11221.7 | 33095.6 |
+| Gateway                    |    Min |    Med |    P90 |    P95 |     P99 |     Max |
+| :------------------------- | -----: | -----: | -----: | -----: | ------: | ------: |
+| Hive Router                |   14.1 |   39.9 |   45.3 |   46.1 |    47.3 |    51.0 |
+| Grafbase Gateway           |   17.9 |   41.5 |   46.2 |   47.1 |    48.2 |    72.7 |
+| Cosmo Router               |   15.5 |   43.6 |   50.2 |   51.6 |    54.1 |    70.9 |
+| Hive Gateway               |  162.1 | 1326.1 | 1711.4 | 1775.3 | 11125.8 | 32626.2 |
+| Apollo Router (with dedup) | errors | errors | errors | errors |  errors |  errors |
 
 ## Resources
 
 ![Efficiency Chart](charts/deduplication-efficiency.svg)
 
-| Gateway          |      CPU | CPU max |      Memory | MEM max | requests/core.s | requests/GB.s |
-| :--------------- | -------: | ------: | ----------: | ------: | --------------: | ------------: |
-| Hive Router      |  83% ±2% |     87% |  187 ±5 MiB | 202 MiB |          1143.2 |        5066.9 |
-| Grafbase Gateway | 113% ±2% |    118% |   98 ±3 MiB | 102 MiB |           849.6 |       10015.7 |
-| Cosmo Router     | 583% ±6% |    596% |   83 ±6 MiB | 100 MiB |           167.6 |       10198.5 |
-| Apollo Router    | 665% ±4% |    678% | 327 ±10 MiB | 342 MiB |           147.5 |        2993.1 |
-| Hive Gateway     | 125% ±6% |    143% | 646 ±52 MiB | 709 MiB |            93.0 |         191.7 |
+| Gateway                    |       CPU | CPU max |      Memory | MEM max | requests/core.s | requests/GB.s |
+| :------------------------- | --------: | ------: | ----------: | ------: | --------------: | ------------: |
+| Hive Router                |   80% ±1% |     83% |  190 ±5 MiB | 199 MiB |          1206.4 |        5135.3 |
+| Grafbase Gateway           |  114% ±2% |    120% |   99 ±3 MiB | 106 MiB |           832.4 |        9634.4 |
+| Cosmo Router               |  580% ±7% |    599% |   83 ±6 MiB |  97 MiB |           166.9 |       10543.9 |
+| Hive Gateway               |  125% ±5% |    142% | 665 ±69 MiB | 765 MiB |            93.3 |         176.9 |
+| Apollo Router (with dedup) | 978% ±15% |   1009% |  201 ±5 MiB | 213 MiB |          errors |        errors |
 
 ## Requests
 
 ![Quality Chart](charts/deduplication-quality.svg)
 
-| Gateway          | Requests | Failures | Subgraph requests (total) |
-| :--------------- | -------: | -------: | ------------------------: |
-| Cosmo Router     |    60000 |        0 |              0.63 (37789) |
-| Hive Router      |    60001 |        0 |              0.64 (38410) |
-| Grafbase Gateway |    60001 |        0 |              0.90 (53910) |
-| Hive Gateway     |     8132 |        0 |              7.01 (56974) |
-| Apollo Router    |    60001 |        0 |             16.0 (960016) |
+| Gateway                    | Requests | Failures | Subgraph requests (total) |
+| :------------------------- | -------: | -------: | ------------------------: |
+| Cosmo Router               |    60001 |        0 |              0.63 (37654) |
+| Hive Router                |    60001 |        0 |              0.65 (38935) |
+| Grafbase Gateway           |    60001 |        0 |              0.89 (53191) |
+| Hive Gateway               |     8089 |        0 |              7.00 (56661) |
+| Apollo Router (with dedup) |    60001 |       47 |              1.24 (74165) |
 
 # long-lived-big-response
 
@@ -226,11 +226,11 @@ K6 runs with a constant throughput of 500 requests/s
 
 | Gateway          |      CPU | CPU max |      Memory | MEM max | requests/core.s | requests/GB.s |
 | :--------------- | -------: | ------: | ----------: | ------: | --------------: | ------------: |
-| Hive Router      |  45% ±2% |     50% |  162 ±3 MiB | 170 MiB |           998.9 |        3008.6 |
-| Grafbase Gateway |  62% ±2% |     71% |   75 ±3 MiB |  78 MiB |           704.8 |        6560.9 |
-| Apollo Router    | 276% ±6% |    295% |  169 ±4 MiB | 184 MiB |           169.1 |        2779.9 |
-| Cosmo Router     | 339% ±4% |    349% |   62 ±2 MiB |  65 MiB |           143.1 |        7857.5 |
-| Hive Gateway     | 124% ±5% |    141% | 643 ±52 MiB | 703 MiB |            94.1 |         192.8 |
+| Hive Router      |  45% ±2% |     50% |  162 ±3 MiB | 170 MiB |           998.9 |        3008.6 |
+| Grafbase Gateway |  62% ±2% |     71% |   75 ±3 MiB |  78 MiB |           704.8 |        6560.9 |
+| Apollo Router    | 276% ±6% |    295% |  169 ±4 MiB | 184 MiB |           169.1 |        2779.9 |
+| Cosmo Router     | 339% ±4% |    349% |   62 ±2 MiB |  65 MiB |           143.1 |        7857.5 |
+| Hive Gateway     | 124% ±5% |    141% | 643 ±52 MiB | 703 MiB |            94.1 |         192.8 |
 
 ## Requests
 

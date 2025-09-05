@@ -16,4 +16,4 @@ gateway = ["grafbase", "cosmo", "apollo-router", "hive-gateway", "hive-router"]
 
 [[benchmarks]]
 scenario = "deduplication"
-gateway = ["grafbase", "cosmo", "apollo-router", "hive-gateway", "hive-router"]
+gateway = ["grafbase", "cosmo", "apollo-router-dedup", "hive-gateway", "hive-router"]
