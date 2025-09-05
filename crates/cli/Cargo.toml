@@ -6,10 +6,12 @@ edition.workspace = true
 [dependencies]
 anyhow.workspace = true
 argh.workspace = true
+base64 = "0.22"
 bollard.workspace = true
 duct.workspace = true
 fast-glob.workspace = true
 futures-util.workspace = true
+plotters = { version = "0.3", default-features = false, features = ["svg_backend", "full_palette"] }
 reqwest.workspace = true
 serde.workspace = true
 serde_json.workspace = true

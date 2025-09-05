@@ -1,15 +1,40 @@
 use crate::benchmark::BenchmarkResult;
+use crate::charts;
 use crate::config::Config;
 use crate::system::SystemInfo;
 use std::collections::BTreeMap;
+use std::path::PathBuf;
 
 const ERR_PLACEHOLDER: &str = "<err>";
 
+#[derive(Default)]
+pub struct ReportOptions {
+    pub generate_charts: bool,
+    pub charts_dir: Option<PathBuf>,
+}
+
+#[cfg(test)]
 pub fn generate_report(
     timestamp: time::OffsetDateTime,
     results: &[BenchmarkResult],
     system_info: &SystemInfo,
     config: &Config,
+) -> anyhow::Result<String> {
+    generate_report_with_options(
+        timestamp,
+        results,
+        system_info,
+        config,
+        &ReportOptions::default(),
+    )
+}
+
+pub fn generate_report_with_options(
+    timestamp: time::OffsetDateTime,
+    results: &[BenchmarkResult],
+    system_info: &SystemInfo,
+    config: &Config,
+    options: &ReportOptions,
 ) -> anyhow::Result<String> {
     let mut grouped_results: BTreeMap<String, Vec<&BenchmarkResult>> = BTreeMap::new();
 
@@ -202,6 +227,37 @@ pub fn generate_report(
                     width = gateway_width
                 ));
             }
+        }
+
+        // Generate and add chart if requested
+        if options.generate_charts {
+            report.push('\n');
+
+            if let Some(charts_dir) = &options.charts_dir {
+                // Save chart to file
+                std::fs::create_dir_all(charts_dir)?;
+                let chart_filename = format!("{}-latency.svg", benchmark_name.replace(' ', "-"));
+                let chart_path = charts_dir.join(&chart_filename);
+
+                charts::generate_latency_chart_to_file(
+                    &benchmark_name,
+                    &benchmark_results,
+                    &chart_path,
+                )?;
+
+                report.push_str(&format!("![Latency Chart](./charts/{})\n", chart_filename));
+            } else {
+                // Embed chart as base64 data URL
+                let svg_content =
+                    charts::generate_latency_chart(&benchmark_name, &benchmark_results)?;
+                use base64::Engine;
+                let encoded = base64::engine::general_purpose::STANDARD.encode(&svg_content);
+                report.push_str(&format!(
+                    "![Latency Chart](data:image/svg+xml;base64,{})\n",
+                    encoded
+                ));
+            }
+            report.push('\n');
         }
 
         report.push_str("\n### Resources\n\n");

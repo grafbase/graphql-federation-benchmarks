@@ -1,4 +1,5 @@
 mod benchmark;
+mod charts;
 mod commands;
 mod config;
 mod docker;
