@@ -2,6 +2,10 @@
 
 This repo contains a list of complex benchmark cases to measure the performance of GraphQL Federation gateways.
 
+## Latest report
+
+[report (2025-09-05)](./REPORT.md)
+
 ## Protocol
 
 Every service, gateway and subgraphs, are running in docker containers with `--network host` to avoid any overhead.
@@ -24,10 +28,6 @@ We measure the following:
 \* health checks are excluded.
 
 A report is provided at the end with all the numerical results. Charts are also generated, but we only use the data from successful benchmark runs. Gateways that have errors or don't return a response will simply grayed out as whatever we measured is not comparable.
-
-## Latest report
-
-[report](./REPORT.md)
 
 ## Running the benchmarks
 
