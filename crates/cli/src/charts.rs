@@ -4,7 +4,7 @@ use plotters::style::text_anchor::{HPos, Pos, VPos};
 
 const CHART_WIDTH: u32 = 900; // Increased to accommodate legend on the side
 const CHART_HEIGHT: u32 = 600;
-const LEGEND_WIDTH: u32 = 150; // Space for legend on the right
+const LEGEND_WIDTH: u32 = 195; // Space for legend on the right (increased by 30%)
 
 const GATEWAY_COLORS: &[RGBColor] = &[
     RGBColor(7, 168, 101),   // #07A865 - green
@@ -68,12 +68,12 @@ pub fn generate_latency_chart(
 
         let mut chart = ChartBuilder::on(&chart_area)
             .caption(
-                &format!("{} - Latency Distribution", scenario_name),
+                &format!("{} - latencies", scenario_name),
                 ("sans-serif", 30).into_font(),
             )
             .margin(20)
-            .x_label_area_size(40)
-            .y_label_area_size(60)
+            .x_label_area_size(50)
+            .y_label_area_size(70)
             .build_cartesian_2d(-0.5f64..2.5f64, 0.0..y_max)?;
 
         chart
@@ -85,6 +85,8 @@ pub fn generate_latency_chart(
                 percentile_labels.get(idx).unwrap_or(&"").to_string()
             })
             .x_labels(3)
+            .x_label_style(("sans-serif", 16))
+            .y_label_style(("sans-serif", 16))
             .disable_x_mesh()
             .disable_y_mesh()
             .draw()?;
@@ -130,7 +132,7 @@ pub fn generate_latency_chart(
                 chart.draw_series(std::iter::once(Text::new(
                     label_text,
                     (label_x, label_y),
-                    ("sans-serif", 12)
+                    ("sans-serif", 16)
                         .into_font()
                         .transform(FontTransform::Rotate270)
                         .color(&BLACK),
@@ -156,7 +158,7 @@ pub fn generate_latency_chart(
             legend_area.draw(&Text::new(
                 gateway_name.to_string(),
                 (30, y_pos + 3),
-                ("sans-serif", 14).into_font(),
+                ("sans-serif", 18).into_font(),
             ))?;
         }
 
@@ -197,7 +199,7 @@ pub fn generate_efficiency_chart(
         let (title_area, chart_area) = main_area.split_vertically(40);
         
         // Add title centered in the title area
-        let title_text = format!("{} - Efficiency", scenario_name);
+        let title_text = format!("{} - efficiency", scenario_name);
         let title_style = TextStyle::from(("sans-serif", 30).into_font()).pos(Pos::new(HPos::Center, VPos::Center));
         title_area.draw(&Text::new(
             title_text,
@@ -264,17 +266,17 @@ pub fn generate_efficiency_chart(
             let color = color_map[gateway_name];
             let y_pos = legend_y_start + (idx as i32 * legend_item_height);
             
-            // Draw color box
+            // Draw color box (moved closer to chart)
             legend_area.draw(&Rectangle::new(
-                [(10, y_pos), (25, y_pos + 15)],
+                [(5, y_pos), (20, y_pos + 15)],
                 color.filled(),
             ))?;
             
             // Draw gateway name
             legend_area.draw(&Text::new(
                 gateway_name.to_string(),
-                (30, y_pos + 3),
-                ("sans-serif", 14).into_font(),
+                (25, y_pos + 3),
+                ("sans-serif", 18).into_font(),
             ))?;
         }
 
@@ -326,7 +328,7 @@ where
     caption_area.draw(&Text::new(
         caption,
         (caption_area.dim_in_pixel().0 as i32 / 2, 15),
-        TextStyle::from(("sans-serif", 16).into_font()).pos(Pos::new(HPos::Center, VPos::Center)),
+        TextStyle::from(("sans-serif", 20).into_font()).pos(Pos::new(HPos::Center, VPos::Center)),
     ))?;
     
     let mut chart = ChartBuilder::on(&chart_area)
@@ -345,6 +347,7 @@ where
             }
         })
         .x_labels(0) // No x-axis labels
+        .y_label_style(("sans-serif", 16))
         .disable_x_mesh()
         .disable_y_mesh()
         .draw()?;
@@ -374,7 +377,7 @@ where
         chart.draw_series(std::iter::once(Text::new(
             label_text,
             (idx as f64, value + y_max * 0.02),
-            ("sans-serif", 10)
+            ("sans-serif", 16)
                 .into_font()
                 .transform(FontTransform::Rotate270)
                 .color(&BLACK),
@@ -415,7 +418,7 @@ pub fn generate_quality_chart(
         let (title_area, chart_area) = main_area.split_vertically(40);
         
         // Add title centered in the title area
-        let title_text = format!("{} - Quality", scenario_name);
+        let title_text = format!("{} - quality", scenario_name);
         let title_style = TextStyle::from(("sans-serif", 30).into_font()).pos(Pos::new(HPos::Center, VPos::Center));
         title_area.draw(&Text::new(
             title_text,
@@ -455,17 +458,17 @@ pub fn generate_quality_chart(
             let color = color_map[gateway_name];
             let y_pos = legend_y_start + (idx as i32 * legend_item_height);
             
-            // Draw color box
+            // Draw color box (moved closer to chart)
             legend_area.draw(&Rectangle::new(
-                [(10, y_pos), (25, y_pos + 15)],
+                [(5, y_pos), (20, y_pos + 15)],
                 color.filled(),
             ))?;
             
             // Draw gateway name
             legend_area.draw(&Text::new(
                 gateway_name.to_string(),
-                (30, y_pos + 3),
-                ("sans-serif", 14).into_font(),
+                (25, y_pos + 3),
+                ("sans-serif", 18).into_font(),
             ))?;
         }
 
@@ -517,7 +520,7 @@ where
     caption_area.draw(&Text::new(
         caption,
         (caption_area.dim_in_pixel().0 as i32 / 2, 15),
-        TextStyle::from(("sans-serif", 16).into_font()).pos(Pos::new(HPos::Center, VPos::Center)),
+        TextStyle::from(("sans-serif", 20).into_font()).pos(Pos::new(HPos::Center, VPos::Center)),
     ))?;
     
     let mut chart = ChartBuilder::on(&chart_area)
@@ -536,6 +539,7 @@ where
             }
         })
         .x_labels(0) // No x-axis labels
+        .y_label_style(("sans-serif", 16))
         .disable_x_mesh()
         .disable_y_mesh()
         .draw()?;
@@ -565,7 +569,7 @@ where
         chart.draw_series(std::iter::once(Text::new(
             label_text,
             (idx as f64, value + y_max * 0.02),
-            ("sans-serif", 10)
+            ("sans-serif", 16)
                 .into_font()
                 .transform(FontTransform::Rotate270)
                 .color(&BLACK),
@@ -688,7 +692,7 @@ mod tests {
         let svg = generate_latency_chart("Test Scenario", &refs).unwrap();
 
         assert!(svg.contains("<svg"));
-        assert!(svg.contains("Test Scenario - Latency Distribution"));
+        assert!(svg.contains("Test Scenario - latencies"));
         assert!(svg.contains("Gateway A"));
         assert!(svg.contains("Gateway B"));
     }
@@ -786,7 +790,7 @@ mod tests {
         let svg = generate_efficiency_chart("Test Scenario", &refs).unwrap();
 
         assert!(svg.contains("<svg"));
-        assert!(svg.contains("Test Scenario - Efficiency"));
+        assert!(svg.contains("Test Scenario - efficiency"));
         assert!(svg.contains("Requests/Core"));
         assert!(svg.contains("Requests/GB"));
         assert!(svg.contains("Gateway A"));
@@ -886,7 +890,7 @@ mod tests {
         let svg = generate_quality_chart("Test Scenario", &refs).unwrap();
 
         assert!(svg.contains("<svg"));
-        assert!(svg.contains("Test Scenario - Quality"));
+        assert!(svg.contains("Test Scenario - quality"));
         assert!(svg.contains("Average Subgraph Requests"));
         assert!(svg.contains("Gateway A"));
         assert!(svg.contains("Gateway B"));

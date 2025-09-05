@@ -118,6 +118,8 @@ echo "0" | sudo tee /sys/devices/system/cpu/cpufreq/boost
 
 ### Commands
 
+Be warned that those commands will stop _all_ docker containers without any mercy.
+
 ```bash
 # Run all benchmarks with all gateways
 cargo run --release -- run
