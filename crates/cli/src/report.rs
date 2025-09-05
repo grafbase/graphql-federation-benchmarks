@@ -237,29 +237,67 @@ pub fn generate_report_with_options(
             }
         }
 
-        // Generate and add chart if requested
+        // Generate and add charts if requested
         if let Some(charts_dir) = options.charts_dir.as_ref() {
             std::fs::create_dir_all(charts_dir)?;
-            let chart_filename = format!("{}-latency.svg", benchmark_name.replace(' ', "-"));
-            let chart_path = charts_dir.join(&chart_filename);
-
+            
+            // Generate latency chart
+            let latency_filename = format!("{}-latency.svg", benchmark_name.replace(' ', "-"));
+            let latency_path = charts_dir.join(&latency_filename);
             charts::generate_latency_chart_to_file(
                 &benchmark_name,
                 &benchmark_results,
-                &chart_path,
+                &latency_path,
+            )?;
+            
+            // Generate efficiency chart
+            let efficiency_filename = format!("{}-efficiency.svg", benchmark_name.replace(' ', "-"));
+            let efficiency_path = charts_dir.join(&efficiency_filename);
+            charts::generate_efficiency_chart_to_file(
+                &benchmark_name,
+                &benchmark_results,
+                &efficiency_path,
+            )?;
+            
+            // Generate quality chart
+            let quality_filename = format!("{}-quality.svg", benchmark_name.replace(' ', "-"));
+            let quality_path = charts_dir.join(&quality_filename);
+            charts::generate_quality_chart_to_file(
+                &benchmark_name,
+                &benchmark_results,
+                &quality_path,
             )?;
         }
-        // Only embed in report if not in compact mode
+        
+        // Only embed charts in report if not in compact mode
         if !options.compact_mode {
             report.push('\n');
-            // Embed chart as base64 data URL
-            let svg_content = charts::generate_latency_chart(&benchmark_name, &benchmark_results)?;
+            
+            // Embed latency chart as base64 data URL
+            let latency_svg = charts::generate_latency_chart(&benchmark_name, &benchmark_results)?;
             use base64::Engine;
-            let encoded = base64::engine::general_purpose::STANDARD.encode(&svg_content);
+            let latency_encoded = base64::engine::general_purpose::STANDARD.encode(&latency_svg);
             report.push_str(&format!(
-                "![Latency Chart](data:image/svg+xml;base64,{})\n",
-                encoded
+                "![Latency Chart](data:image/svg+xml;base64,{})\n\n",
+                latency_encoded
             ));
+            
+            // Embed efficiency chart as base64 data URL
+            let efficiency_svg = charts::generate_efficiency_chart(&benchmark_name, &benchmark_results)?;
+            let efficiency_encoded = base64::engine::general_purpose::STANDARD.encode(&efficiency_svg);
+            report.push_str(&format!(
+                "![Efficiency Chart](data:image/svg+xml;base64,{})\n\n",
+                efficiency_encoded
+            ));
+            
+            // Embed quality chart as base64 data URL
+            let quality_svg = charts::generate_quality_chart(&benchmark_name, &benchmark_results)?;
+            let quality_encoded = base64::engine::general_purpose::STANDARD.encode(&quality_svg);
+            report.push_str(&format!(
+                "![Quality Chart](data:image/svg+xml;base64,{})\n",
+                quality_encoded
+            ));
+            
             report.push('\n');
         }
 
@@ -604,6 +642,7 @@ mod tests {
             current_dir: std::path::PathBuf::from("/test"),
         };
 
+        // Use compact mode for test to avoid large embedded charts
         let report = generate_report(
             time::macros::datetime!(2019-01-01 0:00 UTC),
             &results,
@@ -625,8 +664,6 @@ mod tests {
         # Benchmarks
 
         ## complex-nested-query
-
-        Test scenario for complex nested GraphQL queries
 
         ### Requests
 
@@ -650,8 +687,6 @@ mod tests {
         | D-NoResponse |       1% ±0% |       2% |     100 ±5 MiB |   110 MiB |              0.0 |            0.0 |
 
         ## simple-query
-
-        Test scenario for simple GraphQL queries
 
         ### Requests
 
