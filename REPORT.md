@@ -102,6 +102,8 @@ K6 runs with 10 VUs to put some pressure on the gateways.
 
 ## Latencies (ms)
 
+/!\ Here Hive-router continued to deduplicate requests despite sending an random `authorization` header, so it's not apples to apples
+
 ![Latency Chart](charts/long-lived-big-response-latency.svg)
 
 | Gateway          |   Min |    Med |    P90 |    P95 |    P99 |    Max |
@@ -114,6 +116,8 @@ K6 runs with 10 VUs to put some pressure on the gateways.
 
 ## Resources
 
+/!\ Here Hive-router continued to deduplicate requests despite sending an random `authorization` header, so it's not apples to apples
+
 ![Efficiency Chart](charts/long-lived-big-response-efficiency.svg)
 
 | Gateway          |       CPU | CPU max |        Memory |  MEM max | requests/core.s | requests/GB.s |
@@ -125,6 +129,8 @@ K6 runs with 10 VUs to put some pressure on the gateways.
 | Hive Gateway     |  120% ±7% |    133% |   670 ±45 MiB |  766 MiB |             4.4 |           7.9 |
 
 ## Requests
+
+/!\ Here Hive-router continued to deduplicate requests despite sending an random `authorization` header, so it's not apples to apples
 
 ![Quality Chart](charts/long-lived-big-response-quality.svg)
 
