@@ -143,6 +143,82 @@ pub struct BenchmarkResult {
     pub resource_stats: ResourceStats,
 }
 
+impl BenchmarkResult {
+    /// Check if there are request failures
+    pub fn has_failures(&self) -> bool {
+        self.k6_run.summary.metrics.checks
+            .as_ref()
+            .map(|c| c.values.fails > 0)
+            .unwrap_or(false)
+    }
+
+    /// Get the number of failures
+    pub fn failure_count(&self) -> u64 {
+        self.k6_run.summary.metrics.checks
+            .as_ref()
+            .map(|c| c.values.fails)
+            .unwrap_or(0)
+    }
+
+    /// Get request count
+    pub fn request_count(&self) -> u64 {
+        self.k6_run
+            .summary
+            .metrics
+            .http_req_duration
+            .as_ref()
+            .map(|m| m.values.count)
+            .unwrap_or(0)
+    }
+
+    /// Calculate request rate per second
+    pub fn request_rate(&self) -> f64 {
+        self.k6_run
+            .summary
+            .metrics
+            .http_reqs
+            .as_ref()
+            .map(|m| m.values.rate)
+            .unwrap_or(0.0)
+    }
+
+    /// Calculate requests per CPU core second
+    pub fn requests_per_core_s(&self) -> f64 {
+        let rate = self.request_rate();
+        if self.resource_stats.cpu_usage_max > 0.0 {
+            rate / self.resource_stats.cpu_usage_max
+        } else {
+            0.0
+        }
+    }
+
+    /// Calculate requests per GB second
+    pub fn requests_per_gb_s(&self) -> f64 {
+        let rate = self.request_rate();
+        let memory_gb = self.resource_stats.memory_mib_max / 1024.0;
+        if memory_gb > 0.0 {
+            rate / memory_gb
+        } else {
+            0.0
+        }
+    }
+
+    /// Calculate average subgraph requests per gateway request
+    pub fn average_subgraph_requests(&self) -> f64 {
+        let requests = self.request_count() as f64;
+        if requests > 0.0 {
+            self.k6_run.summary.subgraph_stats.count as f64 / requests
+        } else {
+            0.0
+        }
+    }
+
+    /// Get total subgraph request count
+    pub fn subgraph_request_count(&self) -> u64 {
+        self.k6_run.summary.subgraph_stats.count
+    }
+}
+
 impl Benchmark {
     pub fn name(&self) -> &str {
         &self.scenario_name

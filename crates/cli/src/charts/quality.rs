@@ -37,14 +37,7 @@ pub fn generate_quality_chart(
         // Exclude gateways with failures
         let gateway_data: Vec<(&str, &BenchmarkResult)> = results
             .iter()
-            .filter(|r| {
-                // Check if there are failures
-                let has_failures = r.k6_run.summary.metrics.checks
-                    .as_ref()
-                    .map(|c| c.values.fails > 0)
-                    .unwrap_or(false);
-                !has_failures
-            })
+            .filter(|r| !r.has_failures())
             .map(|r| (r.gateway.as_str(), *r))
             .collect();
 

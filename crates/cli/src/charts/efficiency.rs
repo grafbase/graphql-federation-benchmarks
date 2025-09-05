@@ -40,14 +40,7 @@ pub fn generate_efficiency_chart(
         // Exclude gateways with failures
         let gateway_data: Vec<(&str, &BenchmarkResult)> = results
             .iter()
-            .filter(|r| {
-                // Check if there are failures
-                let has_failures = r.k6_run.summary.metrics.checks
-                    .as_ref()
-                    .map(|c| c.values.fails > 0)
-                    .unwrap_or(false);
-                !has_failures
-            })
+            .filter(|r| !r.has_failures())
             .map(|r| (r.gateway.as_str(), *r))
             .collect();
 
@@ -60,14 +53,7 @@ pub fn generate_efficiency_chart(
             &gateway_data,
             &color_map,
             "Requests/Core·s",
-            |result| {
-                let request_rate = calculate_request_rate(result);
-                if result.resource_stats.cpu_usage_max > 0.0 {
-                    request_rate / result.resource_stats.cpu_usage_max
-                } else {
-                    0.0
-                }
-            },
+            |result| result.requests_per_core_s(),
         )?;
 
         // Draw Memory efficiency panel
@@ -76,15 +62,7 @@ pub fn generate_efficiency_chart(
             &gateway_data,
             &color_map,
             "Requests/GB·s",
-            |result| {
-                let request_rate = calculate_request_rate(result);
-                let memory_gb = result.resource_stats.memory_mib_max / 1024.0;
-                if memory_gb > 0.0 {
-                    request_rate / memory_gb
-                } else {
-                    0.0
-                }
-            },
+            |result| result.requests_per_gb_s(),
         )?;
 
         // Draw legend manually in the legend area

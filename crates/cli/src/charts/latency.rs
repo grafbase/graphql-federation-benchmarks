@@ -24,14 +24,8 @@ pub fn generate_latency_chart(
         let mut gateway_data: Vec<(&str, &crate::k6::TrendValues)> = results
             .iter()
             .filter_map(|r| {
-                // Check if there are failures
-                let has_failures = r.k6_run.summary.metrics.checks
-                    .as_ref()
-                    .map(|c| c.values.fails > 0)
-                    .unwrap_or(false);
-                
                 // Only include if no failures and has duration data
-                if !has_failures {
+                if !r.has_failures() {
                     r.k6_run
                         .summary
                         .metrics
@@ -142,13 +136,7 @@ pub fn generate_latency_chart(
         // Exclude gateways with failures
         let legend_data: Vec<(&str, &BenchmarkResult)> = results
             .iter()
-            .filter(|r| {
-                let has_failures = r.k6_run.summary.metrics.checks
-                    .as_ref()
-                    .map(|c| c.values.fails > 0)
-                    .unwrap_or(false);
-                !has_failures && r.k6_run.summary.metrics.http_req_duration.is_some()
-            })
+            .filter(|r| !r.has_failures() && r.k6_run.summary.metrics.http_req_duration.is_some())
             .map(|r| (r.gateway.as_str(), *r))
             .collect();
         draw_legend(&legend_area, &legend_data, &color_map)?;

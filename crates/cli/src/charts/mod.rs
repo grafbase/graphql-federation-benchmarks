@@ -151,31 +151,9 @@ fn draw_legend(
     Ok(())
 }
 
-/// Calculate request rate from benchmark result
-fn calculate_request_rate(result: &BenchmarkResult) -> f64 {
-    let duration_ms = result.k6_run.summary.state.test_run_duration_ms;
-    let requests_count = result
-        .k6_run
-        .summary
-        .metrics
-        .http_req_duration
-        .as_ref()
-        .map(|m| m.values.count)
-        .unwrap_or(0) as f64;
-    requests_count / (duration_ms / 1000.0)
-}
-
 /// Calculate average subgraph requests per gateway request
 fn calculate_avg_subgraph_requests(result: &BenchmarkResult) -> f64 {
-    let requests_count = result
-        .k6_run
-        .summary
-        .metrics
-        .http_req_duration
-        .as_ref()
-        .map(|m| m.values.count)
-        .unwrap_or(1) as f64;
-    result.k6_run.summary.subgraph_stats.count as f64 / requests_count
+    result.average_subgraph_requests()
 }
 
 #[cfg(test)]

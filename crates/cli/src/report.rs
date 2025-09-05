@@ -3,7 +3,7 @@ use crate::config::Config;
 use crate::system::SystemInfo;
 use std::collections::BTreeMap;
 
-const ERR_PLACEHOLDER: &str = "<err>";
+const ERR_PLACEHOLDER: &str = "err";
 
 pub struct ReportOptions {
     pub is_tty: bool,
@@ -66,11 +66,10 @@ pub fn generate_report_with_options(
         if let Some(docker_version) = &system_info.docker_version {
             report.push_str(&format!("Docker Version: {}\n", docker_version));
         }
-        report.push_str("\n# Benchmarks\n\n");
     }
 
     for (scenario_name, benchmark_results) in grouped_results {
-        report.push_str(&format!("## {}\n\n", scenario_name));
+        report.push_str(&format!("# {}\n\n", scenario_name));
 
         // Add description if available from the config and not in tty mode
         let scenario = config.get_scenario(&scenario_name)?;
@@ -88,7 +87,7 @@ pub fn generate_report_with_options(
 
         // Latencies table first
         if !options.is_tty {
-            report.push_str("### Latencies (ms)\n\n");
+            report.push_str("## Latencies (ms)\n\n");
             // Add latency chart image before the table
             let latency_chart_path = format!("{}-latency.svg", scenario_name);
             report.push_str(&format!(
@@ -123,16 +122,7 @@ pub fn generate_report_with_options(
         ));
 
         for result in benchmark_results.iter() {
-            let failures = result
-                .k6_run
-                .summary
-                .metrics
-                .checks
-                .as_ref()
-                .map(|c| c.values.fails)
-                .unwrap_or(0);
-
-            if failures > 0 {
+            if result.has_failures() {
                 report.push_str(&format!(
                     "| {:<width$} | {:>7} | {:>7} | {:>7} | {:>7} | {:>7} | {:>7} |\n",
                     result.gateway,
@@ -177,7 +167,7 @@ pub fn generate_report_with_options(
         }
 
         if !options.is_tty {
-            report.push_str("\n### Resources\n\n");
+            report.push_str("\n## Resources\n\n");
             // Add efficiency chart image before the table
             let efficiency_chart_path = format!("{}-efficiency.svg", scenario_name);
             report.push_str(&format!(
@@ -219,43 +209,7 @@ pub fn generate_report_with_options(
                 serde_json::to_string_pretty(result).unwrap()
             );
 
-            let failures = result
-                .k6_run
-                .summary
-                .metrics
-                .checks
-                .as_ref()
-                .map(|c| c.values.fails)
-                .unwrap_or(0);
-
             let resource_stats = &result.resource_stats;
-
-            // Calculate request rate from K6 metrics
-            let request_rate = result
-                .k6_run
-                .summary
-                .metrics
-                .http_reqs
-                .as_ref()
-                .map(|m| m.values.rate)
-                .unwrap_or(0.0);
-
-            // Calculate requests per CPU core second
-            // cpu_usage_max is in cores (1.0 = 1 core, 2.0 = 2 cores, etc.)
-            let requests_per_core_s = if resource_stats.cpu_usage_max > 0.0 {
-                request_rate / resource_stats.cpu_usage_max
-            } else {
-                0.0
-            };
-
-            // Calculate requests per GB second
-            // memory_mib_max is in MiB, convert to GB (1 GB = 1024 MiB)
-            let memory_gb = resource_stats.memory_mib_max / 1024.0;
-            let requests_per_gb_s = if memory_gb > 0.0 {
-                request_rate / memory_gb
-            } else {
-                0.0
-            };
 
             // Format CPU and Memory as mean ± std dev
             let cpu_str = format!(
@@ -268,7 +222,7 @@ pub fn generate_report_with_options(
                 resource_stats.memory_mib_avg, resource_stats.memory_mib_std
             );
 
-            if failures > 0 {
+            if result.has_failures() {
                 report.push_str(&format!(
                     "| {:<width$} | {:>12} | {:>7.0}% | {:>14} | {:>5.0}\u{00A0}MiB | {:>16} | {:>14} |\n",
                     result.gateway,
@@ -289,8 +243,8 @@ pub fn generate_report_with_options(
                     resource_stats.cpu_usage_max * 100.0,
                     mem_str,
                     resource_stats.memory_mib_max,
-                    requests_per_core_s,
-                    requests_per_gb_s,
+                    result.requests_per_core_s(),
+                    result.requests_per_gb_s(),
                     width = gateway_width
                 ));
             }
@@ -298,7 +252,7 @@ pub fn generate_report_with_options(
 
         // Requests table last (after Resources)
         if !options.is_tty {
-            report.push_str("\n### Requests\n\n");
+            report.push_str("\n## Requests\n\n");
             // Add quality chart image before the table
             let quality_chart_path = format!("{}-quality.svg", scenario_name);
             report.push_str(&format!(
@@ -328,29 +282,20 @@ pub fn generate_report_with_options(
         ));
 
         for result in benchmark_results.iter() {
-            let requests_count = result
-                .k6_run
-                .summary
-                .metrics
-                .http_req_duration
-                .as_ref()
-                .map(|m| m.values.count)
-                .unwrap_or(0);
+            let requests_count = result.request_count();
+            let failures = result.failure_count();
 
-            let failures = result
-                .k6_run
-                .summary
-                .metrics
-                .checks
-                .as_ref()
-                .map(|c| c.values.fails)
-                .unwrap_or(0);
-
+            let decimal_places = match result.average_subgraph_requests() {
+                x if x >= 100.0 => 0,
+                x if x >= 10.0 => 1,
+                _ => 2,
+            };
             let sub = if requests_count > 0 {
                 format!(
-                    "{:.2} ({})",
-                    result.k6_run.summary.subgraph_stats.count as f64 / requests_count as f64,
-                    result.k6_run.summary.subgraph_stats.count,
+                    "{:.prec$} ({})",
+                    result.average_subgraph_requests(),
+                    result.subgraph_request_count(),
+                    prec = decimal_places
                 )
             } else {
                 "0 (0)".to_string()

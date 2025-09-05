@@ -1,4 +1,5 @@
 <svg width="900" height="600" viewBox="0 0 900 600" xmlns="http://www.w3.org/2000/svg">
+<rect x="0" y="0" width="900" height="600" opacity="1" fill="#FAFAFC" stroke="none"/>
 <text x="352" y="20" dy="0.5ex" text-anchor="middle" font-family="sans-serif" font-size="24.193548387096776" opacity="1" fill="#000000">
 many-plans - quality
 </text>
@@ -26,36 +27,32 @@ Average Subgraph Requests
 200
 </text>
 <polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="54,135 59,135 "/>
-<rect x="67" y="589" width="64" height="0" opacity="1" fill="#9C27B0" stroke="none"/>
-<text x="99" y="579" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 99, 579)">
+<rect x="69" y="589" width="72" height="0" opacity="1" fill="#FF5722" stroke="none"/>
+<text x="105" y="579" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 105, 579)">
 0.0
 </text>
-<rect x="147" y="576" width="63" height="13" opacity="1" fill="#FFC107" stroke="none"/>
-<text x="178" y="566" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 178, 566)">
-6.0
-</text>
-<rect x="226" y="413" width="63" height="176" opacity="1" fill="#BDE56C" stroke="none"/>
-<text x="258" y="403" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 258, 403)">
+<rect x="159" y="413" width="73" height="176" opacity="1" fill="#FFC107" stroke="none"/>
+<text x="195" y="403" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 195, 403)">
 78
 </text>
-<rect x="305" y="413" width="64" height="176" opacity="1" fill="#9EB1FF" stroke="none"/>
-<text x="337" y="403" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 337, 403)">
+<rect x="250" y="413" width="72" height="176" opacity="1" fill="#9EB1FF" stroke="none"/>
+<text x="286" y="403" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 286, 403)">
 78
 </text>
-<rect x="384" y="158" width="64" height="431" opacity="1" fill="#DF682D" stroke="none"/>
-<text x="416" y="148" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 416, 148)">
-190
+<rect x="340" y="165" width="73" height="424" opacity="1" fill="#BDE56C" stroke="none"/>
+<text x="377" y="154" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 377, 154)">
+187
 </text>
-<rect x="464" y="150" width="63" height="439" opacity="1" fill="#E796F3" stroke="none"/>
-<text x="495" y="140" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 495, 140)">
-193
+<rect x="431" y="153" width="72" height="436" opacity="1" fill="#DF682D" stroke="none"/>
+<text x="467" y="143" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 467, 143)">
+192
 </text>
-<rect x="543" y="128" width="63" height="461" opacity="1" fill="#07A865" stroke="none"/>
-<text x="575" y="118" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 575, 118)">
+<rect x="521" y="128" width="73" height="461" opacity="1" fill="#07A865" stroke="none"/>
+<text x="558" y="118" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 558, 118)">
 203
 </text>
-<rect x="622" y="128" width="64" height="461" opacity="1" fill="#1E90FF" stroke="none"/>
-<text x="654" y="118" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 654, 118)">
+<rect x="612" y="128" width="72" height="461" opacity="1" fill="#1E90FF" stroke="none"/>
+<text x="648" y="118" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 648, 118)">
 203
 </text>
 <rect x="710" y="60" width="15" height="15" opacity="1" fill="#07A865" stroke="none"/>
@@ -66,28 +63,24 @@ Apollo Router
 <text x="730" y="88" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="14.516129032258064" opacity="1" fill="#000000">
 Apollo Router (no cache)
 </text>
-<rect x="710" y="110" width="15" height="15" opacity="1" fill="#E796F3" stroke="none"/>
+<rect x="710" y="110" width="15" height="15" opacity="1" fill="#DF682D" stroke="none"/>
 <text x="730" y="113" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="14.516129032258064" opacity="1" fill="#000000">
 Cosmo Router
 </text>
-<rect x="710" y="135" width="15" height="15" opacity="1" fill="#DF682D" stroke="none"/>
+<rect x="710" y="135" width="15" height="15" opacity="1" fill="#BDE56C" stroke="none"/>
 <text x="730" y="138" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="14.516129032258064" opacity="1" fill="#000000">
 Cosmo Router (no cache)
 </text>
-<rect x="710" y="160" width="15" height="15" opacity="1" fill="#BDE56C" stroke="none"/>
+<rect x="710" y="160" width="15" height="15" opacity="1" fill="#9EB1FF" stroke="none"/>
 <text x="730" y="163" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="14.516129032258064" opacity="1" fill="#000000">
 Grafbase Gateway
 </text>
-<rect x="710" y="185" width="15" height="15" opacity="1" fill="#9EB1FF" stroke="none"/>
+<rect x="710" y="185" width="15" height="15" opacity="1" fill="#FFC107" stroke="none"/>
 <text x="730" y="188" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="14.516129032258064" opacity="1" fill="#000000">
 Grafbase Gateway (no cache)
 </text>
-<rect x="710" y="210" width="15" height="15" opacity="1" fill="#FFC107" stroke="none"/>
+<rect x="710" y="210" width="15" height="15" opacity="1" fill="#FF5722" stroke="none"/>
 <text x="730" y="213" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="14.516129032258064" opacity="1" fill="#000000">
-Hive Gateway
-</text>
-<rect x="710" y="235" width="15" height="15" opacity="1" fill="#9C27B0" stroke="none"/>
-<text x="730" y="238" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="14.516129032258064" opacity="1" fill="#000000">
 Hive Router
 </text>
 </svg>
