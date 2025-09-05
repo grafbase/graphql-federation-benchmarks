@@ -598,13 +598,14 @@ mod tests {
         insta::assert_snapshot!(report, @r"
         # System Information
 
-        Date: 2019-01-01
-        CPU: Test CPU Model
-        Memory: 16.0 GiB
-        CPU Boost: Enabled
-        Git Commit: abc123def456
-        Linux Version: 6.16.1
-        Docker Version: 24.0.7
+        - Date: 2019-01-01
+        - CPU: Test CPU Model
+        - Memory: 16.0 GiB
+        - CPU Boost: Enabled
+        - Git Commit: abc123def456
+        - Linux Version: 6.16.1
+        - Docker Version: 24.0.7
+
         # complex-nested-query
 
         Test scenario for complex nested GraphQL queries

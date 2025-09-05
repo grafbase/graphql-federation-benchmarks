@@ -108,12 +108,7 @@ const KILO_THRESHOLD: f64 = 1000.0;
 
 /// Calculate the legend width based on gateway names
 fn calculate_legend_width(results: &[&BenchmarkResult]) -> u32 {
-    let max_name_len = results
-        .iter()
-        .filter(|r| r.is_valid())
-        .map(|r| r.gateway.len())
-        .max()
-        .unwrap_or(0) as u32;
+    let max_name_len = results.iter().map(|r| r.gateway.len()).max().unwrap_or(0) as u32;
 
     // Calculate width: box + spacing + text
     let width =
@@ -134,34 +129,67 @@ fn create_color_map<'a>(results: &[&'a BenchmarkResult]) -> HashMap<&'a str, RGB
         .collect()
 }
 
-/// Draw legend for a chart
-fn draw_legend(
+/// Draw legend for a chart with all gateways (strikethrough for invalid ones)
+fn draw_legend_all(
     legend_area: &DrawingArea<SVGBackend, plotters::coord::Shift>,
-    gateway_data: &[(&str, &BenchmarkResult)],
+    all_results: &[&BenchmarkResult],
     color_map: &HashMap<&str, RGBColor>,
 ) -> anyhow::Result<()> {
+    use plotters::prelude::*;
+
     let legend_y_start = LEGEND_Y_START;
     let legend_item_height = LEGEND_ITEM_HEIGHT;
 
-    for (idx, (gateway_name, _)) in gateway_data.iter().enumerate() {
+    // Sort gateways alphabetically for consistent ordering
+    let mut sorted_results = all_results.to_vec();
+    sorted_results.sort_unstable_by(|a, b| match (a.is_valid(), b.is_valid()) {
+        (true, false) => std::cmp::Ordering::Less,
+        (false, true) => std::cmp::Ordering::Greater,
+        _ => a.gateway.cmp(&b.gateway),
+    });
+
+    for (idx, result) in sorted_results.iter().enumerate() {
+        let gateway_name = result.gateway.as_str();
         let color = color_map[gateway_name];
         let y_pos = legend_y_start + (idx as i32 * legend_item_height);
+        let is_valid = result.is_valid();
 
-        // Draw color box (moved closer to chart)
-        legend_area.draw(&Rectangle::new(
-            [
-                (LEGEND_BOX_X, y_pos),
-                (LEGEND_BOX_X + LEGEND_BOX_SIZE, y_pos + LEGEND_BOX_SIZE),
-            ],
-            color.filled(),
-        ))?;
+        // Draw color box
+        if is_valid {
+            legend_area.draw(&Rectangle::new(
+                [
+                    (LEGEND_BOX_X, y_pos),
+                    (LEGEND_BOX_X + LEGEND_BOX_SIZE, y_pos + LEGEND_BOX_SIZE),
+                ],
+                color.filled(),
+            ))?;
+        } else {
+            // Draw a grayed out box for invalid entries
+            legend_area.draw(&Rectangle::new(
+                [
+                    (LEGEND_BOX_X, y_pos),
+                    (LEGEND_BOX_X + LEGEND_BOX_SIZE, y_pos + LEGEND_BOX_SIZE),
+                ],
+                RGBColor(200, 200, 200).filled(),
+            ))?;
+        }
 
-        // Draw gateway name
-        legend_area.draw(&Text::new(
-            gateway_name.to_string(),
-            (LEGEND_TEXT_X, y_pos + LEGEND_TEXT_Y_OFFSET),
-            (FONT_FAMILY, LEGEND_FONT_SIZE).into_font(),
-        ))?;
+        if is_valid {
+            legend_area.draw(&Text::new(
+                gateway_name.to_string(),
+                (LEGEND_TEXT_X, y_pos + LEGEND_TEXT_Y_OFFSET),
+                (FONT_FAMILY, LEGEND_FONT_SIZE).into_font(),
+            ))?;
+        } else {
+            // Draw grayed out text
+            legend_area.draw(&Text::new(
+                gateway_name.to_string(),
+                (LEGEND_TEXT_X, y_pos + LEGEND_TEXT_Y_OFFSET),
+                (FONT_FAMILY, LEGEND_FONT_SIZE)
+                    .into_font()
+                    .color(&RGBColor(128, 128, 128)),
+            ))?;
+        }
     }
 
     Ok(())

@@ -56,8 +56,8 @@ pub fn generate_quality_chart(
             calculate_avg_subgraph_requests,
         )?;
 
-        // Draw legend manually in the legend area
-        draw_legend(&legend_area, &gateway_data, &color_map)?;
+        // Draw legend with all gateways (including invalid ones with strikethrough)
+        draw_legend_all(&legend_area, results, &color_map)?;
 
         root.present()?;
     }

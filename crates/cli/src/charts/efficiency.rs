@@ -68,8 +68,8 @@ pub fn generate_efficiency_chart(
             |result| result.requests_per_gb_s(),
         )?;
 
-        // Draw legend manually in the legend area
-        draw_legend(&legend_area, &gateway_data, &color_map)?;
+        // Draw legend with all gateways (including invalid ones with strikethrough)
+        draw_legend_all(&legend_area, results, &color_map)?;
 
         root.present()?;
     }

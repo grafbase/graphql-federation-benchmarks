@@ -134,15 +134,8 @@ pub fn generate_latency_chart(
             }
         }
 
-        // Draw legend manually in the legend area
-        // Convert TrendValues to BenchmarkResult references for draw_legend
-        // Exclude gateways with failures
-        let legend_data: Vec<(&str, &BenchmarkResult)> = results
-            .iter()
-            .filter(|r| !r.has_failures() && r.k6_run.summary.metrics.http_req_duration.is_some())
-            .map(|r| (r.gateway.as_str(), *r))
-            .collect();
-        draw_legend(&legend_area, &legend_data, &color_map)?;
+        // Draw legend with all gateways (including invalid ones with strikethrough)
+        draw_legend_all(&legend_area, results, &color_map)?;
 
         root.present()?;
     }
@@ -260,8 +253,10 @@ mod tests {
 
         // Should contain Gateway A
         assert!(svg.contains("Gateway A"));
-        // Should NOT contain Gateway B (has failures)
-        assert!(!svg.contains("Gateway B"));
+        // Should contain Gateway B in legend (with strikethrough line)
+        assert!(svg.contains("Gateway B"));
+        // Should contain a gray box for Gateway B (hex format #C8C8C8 = rgb(200,200,200))
+        assert!(svg.contains("#C8C8C8"));
     }
 
     #[test]

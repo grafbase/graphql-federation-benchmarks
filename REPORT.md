@@ -4,9 +4,140 @@
 - CPU: AMD Ryzen 9 7950X3D 16-Core Processor
 - Memory: 93.4 GiB
 - CPU Boost: Disabled
-- Git Commit: 58c000d814dfbd4237219c396fb72412b0fea1de
+- Git Commit: 42a941d95602083fb42f63dc9bdec006a4aa9224
 - Linux Version: 6.16.1
 - Docker Version: 28.3.3
+
+# big-response
+
+Tests gateway performance with large GraphQL response payloads (~8MiB) containing a mix of lists, objects strings, floats and ints.
+
+K6 runs with a single VU, executing requests sequentially, to measure the best case latencies a gateway could provide.
+
+
+## Latencies (ms)
+
+![Latency Chart](charts/big-response-latency.svg)
+
+| Gateway          |     Min |     Med |     P90 |     P95 |     P99 |     Max |
+| :--------------- | ------: | ------: | ------: | ------: | ------: | ------: |
+| Grafbase Gateway |    26.7 |    31.3 |    34.6 |    35.6 |    38.0 |   139.6 |
+| Cosmo Router     |    54.5 |    72.7 |    80.9 |    83.1 |    87.3 |   179.7 |
+| Apollo Router    |   111.5 |   122.9 |   128.7 |   130.6 |   138.2 |   240.8 |
+| Hive Gateway     |   154.7 |   167.2 |   180.7 |   184.4 |   191.9 |   381.1 |
+| Hive Router      |  errors |  errors |  errors |  errors |  errors |  errors |
+
+## Resources
+
+![Efficiency Chart](charts/big-response-efficiency.svg)
+
+| Gateway          |          CPU |  CPU max |         Memory |   MEM max |  requests/core.s |  requests/GB.s |
+| :--------------- | -----------: | -------: | -------------: | --------: | ---------------: | -------------: |
+| Grafbase Gateway |      87% ±1% |      89% |      72 ±6 MiB |    87 MiB |             33.0 |          346.1 |
+| Apollo Router    |      96% ±0% |      97% |    533 ±65 MiB |   653 MiB |              8.2 |           12.5 |
+| Cosmo Router     |    222% ±14% |     252% |    104 ±17 MiB |   150 MiB |              5.3 |           91.4 |
+| Hive Gateway     |     116% ±2% |     122% |    509 ±22 MiB |   553 MiB |              4.8 |           10.8 |
+| Hive Router      |      91% ±0% |      92% |     156 ±1 MiB |   159 MiB |           errors |         errors |
+
+## Requests
+
+![Quality Chart](charts/big-response-quality.svg)
+
+| Gateway          | Requests | Failures | Subgraph requests (total) |
+| :--------------- | -------: | -------: | ------------------------: |
+| Apollo Router    |      478 |        0 |                1.00 (478) |
+| Cosmo Router     |      802 |        0 |                1.00 (802) |
+| Grafbase Gateway |     1771 |        0 |               1.00 (1771) |
+| Hive Gateway     |      350 |        0 |                1.00 (350) |
+| Hive Router      |     7379 |     7379 |               1.00 (7379) |
+
+# deduplication
+
+Fairly complex query requiring a dozen subgraph requests with some duplicate plans/requests. The goal here is to measure how well the gateways
+behaves under a certain throughput.
+
+K6 runs with a constant throughput of 1000 requests/s
+
+
+## Latencies (ms)
+
+![Latency Chart](charts/deduplication-latency.svg)
+
+| Gateway          |     Min |     Med |     P90 |     P95 |     P99 |     Max |
+| :--------------- | ------: | ------: | ------: | ------: | ------: | ------: |
+| Hive Router      |    13.2 |    40.0 |    45.5 |    46.4 |    47.7 |    49.9 |
+| Grafbase Gateway |    22.7 |    41.5 |    46.0 |    46.9 |    48.3 |    67.0 |
+| Cosmo Router     |    14.4 |    43.6 |    50.2 |    51.6 |    54.1 |    61.5 |
+| Apollo Router    |    46.0 |    48.6 |    49.9 |    50.4 |    51.5 |    95.1 |
+| Hive Gateway     |   153.3 |  1319.5 |  1685.0 |  1734.8 | 11221.7 | 33095.6 |
+
+## Resources
+
+![Efficiency Chart](charts/deduplication-efficiency.svg)
+
+| Gateway          |          CPU |  CPU max |         Memory |   MEM max |  requests/core.s |  requests/GB.s |
+| :--------------- | -----------: | -------: | -------------: | --------: | ---------------: | -------------: |
+| Hive Router      |      83% ±2% |      87% |     187 ±5 MiB |   202 MiB |           1143.2 |         5066.9 |
+| Grafbase Gateway |     113% ±2% |     118% |      98 ±3 MiB |   102 MiB |            849.6 |        10015.7 |
+| Cosmo Router     |     583% ±6% |     596% |      83 ±6 MiB |   100 MiB |            167.6 |        10198.5 |
+| Apollo Router    |     665% ±4% |     678% |    327 ±10 MiB |   342 MiB |            147.5 |         2993.1 |
+| Hive Gateway     |     125% ±6% |     143% |    646 ±52 MiB |   709 MiB |             93.0 |          191.7 |
+
+## Requests
+
+![Quality Chart](charts/deduplication-quality.svg)
+
+| Gateway          | Requests | Failures | Subgraph requests (total) |
+| :--------------- | -------: | -------: | ------------------------: |
+| Cosmo Router     |    60000 |        0 |              0.63 (37789) |
+| Hive Router      |    60001 |        0 |              0.64 (38410) |
+| Grafbase Gateway |    60001 |        0 |              0.90 (53910) |
+| Hive Gateway     |     8132 |        0 |              7.01 (56974) |
+| Apollo Router    |    60001 |        0 |             16.0 (960016) |
+
+# long-lived-big-response
+
+A very similar paylaod to big-response (~8MiB) is used, but now we add an extra subgraph request that takes 100ms. This forces the
+gateway to keep the response for longer in memory and gives us a more realistic idea of how much cpu and memory a gateway would need.
+
+K6 runs with 10 VUs to put some pressure on the gateways.
+
+
+## Latencies (ms)
+
+![Latency Chart](charts/long-lived-big-response-latency.svg)
+
+| Gateway          |     Min |     Med |     P90 |     P95 |     P99 |     Max |
+| :--------------- | ------: | ------: | ------: | ------: | ------: | ------: |
+| Grafbase Gateway |   129.6 |   162.1 |   179.2 |   185.5 |   198.5 |   281.0 |
+| Cosmo Router     |   146.2 |   209.5 |   236.0 |   242.9 |   257.6 |   377.6 |
+| Apollo Router    |   217.7 |   304.1 |   361.4 |   380.2 |   432.4 |   520.2 |
+| Hive Gateway     |   431.4 |  1612.5 |  2356.8 |  2639.2 |  5003.4 |  6838.6 |
+| Hive Router      |  errors |  errors |  errors |  errors |  errors |  errors |
+
+## Resources
+
+![Efficiency Chart](charts/long-lived-big-response-efficiency.svg)
+
+| Gateway          |          CPU |  CPU max |         Memory |   MEM max |  requests/core.s |  requests/GB.s |
+| :--------------- | -----------: | -------: | -------------: | --------: | ---------------: | -------------: |
+| Grafbase Gateway |     223% ±5% |     233% |    323 ±26 MiB |   395 MiB |             25.9 |          156.5 |
+| Apollo Router    |    462% ±25% |     529% |  2307 ±189 MiB |  2662 MiB |              6.1 |           12.4 |
+| Cosmo Router     |    845% ±84% |     997% |    809 ±62 MiB |   942 MiB |              4.7 |           51.3 |
+| Hive Gateway     |     120% ±6% |     133% |    654 ±57 MiB |   766 MiB |              4.4 |            7.8 |
+| Hive Router      |     732% ±7% |     748% |     349 ±5 MiB |   356 MiB |           errors |         errors |
+
+## Requests
+
+![Quality Chart](charts/long-lived-big-response-quality.svg)
+
+| Gateway          | Requests | Failures | Subgraph requests (total) |
+| :--------------- | -------: | -------: | ------------------------: |
+| Apollo Router    |     1938 |        0 |               2.00 (3876) |
+| Cosmo Router     |     2838 |        0 |               2.00 (5676) |
+| Grafbase Gateway |     3630 |        0 |               2.00 (7260) |
+| Hive Gateway     |      361 |        0 |                2.00 (722) |
+| Hive Router      |    60657 |    60657 |               0.11 (6785) |
 
 # many-plans
 
@@ -22,39 +153,36 @@ Query Planning performance is important during the re-deployment of gateways whe
 
 K6 runs with a single VU.
 
+
 ## Latencies (ms)
 
 ![Latency Chart](charts/many-plans-latency.svg)
 
-| Gateway                     |    Min |    Med |    P90 |    P95 |    P99 |    Max |
-| :-------------------------- | -----: | -----: | -----: | -----: | -----: | -----: |
-| Grafbase Gateway            |    1.7 |    2.1 |    2.3 |    2.4 |    2.6 |   28.1 |
-| Apollo Router               |    8.2 |    9.2 |   10.0 |   10.3 |   12.1 | 3410.7 |
-| Cosmo Router                |   15.6 |   18.1 |   19.6 |   20.0 |   21.2 |  392.6 |
-| Grafbase Gateway (no cache) |   18.5 |   19.5 |   20.5 |   21.4 |   22.5 |   28.1 |
-| Cosmo Router (no cache)     |  358.3 |  375.5 |  382.6 |  388.2 |  390.6 |  390.7 |
-| Apollo Router (no cache)    | 3338.5 | 3344.1 | 3390.6 | 3396.4 | 3401.0 | 3402.2 |
-| Apollo Router (with dedup)  | errors | errors | errors | errors | errors | errors |
-| Hive Gateway                | errors | errors | errors | errors | errors | errors |
-| Hive Gateway (no cache?)    | errors | errors | errors | errors | errors | errors |
-| Hive Router                 |   >13s |   >13s |   >13s |   >13s |   >13s |   >13s |
+| Gateway                     |     Min |     Med |     P90 |     P95 |     P99 |     Max |
+| :-------------------------- | ------: | ------: | ------: | ------: | ------: | ------: |
+| Grafbase Gateway            |     1.7 |     2.0 |     2.3 |     2.3 |     2.6 |    50.0 |
+| Apollo Router               |     8.1 |     9.3 |    10.1 |    10.5 |    11.9 |  3404.5 |
+| Cosmo Router                |    15.4 |    17.9 |    19.3 |    19.7 |    20.4 |   383.2 |
+| Grafbase Gateway (no cache) |    18.5 |    19.5 |    20.3 |    20.6 |    21.9 |    36.8 |
+| Cosmo Router (no cache)     |   359.1 |   372.1 |   377.8 |   380.3 |   383.6 |   386.1 |
+| Apollo Router (no cache)    |  3314.7 |  3338.9 |  3375.9 |  3385.2 |  3405.2 |  3410.2 |
+| Hive Gateway                |  errors |  errors |  errors |  errors |  errors |  errors |
+| Hive Router                 |  errors |  errors |  errors |  errors |  errors |  errors |
 
 ## Resources
 
 ![Efficiency Chart](charts/many-plans-efficiency.svg)
 
-| Gateway                     |       CPU | CPU max |       Memory |  MEM max | requests/core.s | requests/GB.s |
-| :-------------------------- | --------: | ------: | -----------: | -------: | --------------: | ------------: |
-| Grafbase Gateway            |  167% ±1% |    168% |    45 ±2 MiB |   48 MiB |           278.1 |        9925.4 |
-| Grafbase Gateway (no cache) |  108% ±0% |    108% |    98 ±6 MiB |  106 MiB |            46.7 |         486.1 |
-| Apollo Router               | 152% ±34% |    174% | 494 ±118 MiB |  800 MiB |            40.3 |          89.7 |
-| Cosmo Router                |  504% ±5% |    512% |    71 ±2 MiB |   73 MiB |            10.3 |         742.1 |
-| Cosmo Router (no cache)     | 160% ±11% |    179% |    74 ±6 MiB |   80 MiB |             1.5 |          34.2 |
-| Apollo Router (no cache)    |   99% ±1% |    101% | 745 ±283 MiB | 1235 MiB |             0.3 |           0.2 |
-| Apollo Router (with dedup)  | 145% ±29% |    164% | 481 ±125 MiB |  803 MiB |          errors |        errors |
-| Hive Gateway                |  110% ±5% |    121% |  475 ±83 MiB |  536 MiB |          errors |        errors |
-| Hive Gateway (no cache?)    |  109% ±5% |    121% |  474 ±84 MiB |  537 MiB |          errors |        errors |
-| Hive Router                 |  100% ±0% |    100% |   138 ±0 MiB |  138 MiB |             0.0 |           0.0 |
+| Gateway                     |          CPU |  CPU max |         Memory |   MEM max |  requests/core.s |  requests/GB.s |
+| :-------------------------- | -----------: | -------: | -------------: | --------: | ---------------: | -------------: |
+| Grafbase Gateway            |     165% ±1% |     167% |      52 ±3 MiB |    56 MiB |            282.5 |         8558.2 |
+| Apollo Router               |    170% ±15% |     175% |    478 ±45 MiB |   801 MiB |             56.8 |          126.9 |
+| Grafbase Gateway (no cache) |     108% ±0% |     108% |     121 ±9 MiB |   134 MiB |             46.9 |          387.2 |
+| Cosmo Router                |     503% ±5% |     513% |      72 ±2 MiB |    79 MiB |             10.7 |          717.6 |
+| Cosmo Router (no cache)     |     157% ±7% |     178% |      76 ±3 MiB |    83 MiB |              1.5 |           33.2 |
+| Apollo Router (no cache)    |     100% ±1% |     101% | 2241 ±1019 MiB |  4101 MiB |              0.3 |            0.1 |
+| Hive Gateway                |     106% ±4% |     121% |    533 ±39 MiB |   544 MiB |           errors |         errors |
+| Hive Router                 |     100% ±0% |     100% |     140 ±3 MiB |   145 MiB |           errors |         errors |
 
 ## Requests
 
@@ -62,13 +190,56 @@ K6 runs with a single VU.
 
 | Gateway                     | Requests | Failures | Subgraph requests (total) |
 | :-------------------------- | -------: | -------: | ------------------------: |
-| Grafbase Gateway            |     4683 |        0 |             77.7 (363842) |
-| Grafbase Gateway (no cache) |      506 |        0 |              77.8 (39351) |
-| Cosmo Router (no cache)     |       27 |        0 |                189 (5091) |
-| Cosmo Router                |      529 |        0 |              193 (101867) |
-| Apollo Router               |      701 |        0 |              203 (142303) |
-| Apollo Router (no cache)    |        3 |        0 |                 203 (609) |
-| Apollo Router (with dedup)  |      754 |        3 |               108 (81265) |
-| Hive Gateway                |      679 |      679 |               6.00 (4074) |
-| Hive Gateway (no cache?)    |      680 |      680 |               6.00 (4080) |
-| Hive Router                 |        0 |        0 |                     0 (0) |
+| Grafbase Gateway            |    28247 |        0 |            77.6 (2191064) |
+| Grafbase Gateway (no cache) |     3043 |        0 |             77.7 (236500) |
+| Cosmo Router (no cache)     |      162 |        0 |               189 (30558) |
+| Cosmo Router                |     3307 |        0 |              192 (636423) |
+| Apollo Router               |     5962 |        0 |             203 (1210286) |
+| Apollo Router (no cache)    |       18 |        0 |                203 (3654) |
+| Hive Gateway                |     4200 |     4200 |              6.00 (25200) |
+| Hive Router                 |        1 |        2 |                  0.00 (0) |
+
+# query
+
+Fairly complex query requiring a dozen subgraph requests with some duplicate plans/requests. The goal here is to measure how well the gateways
+behaves under a certain throughput.
+
+K6 runs with a constant throughput of 100 requests/s
+
+
+## Latencies (ms)
+
+![Latency Chart](charts/query-latency.svg)
+
+| Gateway          |     Min |     Med |     P90 |     P95 |     P99 |     Max |
+| :--------------- | ------: | ------: | ------: | ------: | ------: | ------: |
+| Hive Gateway     |    38.4 |    42.3 |    61.3 |    99.6 |   137.2 |   235.1 |
+| Hive Router      |    23.6 |    43.8 |    46.3 |    46.7 |    47.5 |    49.0 |
+| Grafbase Gateway |    43.4 |    45.5 |    46.5 |    46.7 |    47.4 |    48.4 |
+| Cosmo Router     |    43.9 |    46.7 |    48.1 |    48.5 |    49.0 |    50.8 |
+| Apollo Router    |    45.0 |    47.9 |    49.4 |    49.8 |    50.6 |    54.1 |
+
+## Resources
+
+![Efficiency Chart](charts/query-efficiency.svg)
+
+| Gateway          |          CPU |  CPU max |         Memory |   MEM max |  requests/core.s |  requests/GB.s |
+| :--------------- | -----------: | -------: | -------------: | --------: | ---------------: | -------------: |
+| Hive Router      |       9% ±0% |      10% |     153 ±3 MiB |   159 MiB |            969.3 |          643.6 |
+| Grafbase Gateway |      13% ±1% |      14% |      32 ±1 MiB |    34 MiB |            697.1 |         2991.0 |
+| Apollo Router    |      45% ±1% |      49% |      66 ±1 MiB |    69 MiB |            203.5 |         1476.9 |
+| Cosmo Router     |      58% ±3% |      63% |      44 ±1 MiB |    46 MiB |            159.9 |         2213.2 |
+| Hive Gateway     |      88% ±9% |     129% |    579 ±68 MiB |   656 MiB |             77.6 |          155.9 |
+
+## Requests
+
+![Quality Chart](charts/query-quality.svg)
+
+| Gateway          | Requests | Failures | Subgraph requests (total) |
+| :--------------- | -------: | -------: | ------------------------: |
+| Hive Router      |     6000 |        0 |              4.02 (24144) |
+| Hive Gateway     |     5992 |        0 |              7.00 (41951) |
+| Cosmo Router     |     6000 |        0 |              8.01 (48057) |
+| Grafbase Gateway |     6000 |        0 |              13.0 (78000) |
+| Apollo Router    |     6000 |        0 |              16.0 (96000) |
+

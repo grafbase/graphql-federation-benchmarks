@@ -1,8 +1,9 @@
 <svg width="900" height="600" viewBox="0 0 900 600" xmlns="http://www.w3.org/2000/svg">
-<text x="352" y="20" dy="0.5ex" text-anchor="middle" font-family="sans-serif" font-size="24.193548387096776" opacity="1" fill="#000000">
+<rect x="0" y="0" width="900" height="600" opacity="1" fill="#FAFAFC" stroke="none"/>
+<text x="355" y="20" dy="0.5ex" text-anchor="middle" font-family="sans-serif" font-size="24.193548387096776" opacity="1" fill="#000000">
 query - quality
 </text>
-<text x="352" y="55" dy="0.5ex" text-anchor="middle" font-family="sans-serif" font-size="16.129032258064516" opacity="1" fill="#000000">
+<text x="355" y="55" dy="0.5ex" text-anchor="middle" font-family="sans-serif" font-size="16.129032258064516" opacity="1" fill="#000000">
 Average Subgraph Requests
 </text>
 <polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="59,80 59,589 "/>
@@ -46,44 +47,44 @@ Average Subgraph Requests
 18
 </text>
 <polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="54,80 59,80 "/>
-<rect x="72" y="476" width="102" height="113" opacity="1" fill="#BDE56C" stroke="none"/>
-<text x="123" y="465" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 123, 465)">
+<rect x="72" y="476" width="103" height="113" opacity="1" fill="#BDE56C" stroke="none"/>
+<text x="123" y="466" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 123, 466)">
 4.0
 </text>
-<rect x="199" y="391" width="101" height="198" opacity="1" fill="#DF682D" stroke="none"/>
-<text x="250" y="381" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 250, 381)">
+<rect x="200" y="392" width="102" height="197" opacity="1" fill="#DF682D" stroke="none"/>
+<text x="251" y="381" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 251, 381)">
 7.0
 </text>
-<rect x="326" y="363" width="101" height="226" opacity="1" fill="#1E90FF" stroke="none"/>
-<text x="377" y="353" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 377, 353)">
+<rect x="328" y="363" width="102" height="226" opacity="1" fill="#1E90FF" stroke="none"/>
+<text x="379" y="353" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 379, 353)">
 8.0
 </text>
-<rect x="453" y="222" width="101" height="367" opacity="1" fill="#E796F3" stroke="none"/>
-<text x="503" y="212" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 503, 212)">
+<rect x="456" y="222" width="102" height="367" opacity="1" fill="#E796F3" stroke="none"/>
+<text x="507" y="212" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 507, 212)">
 13
 </text>
-<rect x="579" y="137" width="102" height="452" opacity="1" fill="#07A865" stroke="none"/>
-<text x="630" y="127" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 630, 127)">
+<rect x="583" y="137" width="103" height="452" opacity="1" fill="#07A865" stroke="none"/>
+<text x="635" y="127" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 635, 127)">
 16
 </text>
-<rect x="710" y="60" width="15" height="15" opacity="1" fill="#07A865" stroke="none"/>
-<text x="730" y="63" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="14.516129032258064" opacity="1" fill="#000000">
+<rect x="715" y="60" width="15" height="15" opacity="1" fill="#07A865" stroke="none"/>
+<text x="735" y="63" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="14.516129032258064" opacity="1" fill="#000000">
 Apollo Router
 </text>
-<rect x="710" y="85" width="15" height="15" opacity="1" fill="#1E90FF" stroke="none"/>
-<text x="730" y="88" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="14.516129032258064" opacity="1" fill="#000000">
+<rect x="715" y="85" width="15" height="15" opacity="1" fill="#1E90FF" stroke="none"/>
+<text x="735" y="88" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="14.516129032258064" opacity="1" fill="#000000">
 Cosmo Router
 </text>
-<rect x="710" y="110" width="15" height="15" opacity="1" fill="#E796F3" stroke="none"/>
-<text x="730" y="113" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="14.516129032258064" opacity="1" fill="#000000">
+<rect x="715" y="110" width="15" height="15" opacity="1" fill="#E796F3" stroke="none"/>
+<text x="735" y="113" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="14.516129032258064" opacity="1" fill="#000000">
 Grafbase Gateway
 </text>
-<rect x="710" y="135" width="15" height="15" opacity="1" fill="#DF682D" stroke="none"/>
-<text x="730" y="138" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="14.516129032258064" opacity="1" fill="#000000">
+<rect x="715" y="135" width="15" height="15" opacity="1" fill="#DF682D" stroke="none"/>
+<text x="735" y="138" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="14.516129032258064" opacity="1" fill="#000000">
 Hive Gateway
 </text>
-<rect x="710" y="160" width="15" height="15" opacity="1" fill="#BDE56C" stroke="none"/>
-<text x="730" y="163" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="14.516129032258064" opacity="1" fill="#000000">
+<rect x="715" y="160" width="15" height="15" opacity="1" fill="#BDE56C" stroke="none"/>
+<text x="735" y="163" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="14.516129032258064" opacity="1" fill="#000000">
 Hive Router
 </text>
 </svg>
