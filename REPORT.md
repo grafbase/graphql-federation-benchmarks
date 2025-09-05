@@ -1,12 +1,12 @@
 # System Information
 
--Date: 2025-09-05
--CPU: AMD Ryzen 9 7950X3D 16-Core Processor
--Memory: 93.4 GiB
--CPU Boost: Disabled
--Git Commit: 58c000d814dfbd4237219c396fb72412b0fea1de
--Linux Version: 6.16.1
--Docker Version: 28.3.3
+- Date: 2025-09-05
+- CPU: AMD Ryzen 9 7950X3D 16-Core Processor
+- Memory: 93.4 GiB
+- CPU Boost: Disabled
+- Git Commit: 58c000d814dfbd4237219c396fb72412b0fea1de
+- Linux Version: 6.16.1
+- Docker Version: 28.3.3
 
 # many-plans
 
