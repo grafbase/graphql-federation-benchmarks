@@ -19,7 +19,7 @@ This ensures that gateways don't abuse the repetitive nature of the benchmarks. 
 
 So unless specified the goal is not to test how a gateway behaves against recurrent queries.
 
-The load testing itself is done with K6. Multiple scenarios have been created to benchmark different situations.
+The load testing itself is done with K6 for 1 minute. Multiple scenarios have been created to benchmark different situations.
 
 We measure the following:
 
