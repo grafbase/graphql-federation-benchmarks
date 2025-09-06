@@ -30,6 +30,8 @@ We measure the following:
 | Subgraph requests     | Subgraph service\* (retrieved by K6 at the end)     |
 | CPU                   | `cpu_stats.cpu_usage.total_usage` from docker stats |
 | Memory                | `memory_stats.usage` from docker stats              |
+| Requests per core.s   | request count / max CPU                             |
+| Requests per GB.s     | request count / max Memory                          |
 
 \* health checks are excluded.
 
