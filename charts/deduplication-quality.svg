@@ -11,53 +11,61 @@ Average Subgraph Requests
 0
 </text>
 <polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="54,589 59,589 "/>
-<text x="50" y="526" dy="0.5ex" text-anchor="end" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000">
-1
+<text x="50" y="539" dy="0.5ex" text-anchor="end" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000">
+0
 </text>
-<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="54,526 59,526 "/>
-<text x="50" y="462" dy="0.5ex" text-anchor="end" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000">
-2
+<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="54,539 59,539 "/>
+<text x="50" y="488" dy="0.5ex" text-anchor="end" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000">
+0
 </text>
-<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="54,462 59,462 "/>
-<text x="50" y="399" dy="0.5ex" text-anchor="end" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000">
-3
+<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="54,488 59,488 "/>
+<text x="50" y="437" dy="0.5ex" text-anchor="end" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000">
+0
 </text>
-<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="54,399 59,399 "/>
+<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="54,437 59,437 "/>
+<text x="50" y="386" dy="0.5ex" text-anchor="end" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000">
+0
+</text>
+<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="54,386 59,386 "/>
 <text x="50" y="335" dy="0.5ex" text-anchor="end" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000">
-4
+0
 </text>
 <polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="54,335 59,335 "/>
-<text x="50" y="271" dy="0.5ex" text-anchor="end" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000">
-5
+<text x="50" y="284" dy="0.5ex" text-anchor="end" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000">
+1
 </text>
-<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="54,271 59,271 "/>
-<text x="50" y="208" dy="0.5ex" text-anchor="end" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000">
-6
+<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="54,284 59,284 "/>
+<text x="50" y="233" dy="0.5ex" text-anchor="end" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000">
+1
 </text>
-<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="54,208 59,208 "/>
-<text x="50" y="144" dy="0.5ex" text-anchor="end" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000">
-7
+<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="54,233 59,233 "/>
+<text x="50" y="182" dy="0.5ex" text-anchor="end" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000">
+1
 </text>
-<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="54,144 59,144 "/>
+<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="54,182 59,182 "/>
+<text x="50" y="131" dy="0.5ex" text-anchor="end" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000">
+1
+</text>
+<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="54,131 59,131 "/>
 <text x="50" y="80" dy="0.5ex" text-anchor="end" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000">
-8
+1
 </text>
 <polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="54,80 59,80 "/>
-<rect x="73" y="550" width="108" height="39" opacity="1" fill="#1E90FF" stroke="none"/>
-<text x="127" y="539" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 127, 539)">
+<rect x="73" y="440" width="108" height="149" opacity="1" fill="#DF682D" stroke="none"/>
+<text x="127" y="430" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 127, 430)">
+0.3
+</text>
+<rect x="208" y="269" width="108" height="320" opacity="1" fill="#1E90FF" stroke="none"/>
+<text x="262" y="259" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 262, 259)">
 0.6
 </text>
-<rect x="208" y="548" width="108" height="41" opacity="1" fill="#BDE56C" stroke="none"/>
-<text x="262" y="538" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 262, 538)">
+<rect x="342" y="263" width="108" height="326" opacity="1" fill="#BDE56C" stroke="none"/>
+<text x="396" y="253" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 396, 253)">
 0.6
 </text>
-<rect x="342" y="533" width="108" height="56" opacity="1" fill="#E796F3" stroke="none"/>
-<text x="396" y="523" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 396, 523)">
+<rect x="477" y="135" width="108" height="454" opacity="1" fill="#E796F3" stroke="none"/>
+<text x="531" y="125" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 531, 125)">
 0.9
-</text>
-<rect x="477" y="144" width="108" height="445" opacity="1" fill="#DF682D" stroke="none"/>
-<text x="531" y="134" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 531, 134)">
-7.0
 </text>
 <rect x="615" y="60" width="15" height="15" opacity="1" fill="#1E90FF" stroke="none"/>
 <text x="635" y="63" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="14.516129032258064" opacity="1" fill="#000000">

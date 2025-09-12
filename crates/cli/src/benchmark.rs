@@ -1,7 +1,7 @@
 use anyhow::{Context as _, Result};
 use bollard::Docker;
 use itertools::Itertools;
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
 use std::{collections::HashMap, path::PathBuf, sync::Arc};
 
 use crate::{
@@ -135,10 +135,10 @@ pub struct Benchmark {
     container_id: Option<ContainerId>,
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug)]
 pub struct BenchmarkResult {
     pub scenario: String,
-    pub gateway: String,
+    pub gateway: Arc<Gateway>,
     pub k6_run: K6Run,
     pub resource_stats: ResourceStats,
 }
@@ -278,7 +278,7 @@ impl Benchmark {
         // Build result
         Ok(BenchmarkResult {
             scenario: self.scenario_name.clone(),
-            gateway: self.gateway.label().to_string(),
+            gateway: self.gateway.clone(),
             k6_run,
             resource_stats,
         })

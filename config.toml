@@ -6,7 +6,7 @@
 
 [gateways.grafbase-no-cache]
 label = "Grafbase Gateway (no cache)"
-image = "ghcr.io/grafbase/gateway:0.49.0"
+image = "ghcr.io/grafbase/gateway:0.49.1"
 args = [
     "--config",
     "/gateways/grafbase/no-cache.toml",
@@ -16,7 +16,7 @@ args = [
 
 [gateways.grafbase]
 label = "Grafbase Gateway"
-image = "ghcr.io/grafbase/gateway:0.49.0"
+image = "ghcr.io/grafbase/gateway:0.49.1"
 args = [
     "--config",
     "/gateways/grafbase/grafbase.toml",
@@ -27,13 +27,13 @@ args = [
 [gateways.cosmo]
 label = "Cosmo Router"
 # 2025-09-05
-image = "ghcr.io/wundergraph/cosmo/router:0.249.0"
+image = "ghcr.io/wundergraph/cosmo/router:0.252.1"
 args = ["/router", "-config", "/gateways/cosmo/config.yml"]
 
 [gateways.cosmo-no-cache]
 label = "Cosmo Router (no cache)"
 # 2025-09-05
-image = "ghcr.io/wundergraph/cosmo/router:0.249.0"
+image = "ghcr.io/wundergraph/cosmo/router:0.252.1"
 args = ["/router", "-config", "/gateways/cosmo/no-cache.yml"]
 
 # Compiled from https://github.com/Finistere/router/tree/qp-disable-cache
@@ -73,7 +73,7 @@ args = [
 
 [gateways.hive-router]
 label = "Hive Router"
-image = "ghcr.io/graphql-hive/router:0.0.8"
+image = "ghcr.io/graphql-hive/router:0.0.9"
 env.ROUTER_CONFIG_FILE_PATH = "/gateways/hive-router/config.yaml"
 
 [gateways.hive-gateway]

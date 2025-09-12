@@ -92,6 +92,7 @@ pub struct GatewayConfig {
     pub env: HashMap<String, String>,
 }
 
+#[derive(Debug)]
 pub struct Gateway {
     pub name: String,
     pub gateways_path: PathBuf,

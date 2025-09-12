@@ -66,6 +66,22 @@ pub fn generate_report_with_options(
         if let Some(docker_version) = &system_info.docker_version {
             report.push_str(&format!("- Docker Version: {}\n", docker_version));
         }
+
+        report.push_str("\n# Gateways\n\n");
+
+        // Collect unique gateways from results
+        let mut gateway_images = BTreeMap::new();
+
+        for result in results {
+            gateway_images
+                .entry(&result.gateway.name)
+                .or_insert_with(|| &result.gateway.config.image);
+        }
+
+        report.push_str("The following gateways were tested (as configured in `config.toml`):\n\n");
+        for (name, image) in gateway_images {
+            report.push_str(&format!("- {name}: {image}\n"));
+        }
         report.push('\n');
     }
 
@@ -81,7 +97,7 @@ pub fn generate_report_with_options(
         // Calculate column widths for proper alignment
         let gateway_width = benchmark_results
             .iter()
-            .map(|r| r.gateway.len())
+            .map(|r| r.gateway.label().len())
             .max()
             .unwrap_or(7)
             .max(7); // At least as wide as "Gateway"
@@ -129,7 +145,7 @@ pub fn generate_report_with_options(
                 (true, true) => a.median_latency().total_cmp(&b.median_latency()),
                 (true, false) => std::cmp::Ordering::Less, // a has data, b doesn't -> a comes first
                 (false, true) => std::cmp::Ordering::Greater, // b has data, a doesn't -> b comes first
-                (false, false) => a.gateway.cmp(&b.gateway),  // Neither has data, sort by name
+                (false, false) => a.gateway.label().cmp(b.gateway.label()), // Neither has data, sort by name
             }
         });
 
@@ -137,7 +153,7 @@ pub fn generate_report_with_options(
             if result.has_failures() {
                 report.push_str(&format!(
                     "| {:<width$} | {:>7} | {:>7} | {:>7} | {:>7} | {:>7} | {:>7} |\n",
-                    result.gateway,
+                    result.gateway.label(),
                     ERR_PLACEHOLDER,
                     ERR_PLACEHOLDER,
                     ERR_PLACEHOLDER,
@@ -151,7 +167,7 @@ pub fn generate_report_with_options(
                 let values = &http_req_duration.values;
                 report.push_str(&format!(
                     "| {:<width$} | {:>7.1} | {:>7.1} | {:>7.1} | {:>7.1} | {:>7.1} | {:>7.1} |\n",
-                    result.gateway,
+                    result.gateway.label(),
                     values.min,
                     values.med,
                     values.p90,
@@ -166,7 +182,7 @@ pub fn generate_report_with_options(
                 let duration_str = format!(">{:.0}s", duration_s);
                 report.push_str(&format!(
                     "| {:<width$} | {:>7} | {:>7} | {:>7} | {:>7} | {:>7} | {:>7} |\n",
-                    result.gateway,
+                    result.gateway.label(),
                     duration_str,
                     duration_str,
                     duration_str,
@@ -227,16 +243,11 @@ pub fn generate_report_with_options(
                 }
                 (true, false) => std::cmp::Ordering::Less, // a has data, b doesn't -> a comes first
                 (false, true) => std::cmp::Ordering::Greater, // b has data, a doesn't -> b comes first
-                (false, false) => a.gateway.cmp(&b.gateway),  // Neither has data, sort by name
+                (false, false) => a.gateway.label().cmp(b.gateway.label()), // Neither has data, sort by name
             }
         });
 
         for result in &sorted_results {
-            tracing::debug!(
-                "Benchmark results: {}",
-                serde_json::to_string_pretty(result).unwrap()
-            );
-
             let resource_stats = &result.resource_stats;
 
             // Format CPU and Memory as mean ± std dev
@@ -253,7 +264,7 @@ pub fn generate_report_with_options(
             if result.has_failures() {
                 report.push_str(&format!(
                     "| {:<width$} | {:>12} | {:>7.0}% | {:>14} | {:>5.0}\u{00A0}MiB | {:>16} | {:>14} |\n",
-                    result.gateway,
+                    result.gateway.label(),
                     cpu_str,
                     resource_stats.cpu_usage_max * 100.0,
                     mem_str,
@@ -266,7 +277,7 @@ pub fn generate_report_with_options(
                 // u00A0 is a non-breaking space to prevent line breaks in the table
                 report.push_str(&format!(
                     "| {:<width$} | {:>12} | {:>7.0}% | {:>14} | {:>5.0}\u{00A0}MiB | {:>16.1} | {:>14.1} |\n",
-                    result.gateway,
+                    result.gateway.label(),
                     cpu_str,
                     resource_stats.cpu_usage_max * 100.0,
                     mem_str,
@@ -321,7 +332,7 @@ pub fn generate_report_with_options(
                 }
                 (true, false) => std::cmp::Ordering::Less, // a has data, b doesn't -> a comes first
                 (false, true) => std::cmp::Ordering::Greater, // b has data, a doesn't -> b comes first
-                (false, false) => a.gateway.cmp(&b.gateway),  // Neither has data, sort by name
+                (false, false) => a.gateway.label().cmp(b.gateway.label()), // Neither has data, sort by name
             }
         });
 
@@ -347,7 +358,7 @@ pub fn generate_report_with_options(
 
             report.push_str(&format!(
                 "| {:<width$} | {:>8} | {:>8} | {:>25} |\n",
-                result.gateway,
+                result.gateway.label(),
                 requests_count,
                 failures,
                 sub,
@@ -365,7 +376,7 @@ pub fn generate_report_with_options(
 mod tests {
     use super::*;
     use crate::benchmark::BenchmarkResult;
-    use crate::config::{Config, ScenarioConfig};
+    use crate::config::{Config, Gateway, ScenarioConfig};
     use crate::k6::{
         CheckMetric, CounterMetric, CounterValues, HttpReqFailedValues, K6Run, K6Summary,
         K6SummaryMetrics, K6SummaryState, SubgraphStats, TrendMetric, TrendValues,
@@ -373,14 +384,59 @@ mod tests {
     use crate::resources::ResourceStats;
     use crate::system::SystemInfo;
     use std::collections::{BTreeMap, HashMap};
+    use std::sync::Arc;
     use std::time::Duration;
 
     #[test]
     fn test_generate_report_formatting() {
+        // Create mock gateways
+        let gateways = vec![
+            Arc::new(Gateway {
+                name: "a".to_string(),
+                gateways_path: std::path::PathBuf::from("/test/gateways"),
+                config: crate::config::GatewayConfig {
+                    label: "Gateway A".to_string(),
+                    image: "gateway-a:latest".to_string(),
+                    args: vec![],
+                    env: HashMap::new(),
+                },
+            }),
+            Arc::new(Gateway {
+                name: "b".to_string(),
+                gateways_path: std::path::PathBuf::from("/test/gateways"),
+                config: crate::config::GatewayConfig {
+                    label: "Gateway B".to_string(),
+                    image: "gateway-b:v2.0".to_string(),
+                    args: vec![],
+                    env: HashMap::new(),
+                },
+            }),
+            Arc::new(Gateway {
+                name: "c".to_string(),
+                gateways_path: std::path::PathBuf::from("/test/gateways"),
+                config: crate::config::GatewayConfig {
+                    label: "Gateway C".to_string(),
+                    image: "gateway-c:experimental".to_string(),
+                    args: vec![],
+                    env: HashMap::new(),
+                },
+            }),
+            Arc::new(Gateway {
+                name: "d-noresponse".to_string(),
+                gateways_path: std::path::PathBuf::from("/test/gateways"),
+                config: crate::config::GatewayConfig {
+                    label: "Gateway D".to_string(),
+                    image: "gateway-d:broken".to_string(),
+                    args: vec![],
+                    env: HashMap::new(),
+                },
+            }),
+        ];
+
         let results = vec![
             BenchmarkResult {
                 scenario: "simple-query".to_string(),
-                gateway: "A".to_string(),
+                gateway: gateways[0].clone(),
                 k6_run: K6Run {
                     start: time::OffsetDateTime::now_utc(),
                     end: time::OffsetDateTime::now_utc(),
@@ -427,7 +483,7 @@ mod tests {
             },
             BenchmarkResult {
                 scenario: "simple-query".to_string(),
-                gateway: "B".to_string(),
+                gateway: gateways[1].clone(),
                 k6_run: K6Run {
                     start: time::OffsetDateTime::now_utc(),
                     end: time::OffsetDateTime::now_utc(),
@@ -474,7 +530,7 @@ mod tests {
             },
             BenchmarkResult {
                 scenario: "complex-nested-query".to_string(),
-                gateway: "C".to_string(),
+                gateway: gateways[2].clone(),
                 k6_run: K6Run {
                     start: time::OffsetDateTime::now_utc(),
                     end: time::OffsetDateTime::now_utc(),
@@ -522,7 +578,7 @@ mod tests {
             // Add test case for gateway with no responses
             BenchmarkResult {
                 scenario: "complex-nested-query".to_string(),
-                gateway: "D-NoResponse".to_string(),
+                gateway: gateways[3].clone(),
                 k6_run: K6Run {
                     start: time::OffsetDateTime::now_utc(),
                     end: time::OffsetDateTime::now_utc(),
@@ -582,7 +638,7 @@ mod tests {
         let config = Config {
             scenarios,
             supergraphs: BTreeMap::new(),
-            gateways: Vec::new(),
+            gateways,
             current_dir: std::path::PathBuf::from("/test"),
         };
 
@@ -606,6 +662,15 @@ mod tests {
         - Linux Version: 6.16.1
         - Docker Version: 24.0.7
 
+        # Gateways
+
+        The following gateways were tested (as configured in `config.toml`):
+
+        - **Gateway A**: `gateway-a:latest`
+        - **Gateway B**: `gateway-b:v2.0`
+        - **Gateway C**: `gateway-c:experimental`
+        - **Gateway D**: `gateway-d:broken`
+
         # complex-nested-query
 
         Test scenario for complex nested GraphQL queries
@@ -616,8 +681,8 @@ mod tests {
 
         | Gateway      |     Min |     Med |     P90 |     P95 |     P99 |     Max |
         | :----------- | ------: | ------: | ------: | ------: | ------: | ------: |
-        | C            |  errors |  errors |  errors |  errors |  errors |  errors |
-        | D-NoResponse |    >60s |    >60s |    >60s |    >60s |    >60s |    >60s |
+        | c            |  errors |  errors |  errors |  errors |  errors |  errors |
+        | d-noresponse |    >60s |    >60s |    >60s |    >60s |    >60s |    >60s |
 
         ## Resources
 
@@ -625,8 +690,8 @@ mod tests {
 
         | Gateway      |          CPU |  CPU max |         Memory |   MEM max |  requests/core.s |  requests/GB.s |
         | :----------- | -----------: | -------: | -------------: | --------: | ---------------: | -------------: |
-        | C            |      12% ±9% |      46% |   512 ±156 MiB |  1025 MiB |           errors |         errors |
-        | D-NoResponse |       1% ±0% |       2% |     100 ±5 MiB |   110 MiB |              0.0 |            0.0 |
+        | c            |      12% ±9% |      46% |   512 ±156 MiB |  1025 MiB |           errors |         errors |
+        | d-noresponse |       1% ±0% |       2% |     100 ±5 MiB |   110 MiB |              0.0 |            0.0 |
 
         ## Requests
 
@@ -634,8 +699,8 @@ mod tests {
 
         | Gateway      | Requests | Failures | Subgraph requests (total) |
         | :----------- | -------: | -------: | ------------------------: |
-        | C            |      234 |       10 |                2.15 (502) |
-        | D-NoResponse |        0 |        0 |                     0 (0) |
+        | c            |      234 |       10 |                2.15 (502) |
+        | d-noresponse |        0 |        0 |                     0 (0) |
 
         # simple-query
 
@@ -647,8 +712,8 @@ mod tests {
 
         | Gateway |     Min |     Med |     P90 |     P95 |     P99 |     Max |
         | :------ | ------: | ------: | ------: | ------: | ------: | ------: |
-        | A       |    16.5 |    19.1 |    21.2 |    24.4 |    27.3 |    63.6 |
-        | B       |    18.2 |    21.5 |    24.1 |    27.2 |    31.5 |    72.3 |
+        | a       |    16.5 |    19.1 |    21.2 |    24.4 |    27.3 |    63.6 |
+        | b       |    18.2 |    21.5 |    24.1 |    27.2 |    31.5 |    72.3 |
 
         ## Resources
 
@@ -656,8 +721,8 @@ mod tests {
 
         | Gateway |          CPU |  CPU max |         Memory |   MEM max |  requests/core.s |  requests/GB.s |
         | :------ | -----------: | -------: | -------------: | --------: | ---------------: | -------------: |
-        | A       |       3% ±2% |      10% |     192 ±8 MiB |   205 MiB |            476.5 |          249.5 |
-        | B       |       4% ±3% |      15% |    220 ±12 MiB |   246 MiB |            327.6 |          207.5 |
+        | a       |       3% ±2% |      10% |     192 ±8 MiB |   205 MiB |            476.5 |          249.5 |
+        | b       |       4% ±3% |      15% |    220 ±12 MiB |   246 MiB |            327.6 |          207.5 |
 
         ## Requests
 
@@ -665,8 +730,8 @@ mod tests {
 
         | Gateway | Requests | Failures | Subgraph requests (total) |
         | :------ | -------: | -------: | ------------------------: |
-        | A       |      251 |        0 |                2.00 (502) |
-        | B       |      234 |        0 |                2.15 (502) |
+        | a       |      251 |        0 |                2.00 (502) |
+        | b       |      234 |        0 |                2.15 (502) |
         ");
     }
 }

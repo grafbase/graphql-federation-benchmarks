@@ -41,7 +41,7 @@ pub fn generate_quality_chart(
         let gateway_data: Vec<(&str, &BenchmarkResult)> = results
             .iter()
             .filter(|r| r.is_valid())
-            .map(|r| (r.gateway.as_str(), *r))
+            .map(|r| (r.gateway.label(), *r))
             .collect();
 
         // Create color mapping based on alphabetically sorted gateway names
@@ -174,15 +174,40 @@ pub fn generate_quality_chart_to_file(
 
 #[cfg(test)]
 mod tests {
+    use std::sync::Arc;
+
     use super::*;
-    use crate::charts::tests::*;
+    use crate::{charts::tests::*, config::Gateway};
 
     #[test]
     fn test_generate_quality_chart() {
+        let gateways = [
+            Arc::new(Gateway {
+                name: "a".to_string(),
+                gateways_path: std::path::PathBuf::from("/test/gateways"),
+                config: crate::config::GatewayConfig {
+                    label: "Gateway A".to_string(),
+                    image: "gateway-a:latest".to_string(),
+                    args: vec![],
+                    env: HashMap::new(),
+                },
+            }),
+            Arc::new(Gateway {
+                name: "b".to_string(),
+                gateways_path: std::path::PathBuf::from("/test/gateways"),
+                config: crate::config::GatewayConfig {
+                    label: "Gateway B".to_string(),
+                    image: "gateway-b:v2.0".to_string(),
+                    args: vec![],
+                    env: HashMap::new(),
+                },
+            }),
+        ];
+
         let results = vec![
             BenchmarkResult {
                 scenario: "test-scenario".to_string(),
-                gateway: "Gateway A".to_string(),
+                gateway: gateways[0].clone(),
                 k6_run: K6Run {
                     start: time::OffsetDateTime::now_utc(),
                     end: time::OffsetDateTime::now_utc(),
@@ -224,7 +249,7 @@ mod tests {
             },
             BenchmarkResult {
                 scenario: "test-scenario".to_string(),
-                gateway: "Gateway B".to_string(),
+                gateway: gateways[1].clone(),
                 k6_run: K6Run {
                     start: time::OffsetDateTime::now_utc(),
                     end: time::OffsetDateTime::now_utc(),

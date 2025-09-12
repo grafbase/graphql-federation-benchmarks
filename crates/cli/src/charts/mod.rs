@@ -108,7 +108,11 @@ const KILO_THRESHOLD: f64 = 1000.0;
 
 /// Calculate the legend width based on gateway names
 fn calculate_legend_width(results: &[&BenchmarkResult]) -> u32 {
-    let max_name_len = results.iter().map(|r| r.gateway.len()).max().unwrap_or(0) as u32;
+    let max_name_len = results
+        .iter()
+        .map(|r| r.gateway.label().len())
+        .max()
+        .unwrap_or(0) as u32;
 
     // Calculate width: box + spacing + text
     let width =
@@ -118,7 +122,7 @@ fn calculate_legend_width(results: &[&BenchmarkResult]) -> u32 {
 
 /// Create color mapping based on alphabetically sorted gateway names
 fn create_color_map<'a>(results: &[&'a BenchmarkResult]) -> HashMap<&'a str, RGBColor> {
-    let mut gateway_names: Vec<&str> = results.iter().map(|r| r.gateway.as_str()).collect();
+    let mut gateway_names: Vec<&str> = results.iter().map(|r| r.gateway.label()).collect();
     gateway_names.sort();
     gateway_names.dedup();
 
@@ -145,11 +149,11 @@ fn draw_legend_all(
     sorted_results.sort_unstable_by(|a, b| match (a.is_valid(), b.is_valid()) {
         (true, false) => std::cmp::Ordering::Less,
         (false, true) => std::cmp::Ordering::Greater,
-        _ => a.gateway.cmp(&b.gateway),
+        _ => a.gateway.label().cmp(b.gateway.label()),
     });
 
     for (idx, result) in sorted_results.iter().enumerate() {
-        let gateway_name = result.gateway.as_str();
+        let gateway_name = result.gateway.label();
         let color = color_map[gateway_name];
         let y_pos = legend_y_start + (idx as i32 * legend_item_height);
         let is_valid = result.is_valid();
