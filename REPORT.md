@@ -126,6 +126,8 @@ K6 runs with 10 VUs to put some pressure on the gateways.
 | Apollo Router    | 221.3 | 302.6 | 358.4 | 371.8 | 448.9 | 567.5 |
 | Hive Gateway     | 210.8 | 399.3 | 569.2 | 592.4 | 751.6 | 792.2 |
 
+\*Hive router doesn't respect the authorization header and deduplicates requests. So the `hive-router` results are effectively not comparable.
+
 ## Resources
 
 ![Efficiency Chart](charts/long-lived-big-response-efficiency.svg)
@@ -137,6 +139,8 @@ K6 runs with 10 VUs to put some pressure on the gateways.
 | Hive Gateway     |  345% ±5% |    362% |  1759 ±55 MiB | 1852 MiB |             6.4 |          12.8 |
 | Apollo Router    | 452% ±24% |    506% | 2285 ±183 MiB | 2678 MiB |             6.4 |          12.4 |
 | Cosmo Router     | 811% ±96% |   1009% |   816 ±59 MiB | 1024 MiB |             4.7 |          47.7 |
+
+\*Hive router doesn't respect the authorization header and deduplicates requests. So the `hive-router` results are effectively not comparable.
 
 ## Requests
 
@@ -230,6 +234,8 @@ K6 runs with a constant throughput of 500 requests/s
 | Apollo Router    | 45.4 |  48.0 |  49.0 |  49.6 |  50.5 |  76.1 |
 | Hive Gateway     | 76.5 | 381.8 | 498.9 | 541.3 | 604.3 | 943.6 |
 
+\*Hive router doesn't respect the authorization header and deduplicates requests. So the `hive-router` results are effectively not comparable.
+
 ## Resources
 
 ![Efficiency Chart](charts/query-efficiency.svg)
@@ -241,6 +247,8 @@ K6 runs with a constant throughput of 500 requests/s
 | Apollo Router    | 263% ±4% |    275% |   182 ±5 MiB |  194 MiB |           181.9 |        2631.9 |
 | Cosmo Router     | 334% ±4% |    346% |    62 ±2 MiB |   66 MiB |           144.2 |        7695.6 |
 | Hive Gateway     | 378% ±9% |    406% | 2059 ±94 MiB | 2103 MiB |           114.4 |         226.2 |
+
+\*Hive router doesn't respect the authorization header and deduplicates requests. So the `hive-router` results are effectively not comparable.
 
 ## Requests
 
