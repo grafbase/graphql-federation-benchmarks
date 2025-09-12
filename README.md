@@ -4,7 +4,7 @@ This repo contains a list of complex benchmark cases to measure the performance 
 
 ## Latest report
 
-[report (2025-09-05)](./REPORT.md)
+[report (2025-09-12)](./REPORT.md)
 
 ## Methodology
 
