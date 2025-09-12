@@ -120,7 +120,7 @@ K6 runs with 10 VUs to put some pressure on the gateways.
 
 | Gateway          |   Min |   Med |   P90 |   P95 |   P99 |   Max |
 | :--------------- | ----: | ----: | ----: | ----: | ----: | ----: |
-| Hive Router      | 107.6 | 141.7 | 155.5 | 160.2 | 168.2 | 266.2 |
+| Hive Router\*    | 107.6 | 141.7 | 155.5 | 160.2 | 168.2 | 266.2 |
 | Grafbase Gateway | 128.2 | 158.3 | 175.4 | 181.7 | 194.8 | 277.3 |
 | Cosmo Router     | 143.0 | 207.6 | 234.7 | 241.9 | 255.0 | 361.5 |
 | Apollo Router    | 221.3 | 302.6 | 358.4 | 371.8 | 448.9 | 567.5 |
@@ -132,7 +132,7 @@ K6 runs with 10 VUs to put some pressure on the gateways.
 
 | Gateway          |       CPU | CPU max |        Memory |  MEM max | requests/core.s | requests/GB.s |
 | :--------------- | --------: | ------: | ------------: | -------: | --------------: | ------------: |
-| Hive Router      |  226% ±8% |    246% |   520 ±15 MiB |  558 MiB |            28.1 |         126.4 |
+| Hive Router\*    |  226% ±8% |    246% |   520 ±15 MiB |  558 MiB |            28.1 |         126.4 |
 | Grafbase Gateway |  215% ±7% |    230% |   323 ±20 MiB |  358 MiB |            26.8 |         176.5 |
 | Hive Gateway     |  345% ±5% |    362% |  1759 ±55 MiB | 1852 MiB |             6.4 |          12.8 |
 | Apollo Router    | 452% ±24% |    506% | 2285 ±183 MiB | 2678 MiB |             6.4 |          12.4 |
@@ -144,11 +144,13 @@ K6 runs with 10 VUs to put some pressure on the gateways.
 
 | Gateway          | Requests | Failures | Subgraph requests (total) |
 | :--------------- | -------: | -------: | ------------------------: |
-| Hive Router      |     4145 |        0 |               0.36 (1510) |
+| Hive Router\*    |     4145 |        0 |               0.36 (1510) |
 | Apollo Router    |     1949 |        0 |               2.00 (3898) |
 | Cosmo Router     |     2870 |        0 |               2.00 (5740) |
 | Grafbase Gateway |     3711 |        0 |               2.00 (7422) |
 | Hive Gateway     |     1399 |        0 |               2.00 (2798) |
+
+\*Hive router doesn't respect the authorization header and deduplicates requests. So the `hive-router` results are effectively not comparable.
 
 # many-plans
 
@@ -222,7 +224,7 @@ K6 runs with a constant throughput of 500 requests/s
 
 | Gateway          |  Min |   Med |   P90 |   P95 |   P99 |   Max |
 | :--------------- | ---: | ----: | ----: | ----: | ----: | ----: |
-| Hive Router      | 14.3 |  40.4 |  45.6 |  46.4 |  47.5 |  49.9 |
+| Hive Router\*    | 14.3 |  40.4 |  45.6 |  46.4 |  47.5 |  49.9 |
 | Grafbase Gateway | 43.4 |  45.4 |  46.7 |  47.2 |  47.9 |  77.5 |
 | Cosmo Router     | 44.0 |  46.9 |  48.3 |  48.8 |  49.7 |  56.3 |
 | Apollo Router    | 45.4 |  48.0 |  49.0 |  49.6 |  50.5 |  76.1 |
@@ -234,7 +236,7 @@ K6 runs with a constant throughput of 500 requests/s
 
 | Gateway          |      CPU | CPU max |       Memory |  MEM max | requests/core.s | requests/GB.s |
 | :--------------- | -------: | ------: | -----------: | -------: | --------------: | ------------: |
-| Hive Router      |  44% ±2% |     47% |   160 ±3 MiB |  169 MiB |          1066.4 |        3024.8 |
+| Hive Router\*    |  44% ±2% |     47% |   160 ±3 MiB |  169 MiB |          1066.4 |        3024.8 |
 | Grafbase Gateway |  62% ±2% |     67% |    75 ±2 MiB |   79 MiB |           746.8 |        6443.9 |
 | Apollo Router    | 263% ±4% |    275% |   182 ±5 MiB |  194 MiB |           181.9 |        2631.9 |
 | Cosmo Router     | 334% ±4% |    346% |    62 ±2 MiB |   66 MiB |           144.2 |        7695.6 |
@@ -246,8 +248,10 @@ K6 runs with a constant throughput of 500 requests/s
 
 | Gateway          | Requests | Failures | Subgraph requests (total) |
 | :--------------- | -------: | -------: | ------------------------: |
-| Hive Router      |    29985 |        0 |              1.29 (38648) |
+| Hive Router\*    |    29985 |        0 |              1.29 (38648) |
 | Hive Gateway     |    28014 |        0 |             7.00 (196187) |
 | Cosmo Router     |    29983 |        0 |             8.01 (240197) |
 | Grafbase Gateway |    29985 |        0 |             13.0 (389805) |
 | Apollo Router    |    29983 |        0 |             16.0 (479728) |
+
+\*Hive router doesn't respect the authorization header and deduplicates requests. So the `hive-router` results are effectively not comparable.
