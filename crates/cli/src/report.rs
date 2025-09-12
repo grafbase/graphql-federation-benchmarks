@@ -210,9 +210,9 @@ pub fn generate_report_with_options(
         report.push_str(&format!(
             "| {:<width$} | {:>12} | {:>8} | {:>14} | {:>9} | {:>16} | {:>14} |\n",
             "Gateway",
-            "CPU",
+            "CPU avg",
             "CPU max",
-            "Memory",
+            "MEM avg",
             "MEM max",
             "requests/core.s",
             "requests/GB.s",
@@ -666,10 +666,10 @@ mod tests {
 
         The following gateways were tested (as configured in `config.toml`):
 
-        - **Gateway A**: `gateway-a:latest`
-        - **Gateway B**: `gateway-b:v2.0`
-        - **Gateway C**: `gateway-c:experimental`
-        - **Gateway D**: `gateway-d:broken`
+        - a: gateway-a:latest
+        - b: gateway-b:v2.0
+        - c: gateway-c:experimental
+        - d-noresponse: gateway-d:broken
 
         # complex-nested-query
 
@@ -679,28 +679,28 @@ mod tests {
 
         ![Latency Chart](charts/complex-nested-query-latency.svg)
 
-        | Gateway      |     Min |     Med |     P90 |     P95 |     P99 |     Max |
-        | :----------- | ------: | ------: | ------: | ------: | ------: | ------: |
-        | c            |  errors |  errors |  errors |  errors |  errors |  errors |
-        | d-noresponse |    >60s |    >60s |    >60s |    >60s |    >60s |    >60s |
+        | Gateway   |     Min |     Med |     P90 |     P95 |     P99 |     Max |
+        | :-------- | ------: | ------: | ------: | ------: | ------: | ------: |
+        | Gateway C |  errors |  errors |  errors |  errors |  errors |  errors |
+        | Gateway D |    >60s |    >60s |    >60s |    >60s |    >60s |    >60s |
 
         ## Resources
 
         ![Efficiency Chart](charts/complex-nested-query-efficiency.svg)
 
-        | Gateway      |          CPU |  CPU max |         Memory |   MEM max |  requests/core.s |  requests/GB.s |
-        | :----------- | -----------: | -------: | -------------: | --------: | ---------------: | -------------: |
-        | c            |      12% ±9% |      46% |   512 ±156 MiB |  1025 MiB |           errors |         errors |
-        | d-noresponse |       1% ±0% |       2% |     100 ±5 MiB |   110 MiB |              0.0 |            0.0 |
+        | Gateway   |      CPU avg |  CPU max |        MEM avg |   MEM max |  requests/core.s |  requests/GB.s |
+        | :-------- | -----------: | -------: | -------------: | --------: | ---------------: | -------------: |
+        | Gateway C |      12% ±9% |      46% |   512 ±156 MiB |  1025 MiB |           errors |         errors |
+        | Gateway D |       1% ±0% |       2% |     100 ±5 MiB |   110 MiB |              0.0 |            0.0 |
 
         ## Requests
 
         ![Quality Chart](charts/complex-nested-query-quality.svg)
 
-        | Gateway      | Requests | Failures | Subgraph requests (total) |
-        | :----------- | -------: | -------: | ------------------------: |
-        | c            |      234 |       10 |                2.15 (502) |
-        | d-noresponse |        0 |        0 |                     0 (0) |
+        | Gateway   | Requests | Failures | Subgraph requests (total) |
+        | :-------- | -------: | -------: | ------------------------: |
+        | Gateway C |      234 |       10 |                2.15 (502) |
+        | Gateway D |        0 |        0 |                     0 (0) |
 
         # simple-query
 
@@ -710,28 +710,28 @@ mod tests {
 
         ![Latency Chart](charts/simple-query-latency.svg)
 
-        | Gateway |     Min |     Med |     P90 |     P95 |     P99 |     Max |
-        | :------ | ------: | ------: | ------: | ------: | ------: | ------: |
-        | a       |    16.5 |    19.1 |    21.2 |    24.4 |    27.3 |    63.6 |
-        | b       |    18.2 |    21.5 |    24.1 |    27.2 |    31.5 |    72.3 |
+        | Gateway   |     Min |     Med |     P90 |     P95 |     P99 |     Max |
+        | :-------- | ------: | ------: | ------: | ------: | ------: | ------: |
+        | Gateway A |    16.5 |    19.1 |    21.2 |    24.4 |    27.3 |    63.6 |
+        | Gateway B |    18.2 |    21.5 |    24.1 |    27.2 |    31.5 |    72.3 |
 
         ## Resources
 
         ![Efficiency Chart](charts/simple-query-efficiency.svg)
 
-        | Gateway |          CPU |  CPU max |         Memory |   MEM max |  requests/core.s |  requests/GB.s |
-        | :------ | -----------: | -------: | -------------: | --------: | ---------------: | -------------: |
-        | a       |       3% ±2% |      10% |     192 ±8 MiB |   205 MiB |            476.5 |          249.5 |
-        | b       |       4% ±3% |      15% |    220 ±12 MiB |   246 MiB |            327.6 |          207.5 |
+        | Gateway   |      CPU avg |  CPU max |        MEM avg |   MEM max |  requests/core.s |  requests/GB.s |
+        | :-------- | -----------: | -------: | -------------: | --------: | ---------------: | -------------: |
+        | Gateway A |       3% ±2% |      10% |     192 ±8 MiB |   205 MiB |            476.5 |          249.5 |
+        | Gateway B |       4% ±3% |      15% |    220 ±12 MiB |   246 MiB |            327.6 |          207.5 |
 
         ## Requests
 
         ![Quality Chart](charts/simple-query-quality.svg)
 
-        | Gateway | Requests | Failures | Subgraph requests (total) |
-        | :------ | -------: | -------: | ------------------------: |
-        | a       |      251 |        0 |                2.00 (502) |
-        | b       |      234 |        0 |                2.15 (502) |
+        | Gateway   | Requests | Failures | Subgraph requests (total) |
+        | :-------- | -------: | -------: | ------------------------: |
+        | Gateway A |      251 |        0 |                2.00 (502) |
+        | Gateway B |      234 |        0 |                2.15 (502) |
         ");
     }
 }
