@@ -15,14 +15,14 @@ pub struct Query;
 #[Object]
 impl Query {
     async fn node(&self) -> Option<Node> {
-        Some(Node::new())
+        Some(Node::new("0".to_string()))
     }
 
     #[graphql(entity)]
     async fn find_node_by_id0(&self, id0: ID) -> Node {
         Node {
             id0: id0.to_string(),
-            ..Node::new()
+            ..Node::new(id0.into())
         }
     }
 }
@@ -43,43 +43,39 @@ pub struct Node {
 #[ComplexObject]
 impl Node {
     async fn n0(&self) -> Option<Node> {
-        Some(Self::new())
+        Some(Self::new(format!("{}0", self.id0)))
     }
     async fn n1(&self) -> Option<Node> {
-        Some(Self::new())
+        Some(Self::new(format!("{}1", self.id0)))
     }
     async fn n2(&self) -> Option<Node> {
-        Some(Self::new())
+        Some(Self::new(format!("{}2", self.id0)))
     }
     async fn n3(&self) -> Option<Node> {
-        Some(Self::new())
+        Some(Self::new(format!("{}3", self.id0)))
     }
     async fn n4(&self) -> Option<Node> {
-        Some(Self::new())
+        Some(Self::new(format!("{}4", self.id0)))
     }
     async fn n5(&self) -> Option<Node> {
-        Some(Self::new())
+        Some(Self::new(format!("{}5", self.id0)))
     }
     async fn n6(&self) -> Option<Node> {
-        Some(Self::new())
+        Some(Self::new(format!("{}6", self.id0)))
     }
 }
 
 impl Node {
-    pub fn new() -> Self {
-        #[allow(unused)]
-        let id: u64 = rand::random();
-        let id = 0;
-
+    pub fn new(id0: String) -> Self {
         Node {
-            id0: format!("id1-{id}"),
-            f0: Some(format!("f0-{id}")),
-            f1: Some(format!("f1-{id}")),
-            f2: Some(format!("f2-{id}")),
-            f3: Some(format!("f3-{id}")),
-            f4: Some(format!("f4-{id}")),
-            f5: Some(format!("f5-{id}")),
-            f6: Some(format!("f6-{id}")),
+            f0: Some(format!("f0-{id0}")),
+            f1: Some(format!("f1-{id0}")),
+            f2: Some(format!("f2-{id0}")),
+            f3: Some(format!("f3-{id0}")),
+            f4: Some(format!("f4-{id0}")),
+            f5: Some(format!("f5-{id0}")),
+            f6: Some(format!("f6-{id0}")),
+            id0,
         }
     }
 }

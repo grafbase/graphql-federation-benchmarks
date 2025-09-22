@@ -25,7 +25,7 @@ function generateRandomToken() {
   );
 }
 
-export default function () {
+export default function() {
   const params = {
     headers: {
       "Content-Type": "application/json",

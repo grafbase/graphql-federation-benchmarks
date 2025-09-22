@@ -11,34 +11,34 @@ Latency (ms)
 0
 </text>
 <polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="84,529 89,529 "/>
-<text x="80" y="466" dy="0.5ex" text-anchor="end" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000">
+<text x="80" y="465" dy="0.5ex" text-anchor="end" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000">
 500
 </text>
-<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="84,466 89,466 "/>
-<text x="80" y="403" dy="0.5ex" text-anchor="end" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000">
+<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="84,465 89,465 "/>
+<text x="80" y="401" dy="0.5ex" text-anchor="end" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000">
 1000
 </text>
-<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="84,403 89,403 "/>
-<text x="80" y="339" dy="0.5ex" text-anchor="end" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000">
+<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="84,401 89,401 "/>
+<text x="80" y="337" dy="0.5ex" text-anchor="end" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000">
 1500
 </text>
-<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="84,339 89,339 "/>
-<text x="80" y="276" dy="0.5ex" text-anchor="end" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000">
+<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="84,337 89,337 "/>
+<text x="80" y="273" dy="0.5ex" text-anchor="end" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000">
 2000
 </text>
-<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="84,276 89,276 "/>
-<text x="80" y="213" dy="0.5ex" text-anchor="end" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000">
+<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="84,273 89,273 "/>
+<text x="80" y="208" dy="0.5ex" text-anchor="end" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000">
 2500
 </text>
-<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="84,213 89,213 "/>
-<text x="80" y="149" dy="0.5ex" text-anchor="end" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000">
+<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="84,208 89,208 "/>
+<text x="80" y="144" dy="0.5ex" text-anchor="end" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000">
 3000
 </text>
-<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="84,149 89,149 "/>
-<text x="80" y="86" dy="0.5ex" text-anchor="end" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000">
+<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="84,144 89,144 "/>
+<text x="80" y="80" dy="0.5ex" text-anchor="end" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000">
 3500
 </text>
-<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="84,86 89,86 "/>
+<polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="84,80 89,80 "/>
 <polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="90,530 579,530 "/>
 <text x="171" y="540" dy="0.76em" text-anchor="middle" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000">
 Median
@@ -56,10 +56,10 @@ p99
 <rect x="269" y="529" width="18" height="0" opacity="1" fill="#BDE56C" stroke="none"/>
 <rect x="432" y="529" width="18" height="0" opacity="1" fill="#BDE56C" stroke="none"/>
 <text x="115" y="520" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 115, 520)">
-2.0
+2.1
 </text>
 <text x="278" y="520" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 278, 520)">
-2.3
+2.4
 </text>
 <text x="441" y="520" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 441, 520)">
 2.5
@@ -74,67 +74,67 @@ p99
 10.1
 </text>
 <text x="460" y="519" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 460, 519)">
-11.0
+11.4
 </text>
 <rect x="143" y="527" width="19" height="2" opacity="1" fill="#E796F3" stroke="none"/>
 <rect x="306" y="527" width="19" height="2" opacity="1" fill="#E796F3" stroke="none"/>
 <rect x="469" y="527" width="19" height="2" opacity="1" fill="#E796F3" stroke="none"/>
 <text x="152" y="518" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 152, 518)">
-17.7
+18.3
 </text>
 <text x="315" y="518" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 315, 518)">
-19.4
+19.6
 </text>
 <text x="478" y="517" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 478, 517)">
-20.3
+20.2
 </text>
 <rect x="162" y="527" width="18" height="2" opacity="1" fill="#9EB1FF" stroke="none"/>
 <rect x="325" y="527" width="18" height="2" opacity="1" fill="#9EB1FF" stroke="none"/>
 <rect x="488" y="527" width="18" height="2" opacity="1" fill="#9EB1FF" stroke="none"/>
-<text x="171" y="518" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 171, 518)">
-19.5
+<text x="171" y="517" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 171, 517)">
+19.6
 </text>
 <text x="334" y="517" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 334, 517)">
-20.4
+20.7
 </text>
 <text x="497" y="517" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 497, 517)">
-21.3
+21.8
 </text>
-<rect x="180" y="526" width="19" height="3" opacity="1" fill="#FFC107" stroke="none"/>
-<rect x="343" y="525" width="19" height="4" opacity="1" fill="#FFC107" stroke="none"/>
-<rect x="506" y="524" width="19" height="5" opacity="1" fill="#FFC107" stroke="none"/>
-<text x="190" y="516" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 190, 516)">
-29.2
+<rect x="180" y="524" width="19" height="5" opacity="1" fill="#FFC107" stroke="none"/>
+<rect x="343" y="523" width="19" height="6" opacity="1" fill="#FFC107" stroke="none"/>
+<rect x="506" y="519" width="19" height="10" opacity="1" fill="#FFC107" stroke="none"/>
+<text x="190" y="514" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 190, 514)">
+45.0
 </text>
-<text x="353" y="516" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 353, 516)">
-32.6
+<text x="353" y="514" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 353, 514)">
+50.4
 </text>
-<text x="516" y="514" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 516, 514)">
-47.1
+<text x="516" y="509" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 516, 509)">
+84.1
 </text>
-<rect x="199" y="485" width="19" height="44" opacity="1" fill="#DF682D" stroke="none"/>
-<rect x="362" y="484" width="19" height="45" opacity="1" fill="#DF682D" stroke="none"/>
-<rect x="525" y="484" width="19" height="45" opacity="1" fill="#DF682D" stroke="none"/>
+<rect x="199" y="484" width="19" height="45" opacity="1" fill="#DF682D" stroke="none"/>
+<rect x="362" y="483" width="19" height="46" opacity="1" fill="#DF682D" stroke="none"/>
+<rect x="525" y="483" width="19" height="46" opacity="1" fill="#DF682D" stroke="none"/>
 <text x="208" y="475" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 208, 475)">
 353
 </text>
 <text x="371" y="474" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 371, 474)">
-359
+360
 </text>
-<text x="534" y="474" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 534, 474)">
+<text x="534" y="473" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 534, 473)">
 363
 </text>
-<rect x="218" y="108" width="18" height="421" opacity="1" fill="#1E90FF" stroke="none"/>
-<rect x="381" y="103" width="18" height="426" opacity="1" fill="#1E90FF" stroke="none"/>
+<rect x="218" y="105" width="18" height="424" opacity="1" fill="#1E90FF" stroke="none"/>
+<rect x="381" y="100" width="18" height="429" opacity="1" fill="#1E90FF" stroke="none"/>
 <rect x="544" y="99" width="18" height="430" opacity="1" fill="#1E90FF" stroke="none"/>
-<text x="227" y="99" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 227, 99)">
-3322
+<text x="227" y="96" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 227, 96)">
+3302
 </text>
-<text x="390" y="93" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 390, 93)">
-3369
+<text x="390" y="91" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 390, 91)">
+3340
 </text>
 <text x="553" y="89" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 553, 89)">
-3400
+3353
 </text>
 <rect x="605" y="60" width="15" height="15" opacity="1" fill="#07A865" stroke="none"/>
 <text x="625" y="63" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="14.516129032258064" opacity="1" fill="#000000">
