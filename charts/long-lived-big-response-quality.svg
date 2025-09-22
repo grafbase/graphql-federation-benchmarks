@@ -35,8 +35,8 @@ Average Subgraph Requests
 3
 </text>
 <polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="54,80 59,80 "/>
-<rect x="72" y="528" width="103" height="61" opacity="1" fill="#BDE56C" stroke="none"/>
-<text x="123" y="518" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 123, 518)">
+<rect x="72" y="526" width="103" height="63" opacity="1" fill="#BDE56C" stroke="none"/>
+<text x="123" y="516" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 123, 516)">
 0.4
 </text>
 <rect x="200" y="250" width="102" height="339" opacity="1" fill="#07A865" stroke="none"/>

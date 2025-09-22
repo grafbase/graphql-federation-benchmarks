@@ -27,28 +27,32 @@ Average Subgraph Requests
 200
 </text>
 <polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="54,135 59,135 "/>
-<rect x="68" y="413" width="71" height="176" opacity="1" fill="#BDE56C" stroke="none"/>
-<text x="104" y="403" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 104, 403)">
+<rect x="67" y="500" width="61" height="89" opacity="1" fill="#FFC107" stroke="none"/>
+<text x="97" y="489" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 97, 489)">
+40
+</text>
+<rect x="143" y="413" width="60" height="176" opacity="1" fill="#BDE56C" stroke="none"/>
+<text x="173" y="403" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 173, 403)">
 78
 </text>
-<rect x="156" y="413" width="71" height="176" opacity="1" fill="#9EB1FF" stroke="none"/>
-<text x="192" y="403" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 192, 403)">
+<rect x="218" y="413" width="61" height="176" opacity="1" fill="#9EB1FF" stroke="none"/>
+<text x="248" y="403" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 248, 403)">
 78
 </text>
-<rect x="245" y="158" width="70" height="431" opacity="1" fill="#DF682D" stroke="none"/>
-<text x="280" y="148" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 280, 148)">
-190
-</text>
-<rect x="333" y="150" width="70" height="439" opacity="1" fill="#E796F3" stroke="none"/>
-<text x="368" y="140" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 368, 140)">
+<rect x="294" y="152" width="60" height="437" opacity="1" fill="#E796F3" stroke="none"/>
+<text x="324" y="142" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 324, 142)">
 193
 </text>
-<rect x="421" y="128" width="71" height="461" opacity="1" fill="#07A865" stroke="none"/>
-<text x="456" y="118" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 456, 118)">
+<rect x="369" y="150" width="61" height="439" opacity="1" fill="#DF682D" stroke="none"/>
+<text x="400" y="140" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 400, 140)">
+193
+</text>
+<rect x="445" y="128" width="60" height="461" opacity="1" fill="#07A865" stroke="none"/>
+<text x="475" y="118" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 475, 118)">
 203
 </text>
-<rect x="509" y="128" width="71" height="461" opacity="1" fill="#1E90FF" stroke="none"/>
-<text x="544" y="118" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 544, 118)">
+<rect x="520" y="128" width="61" height="461" opacity="1" fill="#1E90FF" stroke="none"/>
+<text x="551" y="118" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 551, 118)">
 203
 </text>
 <rect x="605" y="60" width="15" height="15" opacity="1" fill="#07A865" stroke="none"/>
@@ -75,8 +79,8 @@ Grafbase Gateway
 <text x="625" y="188" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="14.516129032258064" opacity="1" fill="#000000">
 Grafbase Gateway (no cache)
 </text>
-<rect x="605" y="210" width="15" height="15" opacity="1" fill="#C8C8C8" stroke="none"/>
-<text x="625" y="213" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="14.516129032258064" opacity="1" fill="#808080">
+<rect x="605" y="210" width="15" height="15" opacity="1" fill="#FFC107" stroke="none"/>
+<text x="625" y="213" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="14.516129032258064" opacity="1" fill="#000000">
 Hive Gateway
 </text>
 <rect x="605" y="235" width="15" height="15" opacity="1" fill="#C8C8C8" stroke="none"/>

@@ -51,20 +51,20 @@ Average Subgraph Requests
 1
 </text>
 <polyline fill="none" opacity="1" stroke="#000000" stroke-width="1" points="54,80 59,80 "/>
-<rect x="73" y="440" width="108" height="149" opacity="1" fill="#DF682D" stroke="none"/>
-<text x="127" y="430" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 127, 430)">
+<rect x="73" y="442" width="108" height="147" opacity="1" fill="#DF682D" stroke="none"/>
+<text x="127" y="432" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 127, 432)">
 0.3
 </text>
-<rect x="208" y="269" width="108" height="320" opacity="1" fill="#1E90FF" stroke="none"/>
-<text x="262" y="259" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 262, 259)">
+<rect x="208" y="270" width="108" height="319" opacity="1" fill="#1E90FF" stroke="none"/>
+<text x="262" y="260" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 262, 260)">
 0.6
 </text>
-<rect x="342" y="263" width="108" height="326" opacity="1" fill="#BDE56C" stroke="none"/>
-<text x="396" y="253" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 396, 253)">
+<rect x="342" y="262" width="108" height="327" opacity="1" fill="#BDE56C" stroke="none"/>
+<text x="396" y="251" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 396, 251)">
 0.6
 </text>
-<rect x="477" y="135" width="108" height="454" opacity="1" fill="#E796F3" stroke="none"/>
-<text x="531" y="125" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 531, 125)">
+<rect x="477" y="131" width="108" height="458" opacity="1" fill="#E796F3" stroke="none"/>
+<text x="531" y="121" dy="0.76em" text-anchor="start" font-family="sans-serif" font-size="12.903225806451614" opacity="1" fill="#000000" transform="rotate(270, 531, 121)">
 0.9
 </text>
 <rect x="615" y="60" width="15" height="15" opacity="1" fill="#1E90FF" stroke="none"/>

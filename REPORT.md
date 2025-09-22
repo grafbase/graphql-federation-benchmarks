@@ -1,10 +1,10 @@
 # System Information
 
-- Date: 2025-09-12
+- Date: 2025-09-22
 - CPU: AMD Ryzen 9 7950X3D 16-Core Processor
 - Memory: 93.4 GiB
 - CPU Boost: Disabled
-- Git Commit: 597b22e771304c9e001f53f634442c2f4991a3f2
+- Git Commit: d12ddc8e72138f7448e2033f65ab0ed2d2b250da
 - Linux Version: 6.16.1
 - Docker Version: 28.3.3
 
@@ -19,7 +19,7 @@ The following gateways were tested (as configured in `config.toml`):
 - cosmo-no-cache: ghcr.io/wundergraph/cosmo/router:0.252.1
 - grafbase: ghcr.io/grafbase/gateway:0.49.1
 - grafbase-no-cache: ghcr.io/grafbase/gateway:0.49.1
-- hive-gateway: ghcr.io/graphql-hive/gateway:2.1.2
+- hive-gateway: ghcr.io/graphql-hive/gateway:2.1.6
 - hive-router: ghcr.io/graphql-hive/router:0.0.9
 
 # big-response
@@ -34,23 +34,23 @@ K6 runs with a single VU, executing requests sequentially, to measure the best c
 
 | Gateway          |   Min |   Med |   P90 |   P95 |   P99 |   Max |
 | :--------------- | ----: | ----: | ----: | ----: | ----: | ----: |
-| Hive Router      |  21.4 |  26.3 |  30.6 |  31.5 |  33.8 | 128.8 |
-| Grafbase Gateway |  26.0 |  29.4 |  32.3 |  33.4 |  35.4 | 133.0 |
-| Cosmo Router     |  45.8 |  65.2 |  72.4 |  74.6 |  78.7 | 181.8 |
-| Hive Gateway     |  95.4 | 100.3 | 109.8 | 111.3 | 116.0 | 324.1 |
-| Apollo Router    | 108.8 | 122.4 | 127.9 | 130.5 | 134.5 | 241.7 |
+| Hive Router      |  21.1 |  25.3 |  28.5 |  29.6 |  32.5 | 126.9 |
+| Grafbase Gateway |  25.4 |  29.6 |  32.6 |  33.8 |  36.0 | 130.1 |
+| Cosmo Router     |  46.0 |  65.4 |  73.9 |  75.7 |  79.4 | 172.3 |
+| Hive Gateway     |  97.3 | 102.4 | 113.0 | 114.2 | 119.2 | 337.3 |
+| Apollo Router    | 113.6 | 123.5 | 129.5 | 131.4 | 134.5 | 230.0 |
 
 ## Resources
 
 ![Efficiency Chart](charts/big-response-efficiency.svg)
 
-| Gateway          |       CPU | CPU max |      Memory | MEM max | requests/core.s | requests/GB.s |
+| Gateway          |   CPU avg | CPU max |     MEM avg | MEM max | requests/core.s | requests/GB.s |
 | :--------------- | --------: | ------: | ----------: | ------: | --------------: | ------------: |
-| Hive Router      |   81% ±1% |     83% |  180 ±4 MiB | 189 MiB |            41.7 |         187.4 |
-| Grafbase Gateway |   86% ±1% |     88% |   71 ±6 MiB |  82 MiB |            35.5 |         392.7 |
-| Apollo Router    |   96% ±0% |     96% | 487 ±50 MiB | 602 MiB |             8.3 |          13.6 |
-| Hive Gateway     |  120% ±2% |    124% | 930 ±20 MiB | 968 MiB |             7.7 |          10.1 |
-| Cosmo Router     | 248% ±18% |    302% | 107 ±18 MiB | 147 MiB |             4.9 |         103.6 |
+| Hive Router      |   79% ±1% |     81% |  191 ±4 MiB | 196 MiB |            44.1 |         187.4 |
+| Grafbase Gateway |   86% ±1% |     89% |   71 ±7 MiB |  89 MiB |            34.9 |         359.3 |
+| Apollo Router    |   96% ±0% |     97% | 459 ±70 MiB | 614 MiB |             8.2 |          13.2 |
+| Hive Gateway     |  119% ±2% |    123% | 901 ±21 MiB | 952 MiB |             7.6 |          10.0 |
+| Cosmo Router     | 252% ±19% |    306% | 148 ±17 MiB | 184 MiB |             4.8 |          82.7 |
 
 ## Requests
 
@@ -58,11 +58,11 @@ K6 runs with a single VU, executing requests sequentially, to measure the best c
 
 | Gateway          | Requests | Failures | Subgraph requests (total) |
 | :--------------- | -------: | -------: | ------------------------: |
-| Apollo Router    |      481 |        0 |                1.00 (481) |
-| Cosmo Router     |      894 |        0 |                1.00 (894) |
-| Grafbase Gateway |     1883 |        0 |               1.00 (1883) |
-| Hive Gateway     |      573 |        0 |                1.00 (573) |
-| Hive Router      |     2075 |        0 |               1.00 (2075) |
+| Apollo Router    |      476 |        0 |                1.00 (476) |
+| Cosmo Router     |      890 |        0 |                1.00 (890) |
+| Grafbase Gateway |     1867 |        0 |               1.00 (1867) |
+| Hive Gateway     |      561 |        0 |                1.00 (561) |
+| Hive Router      |     2152 |        0 |               1.00 (2152) |
 
 # deduplication
 
@@ -77,23 +77,23 @@ K6 runs with a constant throughput of 1000 requests/s
 
 | Gateway                    |    Min |    Med |    P90 |    P95 |    P99 |    Max |
 | :------------------------- | -----: | -----: | -----: | -----: | -----: | -----: |
-| Hive Router                |   13.2 |   40.0 |   45.5 |   46.3 |   47.7 |   50.4 |
-| Grafbase Gateway           |   19.4 |   41.4 |   46.0 |   47.0 |   48.3 |   55.7 |
-| Cosmo Router               |   12.7 |   43.4 |   49.9 |   51.3 |   53.9 |   67.7 |
-| Hive Gateway               |   81.1 |  234.5 |  348.9 |  389.3 |  440.6 | 1146.7 |
+| Hive Router                |   13.2 |   40.0 |   45.5 |   46.3 |   47.6 |   51.2 |
+| Grafbase Gateway           |   13.4 |   41.5 |   46.1 |   47.0 |   48.2 |   68.5 |
+| Cosmo Router               |   15.9 |   43.6 |   50.2 |   51.7 |   54.5 |   84.3 |
+| Hive Gateway               |   76.5 |  247.1 |  370.7 |  404.6 |  459.1 | 1414.0 |
 | Apollo Router (with dedup) | errors | errors | errors | errors | errors | errors |
 
 ## Resources
 
 ![Efficiency Chart](charts/deduplication-efficiency.svg)
 
-| Gateway                    |       CPU | CPU max |        Memory |  MEM max | requests/core.s | requests/GB.s |
+| Gateway                    |   CPU avg | CPU max |       MEM avg |  MEM max | requests/core.s | requests/GB.s |
 | :------------------------- | --------: | ------: | ------------: | -------: | --------------: | ------------: |
-| Hive Router                |   80% ±2% |     84% |    188 ±5 MiB |  198 MiB |          1190.7 |        5164.9 |
-| Grafbase Gateway           |  114% ±3% |    119% |     99 ±2 MiB |  103 MiB |           841.7 |        9960.6 |
-| Hive Gateway               | 390% ±10% |    421% | 2516 ±238 MiB | 2687 MiB |           173.2 |         278.0 |
-| Cosmo Router               |  569% ±6% |    582% |     84 ±5 MiB |   98 MiB |           171.6 |       10430.0 |
-| Apollo Router (with dedup) | 974% ±13% |   1007% |    203 ±5 MiB |  218 MiB |          errors |        errors |
+| Hive Router                |   80% ±2% |     85% |    187 ±4 MiB |  195 MiB |          1172.9 |        5242.7 |
+| Grafbase Gateway           |  113% ±3% |    119% |     99 ±2 MiB |  103 MiB |           842.3 |        9907.6 |
+| Cosmo Router               |  576% ±5% |    585% |     86 ±5 MiB |   96 MiB |           170.8 |       10605.4 |
+| Hive Gateway               |  391% ±9% |    424% | 2535 ±264 MiB | 2720 MiB |           164.5 |         262.6 |
+| Apollo Router (with dedup) | 977% ±15% |   1010% |    200 ±5 MiB |  220 MiB |          errors |        errors |
 
 ## Requests
 
@@ -101,11 +101,11 @@ K6 runs with a constant throughput of 1000 requests/s
 
 | Gateway                    | Requests | Failures | Subgraph requests (total) |
 | :------------------------- | -------: | -------: | ------------------------: |
-| Hive Gateway               |    43989 |        0 |              0.29 (12926) |
-| Cosmo Router               |    60001 |        0 |              0.63 (37763) |
-| Hive Router                |    60001 |        0 |              0.64 (38505) |
-| Grafbase Gateway           |    60001 |        0 |              0.89 (53552) |
-| Apollo Router (with dedup) |    60001 |       43 |              1.24 (74422) |
+| Hive Gateway               |    42092 |        0 |              0.29 (12186) |
+| Cosmo Router               |    60001 |        0 |              0.63 (37680) |
+| Hive Router                |    60001 |        0 |              0.64 (38655) |
+| Grafbase Gateway           |    60001 |        0 |              0.90 (54019) |
+| Apollo Router (with dedup) |    60001 |       36 |              1.24 (74287) |
 
 # long-lived-big-response
 
@@ -120,11 +120,11 @@ K6 runs with 10 VUs to put some pressure on the gateways.
 
 | Gateway          |   Min |   Med |   P90 |   P95 |   P99 |   Max |
 | :--------------- | ----: | ----: | ----: | ----: | ----: | ----: |
-| Hive Router\*    | 107.6 | 141.7 | 155.5 | 160.2 | 168.2 | 266.2 |
-| Grafbase Gateway | 128.2 | 158.3 | 175.4 | 181.7 | 194.8 | 277.3 |
-| Cosmo Router     | 143.0 | 207.6 | 234.7 | 241.9 | 255.0 | 361.5 |
-| Apollo Router    | 221.3 | 302.6 | 358.4 | 371.8 | 448.9 | 567.5 |
-| Hive Gateway     | 210.8 | 399.3 | 569.2 | 592.4 | 751.6 | 792.2 |
+| Hive Router\*    | 104.7 | 140.7 | 154.5 | 158.6 | 166.5 | 269.3 |
+| Grafbase Gateway | 127.8 | 159.9 | 177.4 | 182.8 | 195.5 | 269.6 |
+| Cosmo Router     | 144.1 | 208.7 | 235.5 | 242.7 | 255.7 | 368.6 |
+| Apollo Router    | 217.8 | 303.0 | 362.0 | 376.8 | 448.1 | 529.3 |
+| Hive Gateway     | 216.9 | 402.7 | 562.8 | 598.8 | 763.0 | 793.8 |
 
 \*Hive router doesn't respect the authorization header and deduplicates requests. So the `hive-router` results are effectively not comparable.
 
@@ -132,13 +132,13 @@ K6 runs with 10 VUs to put some pressure on the gateways.
 
 ![Efficiency Chart](charts/long-lived-big-response-efficiency.svg)
 
-| Gateway          |       CPU | CPU max |        Memory |  MEM max | requests/core.s | requests/GB.s |
-| :--------------- | --------: | ------: | ------------: | -------: | --------------: | ------------: |
-| Hive Router\*    |  226% ±8% |    246% |   520 ±15 MiB |  558 MiB |            28.1 |         126.4 |
-| Grafbase Gateway |  215% ±7% |    230% |   323 ±20 MiB |  358 MiB |            26.8 |         176.5 |
-| Hive Gateway     |  345% ±5% |    362% |  1759 ±55 MiB | 1852 MiB |             6.4 |          12.8 |
-| Apollo Router    | 452% ±24% |    506% | 2285 ±183 MiB | 2678 MiB |             6.4 |          12.4 |
-| Cosmo Router     | 811% ±96% |   1009% |   816 ±59 MiB | 1024 MiB |             4.7 |          47.7 |
+| Gateway          |    CPU avg | CPU max |       MEM avg |  MEM max | requests/core.s | requests/GB.s |
+| :--------------- | ---------: | ------: | ------------: | -------: | --------------: | ------------: |
+| Hive Router\*    |   227% ±6% |    242% |   533 ±18 MiB |  567 MiB |            28.7 |         125.6 |
+| Grafbase Gateway |   218% ±6% |    238% |   320 ±19 MiB |  350 MiB |            25.8 |         179.0 |
+| Hive Gateway     |   346% ±6% |    364% |  1959 ±97 MiB | 2104 MiB |             6.3 |          11.1 |
+| Apollo Router    |  458% ±28% |    539% | 2248 ±162 MiB | 2555 MiB |             6.0 |          12.9 |
+| Cosmo Router     | 801% ±108% |   1009% |   824 ±64 MiB |  976 MiB |             4.7 |          49.8 |
 
 \*Hive router doesn't respect the authorization header and deduplicates requests. So the `hive-router` results are effectively not comparable.
 
@@ -148,11 +148,11 @@ K6 runs with 10 VUs to put some pressure on the gateways.
 
 | Gateway          | Requests | Failures | Subgraph requests (total) |
 | :--------------- | -------: | -------: | ------------------------: |
-| Hive Router\*    |     4145 |        0 |               0.36 (1510) |
-| Apollo Router    |     1949 |        0 |               2.00 (3898) |
-| Cosmo Router     |     2870 |        0 |               2.00 (5740) |
-| Grafbase Gateway |     3711 |        0 |               2.00 (7422) |
-| Hive Gateway     |     1399 |        0 |               2.00 (2798) |
+| Hive Router\*    |     4183 |        0 |               0.37 (1563) |
+| Apollo Router    |     1940 |        0 |               2.00 (3880) |
+| Cosmo Router     |     2854 |        0 |               2.00 (5708) |
+| Grafbase Gateway |     3681 |        0 |               2.00 (7362) |
+| Hive Gateway     |     1384 |        0 |               2.00 (2768) |
 
 \*Hive router doesn't respect the authorization header and deduplicates requests. So the `hive-router` results are effectively not comparable.
 
@@ -177,28 +177,28 @@ K6 runs with a single VU.
 | Gateway                     |    Min |    Med |    P90 |    P95 |    P99 |    Max |
 | :-------------------------- | -----: | -----: | -----: | -----: | -----: | -----: |
 | Grafbase Gateway            |    1.7 |    2.0 |    2.2 |    2.3 |    2.5 |   27.5 |
-| Apollo Router               |    7.8 |    9.0 |    9.6 |    9.9 |   10.9 | 3327.7 |
-| Cosmo Router                |   14.8 |   17.7 |   19.1 |   19.4 |   20.1 |  357.3 |
-| Grafbase Gateway (no cache) |   18.4 |   19.5 |   20.2 |   20.5 |   22.0 |   27.4 |
-| Cosmo Router (no cache)     |  339.8 |  351.6 |  356.0 |  357.5 |  361.6 |  372.3 |
-| Apollo Router (no cache)    | 3279.4 | 3296.2 | 3308.8 | 3336.9 | 3384.1 | 3395.9 |
-| Hive Gateway                | errors | errors | errors | errors | errors | errors |
+| Apollo Router               |    7.9 |    9.2 |    9.9 |   10.1 |   11.0 | 3376.9 |
+| Cosmo Router                |   14.9 |   17.7 |   19.1 |   19.4 |   20.3 |  383.0 |
+| Grafbase Gateway (no cache) |   18.4 |   19.5 |   20.1 |   20.4 |   21.3 |   26.5 |
+| Hive Gateway                |   28.1 |   29.2 |   31.6 |   32.6 |   47.1 |  250.3 |
+| Cosmo Router (no cache)     |  341.7 |  353.5 |  358.3 |  359.4 |  362.9 |  367.6 |
+| Apollo Router (no cache)    | 3294.5 | 3322.2 | 3349.8 | 3368.8 | 3399.7 | 3407.5 |
 | Hive Router                 | errors | errors | errors | errors | errors | errors |
 
 ## Resources
 
 ![Efficiency Chart](charts/many-plans-efficiency.svg)
 
-| Gateway                     |       CPU | CPU max |         Memory |  MEM max | requests/core.s | requests/GB.s |
+| Gateway                     |   CPU avg | CPU max |        MEM avg |  MEM max | requests/core.s | requests/GB.s |
 | :-------------------------- | --------: | ------: | -------------: | -------: | --------------: | ------------: |
-| Grafbase Gateway            |  168% ±1% |    169% |      50 ±2 MiB |   53 MiB |           282.2 |        9245.7 |
-| Apollo Router               | 172% ±15% |    176% |    469 ±47 MiB |  803 MiB |            58.6 |         131.6 |
-| Grafbase Gateway (no cache) |  108% ±0% |    108% |     105 ±6 MiB |  125 MiB |            47.0 |         418.0 |
-| Cosmo Router                |  508% ±6% |    523% |      73 ±2 MiB |   81 MiB |            10.6 |         703.5 |
-| Cosmo Router (no cache)     |  160% ±6% |    169% |      78 ±4 MiB |   85 MiB |             1.7 |          34.5 |
-| Apollo Router (no cache)    |  100% ±2% |    101% | 2187 ±1026 MiB | 4105 MiB |             0.3 |           0.1 |
-| Hive Gateway                |  109% ±5% |    136% |  1303 ±117 MiB | 1344 MiB |          errors |        errors |
-| Hive Router                 |  100% ±0% |    100% |     142 ±3 MiB |  148 MiB |          errors |        errors |
+| Grafbase Gateway            |  168% ±1% |    169% |      53 ±2 MiB |   57 MiB |           282.9 |        8619.3 |
+| Apollo Router               | 170% ±15% |    175% |    485 ±43 MiB |  803 MiB |            57.6 |         129.0 |
+| Grafbase Gateway (no cache) |  108% ±0% |    108% |     105 ±5 MiB |  113 MiB |            47.1 |         460.3 |
+| Hive Gateway                |  111% ±6% |    145% |  1276 ±159 MiB | 1396 MiB |            22.7 |          24.2 |
+| Cosmo Router                |  509% ±6% |    522% |      73 ±2 MiB |   80 MiB |            10.7 |         716.3 |
+| Cosmo Router (no cache)     |  161% ±5% |    173% |      78 ±4 MiB |   85 MiB |             1.6 |          34.2 |
+| Apollo Router (no cache)    |  100% ±1% |    101% | 2281 ±1001 MiB | 4061 MiB |             0.3 |           0.1 |
+| Hive Router                 |  100% ±0% |    100% |     143 ±3 MiB |  149 MiB |          errors |        errors |
 
 ## Requests
 
@@ -206,13 +206,13 @@ K6 runs with a single VU.
 
 | Gateway                     | Requests | Failures | Subgraph requests (total) |
 | :-------------------------- | -------: | -------: | ------------------------: |
-| Grafbase Gateway            |    28675 |        0 |            77.7 (2227514) |
-| Grafbase Gateway (no cache) |     3054 |        0 |             77.7 (237393) |
-| Cosmo Router (no cache)     |      171 |        0 |               190 (32459) |
-| Cosmo Router                |     3342 |        0 |              193 (645955) |
-| Apollo Router               |     6192 |        0 |             203 (1256976) |
-| Apollo Router (no cache)    |       19 |        0 |                203 (3857) |
-| Hive Gateway                |     4817 |     4817 |              6.00 (28902) |
+| Hive Gateway                |     1978 |        0 |              39.6 (78276) |
+| Grafbase Gateway            |    28713 |        0 |            77.7 (2230523) |
+| Grafbase Gateway (no cache) |     3057 |        0 |             77.8 (237830) |
+| Cosmo Router                |     3351 |        0 |              193 (645203) |
+| Cosmo Router (no cache)     |      170 |        0 |               193 (32861) |
+| Apollo Router               |     6069 |        0 |             203 (1232007) |
+| Apollo Router (no cache)    |       18 |        0 |                203 (3654) |
 | Hive Router                 |        1 |        2 |                  0.00 (0) |
 
 # query
@@ -226,13 +226,13 @@ K6 runs with a constant throughput of 500 requests/s
 
 ![Latency Chart](charts/query-latency.svg)
 
-| Gateway          |  Min |   Med |   P90 |   P95 |   P99 |   Max |
-| :--------------- | ---: | ----: | ----: | ----: | ----: | ----: |
-| Hive Router\*    | 14.3 |  40.4 |  45.6 |  46.4 |  47.5 |  49.9 |
-| Grafbase Gateway | 43.4 |  45.4 |  46.7 |  47.2 |  47.9 |  77.5 |
-| Cosmo Router     | 44.0 |  46.9 |  48.3 |  48.8 |  49.7 |  56.3 |
-| Apollo Router    | 45.4 |  48.0 |  49.0 |  49.6 |  50.5 |  76.1 |
-| Hive Gateway     | 76.5 | 381.8 | 498.9 | 541.3 | 604.3 | 943.6 |
+| Gateway          |  Min |   Med |   P90 |   P95 |   P99 |    Max |
+| :--------------- | ---: | ----: | ----: | ----: | ----: | -----: |
+| Hive Router\*    | 17.4 |  40.4 |  45.7 |  46.5 |  47.8 |   50.0 |
+| Grafbase Gateway | 43.4 |  45.4 |  46.7 |  47.2 |  47.8 |   61.6 |
+| Cosmo Router     | 43.9 |  46.8 |  48.4 |  48.8 |  49.7 |   66.4 |
+| Apollo Router    | 45.1 |  48.1 |  49.6 |  50.1 |  50.9 |   73.6 |
+| Hive Gateway     | 86.1 | 404.8 | 517.8 | 564.5 | 642.8 | 1470.6 |
 
 \*Hive router doesn't respect the authorization header and deduplicates requests. So the `hive-router` results are effectively not comparable.
 
@@ -240,13 +240,13 @@ K6 runs with a constant throughput of 500 requests/s
 
 ![Efficiency Chart](charts/query-efficiency.svg)
 
-| Gateway          |      CPU | CPU max |       Memory |  MEM max | requests/core.s | requests/GB.s |
-| :--------------- | -------: | ------: | -----------: | -------: | --------------: | ------------: |
-| Hive Router\*    |  44% ±2% |     47% |   160 ±3 MiB |  169 MiB |          1066.4 |        3024.8 |
-| Grafbase Gateway |  62% ±2% |     67% |    75 ±2 MiB |   79 MiB |           746.8 |        6443.9 |
-| Apollo Router    | 263% ±4% |    275% |   182 ±5 MiB |  194 MiB |           181.9 |        2631.9 |
-| Cosmo Router     | 334% ±4% |    346% |    62 ±2 MiB |   66 MiB |           144.2 |        7695.6 |
-| Hive Gateway     | 378% ±9% |    406% | 2059 ±94 MiB | 2103 MiB |           114.4 |         226.2 |
+| Gateway          |   CPU avg | CPU max |       MEM avg |  MEM max | requests/core.s | requests/GB.s |
+| :--------------- | --------: | ------: | ------------: | -------: | --------------: | ------------: |
+| Hive Router\*    |   45% ±2% |     49% |    162 ±4 MiB |  170 MiB |          1014.2 |        3003.6 |
+| Grafbase Gateway |   62% ±2% |     68% |     71 ±2 MiB |   75 MiB |           729.7 |        6798.0 |
+| Apollo Router    |  269% ±5% |    284% |    191 ±5 MiB |  200 MiB |           176.0 |        2556.3 |
+| Cosmo Router     |  336% ±4% |    346% |     62 ±2 MiB |   66 MiB |           144.2 |        7805.4 |
+| Hive Gateway     | 377% ±10% |    410% | 2220 ±172 MiB | 2428 MiB |           108.8 |         188.1 |
 
 \*Hive router doesn't respect the authorization header and deduplicates requests. So the `hive-router` results are effectively not comparable.
 
@@ -256,10 +256,10 @@ K6 runs with a constant throughput of 500 requests/s
 
 | Gateway          | Requests | Failures | Subgraph requests (total) |
 | :--------------- | -------: | -------: | ------------------------: |
-| Hive Router\*    |    29985 |        0 |              1.29 (38648) |
-| Hive Gateway     |    28014 |        0 |             7.00 (196187) |
-| Cosmo Router     |    29983 |        0 |             8.01 (240197) |
-| Grafbase Gateway |    29985 |        0 |             13.0 (389805) |
-| Apollo Router    |    29983 |        0 |             16.0 (479728) |
+| Hive Router v    |    29983 |        0 |              1.28 (38341) |
+| Hive Gateway     |    26926 |        0 |             7.00 (188578) |
+| Cosmo Router     |    29984 |        0 |             8.01 (240189) |
+| Grafbase Gateway |    29986 |        0 |             13.0 (389818) |
+| Apollo Router    |    29984 |        0 |             16.0 (479744) |
 
 \*Hive router doesn't respect the authorization header and deduplicates requests. So the `hive-router` results are effectively not comparable.
